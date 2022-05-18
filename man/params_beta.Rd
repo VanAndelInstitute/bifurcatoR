@@ -2,7 +2,7 @@
 % Please edit documentation in R/params_beta.R
 \name{params_beta}
 \alias{params_beta}
-\title{hook for distr6 beta/Gaussian equivalency tricks}
+\title{hook for beta/Gaussian equivalency tricks}
 \usage{
 params_beta(dat)
 }
@@ -14,7 +14,7 @@ params_beta(dat)
 }\if{html}{\out{</div>}}
 }
 \description{
-hook for distr6 beta/Gaussian equivalency tricks
+hook for beta/Gaussian equivalency tricks
 }
 \examples{
 

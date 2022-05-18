@@ -19,8 +19,7 @@ Depends:
     R (>= 4.0.0)
 Imports:
     shiny,
-    dplyr,
-    rmixnorm
+    dplyr
 Suggests:
     covr,
     testthat

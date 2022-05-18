@@ -1,4 +1,4 @@
-#' hook for distr6 beta/Gaussian equivalency tricks
+#' hook for beta/Gaussian equivalency tricks
 #'
 #' @param   dat     a vector of data, purportedly from a univariate distribution
 #' 
