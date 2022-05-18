@@ -20,15 +20,15 @@ rmixnorm(n, p1, p2, shift, sel, CI)
 \item{CI}{generate a CI (?)}
 }
 \value{
-\preformatted{   a data.frame
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{   a data.frame
+}\if{html}{\out{</div>}}
 }
 \description{
 generate a random mixture of normals
 }
 \details{
-\preformatted{  let's see how dplyr verbs work in production :-O
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{  let's see how dplyr verbs work in production :-O
+}\if{html}{\out{</div>}}
 }
 \examples{
 pps = rmixnorm(20, p1=0.25, p2=0.5, shift=15, sel='Bodyweight', CI=0)
