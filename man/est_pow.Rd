@@ -4,22 +4,24 @@
 \alias{est_pow}
 \title{est_pow}
 \usage{
-est_pow(n, p, alpha = 0.05, x, nsim = 20)
+est_pow(n, alpha, nsim, dist, params, tests)
 }
 \arguments{
 \item{n}{number of \link{somethings}}
 
-\item{p}{pr(event)}
-
 \item{alpha}{default significance level (0.05)}
 
-\item{x}{I have no idea what this does}
-
 \item{nsim}{number of simulations (20)}
+
+\item{dist}{generating distribution}
+
+\item{params}{parameters for the generating distribution}
+
+\item{tests}{names of tests to run}
 }
 \value{
-\preformatted{   a power estimate
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     a power estimate
+}\if{html}{\out{</div>}}
 }
 \description{
 est_pow

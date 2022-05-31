@@ -16,8 +16,8 @@ est_pow_bin(n, p, alpha = 0.05, nsim = 20)
 \item{nsim}{number of simulations (20)}
 }
 \value{
-\preformatted{   a power estimate
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{   a power estimate
+}\if{html}{\out{</div>}}
 }
 \description{
 est_pow_bin

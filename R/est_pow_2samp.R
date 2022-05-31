@@ -1,3 +1,18 @@
+#' est_pow_2samp
+#' 
+#' @param   n1      number of [somethings] in group 1
+#' @param   n2      number of [somethings] in group 2 
+#' @param   alpha   default significance level (0.05)
+#' @param   nsim    number of simulations (20) 
+#' @param   modes   modes of the two groups 
+#' @param   dist    generating distributions
+#' @param   params  parameters for the generating distributions
+#' @param   tests   names of tests to run between the two groups 
+#' @param   nperm   number of permutations to run
+#'
+#' @return          a power estimate
+#' 
+#' @export
 est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   n.dfs=list()
   a.dfs=list()

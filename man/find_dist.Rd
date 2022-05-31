@@ -16,8 +16,8 @@ find_dist(n1, n2, alpha, nsim)
 \item{nsim}{number of simulations (20)}
 }
 \value{
-\preformatted{   a data.frame
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{   a data.frame
+}\if{html}{\out{</div>}}
 }
 \description{
 find_dist

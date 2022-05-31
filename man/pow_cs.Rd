@@ -24,8 +24,8 @@ pow_cs(ns, p1, p2, shift, sel, CI, alpha = 0.05, nsim = 20)
 \item{nsim}{number of simulations (20)}
 }
 \value{
-\preformatted{   a data.frame 
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{   a data.frame 
+}\if{html}{\out{</div>}}
 }
 \description{
 calculate power several times

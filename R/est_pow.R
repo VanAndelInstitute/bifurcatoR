@@ -1,3 +1,15 @@
+#' est_pow
+#' 
+#' @param   n       number of [somethings]
+#' @param   alpha   default significance level (0.05)
+#' @param   nsim    number of simulations (20) 
+#' @param   dist    generating distribution
+#' @param   params  parameters for the generating distribution
+#' @param   tests   names of tests to run
+#'
+#' @return          a power estimate
+#' 
+#' @export
 est_pow = function(n,alpha,nsim,dist,params,tests){
   if(dist=="norm"){
     
