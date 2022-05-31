@@ -10,7 +10,6 @@
 #' @return          a power estimate
 #' 
 #' @export
-
 est_pow = function(n,alpha,nsim,dist,params,tests){
   if(dist=="norm"){
     
