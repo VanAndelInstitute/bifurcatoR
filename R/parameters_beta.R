@@ -24,7 +24,7 @@
 #' 
 #' @seealso         MASS::fitdistr
 #' 
-#' @import          MASS
+#' @importFrom      MASS fitdistr
 #' 
 #' @export
 parameters_beta <- function(dat, ...) {

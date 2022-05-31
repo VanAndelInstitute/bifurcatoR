@@ -19,8 +19,14 @@ Depends:
     R (>= 4.0.0)
 Imports:
     MASS,
+    mclust,
+    diptest,
+    twosamples,
+    LaplacesDemon,
+    mousetrap,
     shiny,
-    dplyr
+    dplyr,
+    car
 Suggests:
     covr,
     testthat

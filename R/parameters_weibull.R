@@ -26,7 +26,7 @@
 #' @seealso         EnvStats::eweibull
 #' @seealso         MASS::fitdistr
 #' 
-#' @import          MASS
+#' @importFrom      MASS fitdistr
 #'
 #' @export
 parameters_weibull <- function(dat, ...) {
