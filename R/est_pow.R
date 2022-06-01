@@ -8,6 +8,11 @@
 #' @param   tests   names of tests to run
 #'
 #' @return          a power estimate
+#'
+#' @import          mclust
+#' @import          diptest
+#' @import          mousetrap
+#' @import          LaplacesDemon
 #' 
 #' @export
 est_pow = function(n,alpha,nsim,dist,params,tests){

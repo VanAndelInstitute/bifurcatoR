@@ -12,6 +12,9 @@
 #'
 #' @return          a power estimate
 #' 
+#' @import          twosamples 
+#' @import          car
+#'
 #' @export
 est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   n.dfs=list()
