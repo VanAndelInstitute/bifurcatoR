@@ -27,9 +27,11 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       n1_2 = floor(params$p_2*n2)
       n2_2 = floor((1-params$p_2)*n2)
       
-      n.dfs[[1]] = lapply(1:nsim,function(x) c(rnorm(n1_1,params$mu1_1,params$sd1_1),rnorm(n2_1,params$mu2_1,params$sd2_1)))
+      n.dfs[[1]] = lapply(1:nsim,function(x) c(rnorm(n1_1,params$mu1_1,params$sd1_1),
+                                               rnorm(n2_1,params$mu2_1,params$sd2_1)))
       
-      n.dfs[[2]] = lapply(1:nsim,function(x) c(rnorm(n1_2,params$mu1_2,params$sd1_2),rnorm(n2_2,params$mu2_2,params$sd2_2)))
+      n.dfs[[2]] = lapply(1:nsim,function(x) c(rnorm(n1_2,params$mu1_2,params$sd1_2),
+                                               rnorm(n2_2,params$mu2_2,params$sd2_2)))
       
       p = (params$p_1*n1+params$p_2*n2)/(n1+n2)
       mu1 =   (params$mu1_1*n1_1+params$mu1_2*n1_2)/(n1_1+n1_2)
@@ -131,6 +133,81 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   }
   
   #### Insert all other functions here
+  if ("Permutations (Raw)" %in% tests) {
+
+    # NOTE: Probably want to refactor this and stick it elsewhere eventually.
+    meanDiff <- function(y, X){
+      abs(mean(y[X == 1]) - mean(y[X == 0]))
+    }
+    
+    tmp <- lapply(1:nsim, function(s) {
+      
+      temp_df <- data.frame(
+        y = rbind(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
+      )
+      
+      # Get actual absolute mean difference.
+      actual_diff <- meanDiff(temp_df$y, temp_df$X)
+      # Find shuffled mean differences.
+      shuffled_diff <- sapply(1:nperm, function(p){
+        set.seed(s*p*100)
+        shuffled_idx <- sample(1:nrow(temp_df))
+        shuffled_X <- temp_df$X[shuffled_idx]
+        return(meanDiff(temp_df$y, shuffled_X))
+      })
+      
+      quantile_val <- quantile(shuffled_diff, 1-(alpha/2))
+      if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
+      
+    })
+    
+    num_sig <- sum(as.numeric(as.character(if_sig)))
+    ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
+    
+    pwf.df <- data.frame(Test = "Permutations (Raw)",
+                         Power = num_sig/nsim,
+                         FP = ave_pval)
+  }
+  
+  if ("Permutations (MAD)" %in% tests) {
+    # Perform MAD difference.
+    
+    # NOTE: Probably want to refactor this and stick it elsewhere eventually.
+    madDiff <- function(y, X){
+      abs((mad(y[X == 1], constant = 1) - mad(y[X == 0], constant = 1)))
+    }
+    
+    tmp <- lapply(1:nsim, function(s) {
+      
+      temp_df <- data.frame(
+        y = rbind(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
+      )
+      
+      # Get actual absolute mean difference.
+      actual_diff <- meanDiff(temp_df$y, temp_df$X)
+      # Find shuffled mean differences.
+      shuffled_diff <- sapply(1:nperm, function(p){
+        set.seed(s*p*100)
+        shuffled_idx <- sample(1:nrow(temp_df))
+        shuffled_X <- temp_df$X[shuffled_idx]
+        return(madDiff(temp_df$y, shuffled_X))
+      })
+      
+      quantile_val <- quantile(shuffled_diff, 1-(alpha/2))
+      if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
+      
+    })
+    
+    num_sig <- sum(as.numeric(as.character(if_sig)))
+    ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
+    
+    pwf.df <- data.frame(Test = "Permutations (MAD)",
+                         Power = num_sig/nsim,
+                         FP = ave_pval)
+    
+  }
   
   return(pwr.df)
   
