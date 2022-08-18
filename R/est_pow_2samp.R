@@ -165,7 +165,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     num_sig <- sum(as.numeric(as.character(if_sig)))
     ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
-    pwf.df <- data.frame(Test = "Permutations (Raw)",
+    pwr.df <- data.frame(Test = "Permutations (Raw)",
                          Power = num_sig/nsim,
                          FP = ave_pval)
   }
@@ -203,7 +203,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     num_sig <- sum(as.numeric(as.character(if_sig)))
     ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
-    pwf.df <- data.frame(Test = "Permutations (MAD)",
+    pwr.df <- data.frame(Test = "Permutations (MAD)",
                          Power = num_sig/nsim,
                          FP = ave_pval)
     
