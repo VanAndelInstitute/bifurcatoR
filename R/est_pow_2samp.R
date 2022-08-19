@@ -165,11 +165,11 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     
     if_sig <- unlist(tmp)
     num_sig <- sum(as.numeric(as.character(if_sig)))
-    ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
+    # ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
-    pwr.df <- data.frame(Test = "Permutations (Raw)",
-                         Power = num_sig/nsim,
-                         FP = ave_pval)
+    pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (Raw)",
+                         power = num_sig/nsim,
+                         FP = 0))
   }
   
   if ("Permutations (MAD)" %in% tests) {
@@ -204,11 +204,11 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     
     if_sig <- unlist(tmp)
     num_sig <- sum(as.numeric(as.character(if_sig)))
-    ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
+    # ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
-    pwr.df <- data.frame(Test = "Permutations (MAD)",
-                         Power = num_sig/nsim,
-                         FP = ave_pval)
+    pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (MAD)",
+                         power = num_sig/nsim,
+                         FP = NA))
     
   }
   
