@@ -17,6 +17,7 @@
 #'
 #' @export
 est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
+  set.seed(42)
   n.dfs=list()
   a.dfs=list()
   if(dist=="norm"){
@@ -143,7 +144,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     tmp <- lapply(1:nsim, function(s) {
       
       temp_df <- data.frame(
-        y = rbind(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
         X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
       )
       
@@ -159,9 +160,10 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       
       quantile_val <- quantile(shuffled_diff, 1-(alpha/2))
       if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
-      
+      if_sig
     })
     
+    if_sig <- unlist(tmp)
     num_sig <- sum(as.numeric(as.character(if_sig)))
     ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
@@ -181,7 +183,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     tmp <- lapply(1:nsim, function(s) {
       
       temp_df <- data.frame(
-        y = rbind(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
         X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
       )
       
@@ -197,9 +199,10 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       
       quantile_val <- quantile(shuffled_diff, 1-(alpha/2))
       if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
-      
+      if_sig
     })
     
+    if_sig <- unlist(tmp)
     num_sig <- sum(as.numeric(as.character(if_sig)))
     ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
