@@ -77,11 +77,20 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       if(dist == "weibull"){
         if(modes == 1){
           
-          # n.dfs[[1]] = lapply(1:nsim,function(x) rnorm(n1,0,1))
-          # n.dfs[[2]] = lapply(1:nsim,function(x) rnorm(n2,0+mean,1*var))
-          # 
-          # a.dfs[[1]] = lapply(1:nsim,function(x) rnorm(n1,0,1))
-          # a.dfs[[2]] = lapply(1:nsim,function(x) rnorm(n2,0,1))
+        shape = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$shape
+        scale = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$scale
+        n.dfs[[1]] = lapply(1:nsim,function(x) rweibull(n1,1,1))
+        n.dfs[[2]] = lapply(1:nsim,function(x) rweibull(n2,shape=shape,scale=scale))
+        
+        #Create a targically over-simplified mixture of the two by averaging the means
+        #and pooling the variances
+        mu.pool = (n1+n2*(1+params$mean))/(n1+n2)
+        sd.pool = sqrt(((n1-1)*1^2 + (n2-1)*(params$v_scale)^2)/(n1+n2-2))
+        shape.p = mixdist::weibullpar(mu.pool,sd.pool,loc=0)$shape
+        scale.p = mixdist::weibullpar(mu.pool,sd.pool,loc=0)$scale
+        
+        a.dfs[[1]] = lapply(1:nsim,function(x) rweibull(n1,shape=shape.p,scale=scale.p))
+        a.dfs[[2]] = lapply(1:nsim,function(x) rweibull(n2,shape=shape.p,scale=scale.p))
           
         }
         
