@@ -188,7 +188,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       )
       
       # Get actual absolute mean difference.
-      actual_diff <- meanDiff(temp_df$y, temp_df$X)
+      actual_diff <- madDiff(temp_df$y, temp_df$X)
       # Find shuffled mean differences.
       shuffled_diff <- sapply(1:nperm, function(p){
         set.seed(s*p*100)
@@ -215,3 +215,5 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   return(pwr.df)
   
 }
+
+
