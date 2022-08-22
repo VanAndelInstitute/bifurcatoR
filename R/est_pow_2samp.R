@@ -217,7 +217,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     
     pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (MAD)",
                          power = num_sig/nsim,
-                         FP = NA))
+                         FP = 0))
     
   }
   
