@@ -141,7 +141,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       abs(mean(y[X == 1]) - mean(y[X == 0]))
     }
     
-    tmp <- lapply(1:nsim, function(s) {
+    # Calculate power
+    power_sig <- sapply(1:nsim, function(s) {
       
       temp_df <- data.frame(
         y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
@@ -163,13 +164,36 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       if_sig
     })
     
-    if_sig <- unlist(tmp)
-    num_sig <- sum(as.numeric(as.character(if_sig)))
+    # if_sig <- unlist(tmp)
+    # num_sig <- sum(as.numeric(as.character(if_sig)))
     # ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
+    # Calculate FDR
+    fp_sig <- sapply(1:nsim, function(s) {
+      
+      temp_df <- data.frame(
+        y = c(a.dfs[[1]][[s]], a.dfs[[2]][[s]]),
+        X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
+      )
+      
+      # Get actual absolute mean difference.
+      actual_diff <- meanDiff(temp_df$y, temp_df$X)
+      # Find shuffled mean differences.
+      shuffled_diff <- sapply(1:nperm, function(p){
+        set.seed(s*p*100)
+        shuffled_idx <- sample(1:nrow(temp_df))
+        shuffled_X <- temp_df$X[shuffled_idx]
+        return(meanDiff(temp_df$y, shuffled_X))
+      })
+      
+      quantile_val <- quantile(shuffled_diff, 1-(alpha/2))
+      if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
+      if_sig
+    })
+    
     pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (Raw)",
-                         power = num_sig/nsim,
-                         FP = 0))
+                         power = sum(power_sig)/nsim,
+                         FP = sum(fp_sig)/nsim))
   }
   
   if ("Permutations (MAD)" %in% tests) {
@@ -180,7 +204,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       abs((mad(y[X == 1], constant = 1) - mad(y[X == 0], constant = 1)))
     }
     
-    tmp <- lapply(1:nsim, function(s) {
+    # Calculate power
+    power_sig <- sapply(1:nsim, function(s) {
       
       temp_df <- data.frame(
         y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
@@ -202,13 +227,37 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       if_sig
     })
     
-    if_sig <- unlist(tmp)
-    num_sig <- sum(as.numeric(as.character(if_sig)))
+    # if_sig <- unlist(tmp)
+    # num_sig <- sum(as.numeric(as.character(if_sig)))
     # ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
     
+    # Calculate FDR
+    fp_sig <- sapply(1:nsim, function(s) {
+      
+      temp_df <- data.frame(
+        y = c(a.dfs[[1]][[s]], a.dfs[[2]][[s]]),
+        X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
+      )
+      
+      # Get actual absolute mean difference.
+      actual_diff <- madDiff(temp_df$y, temp_df$X)
+      # Find shuffled mean differences.
+      shuffled_diff <- sapply(1:nperm, function(p){
+        set.seed(s*p*100)
+        shuffled_idx <- sample(1:nrow(temp_df))
+        shuffled_X <- temp_df$X[shuffled_idx]
+        return(madDiff(temp_df$y, shuffled_X))
+      })
+      
+      quantile_val <- quantile(shuffled_diff, 1-(alpha/2))
+      if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
+      if_sig
+    })
+    
+    
     pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (MAD)",
-                         power = num_sig/nsim,
-                         FP = 0))
+                         power = sum(power_sig)/nsim,
+                         FP = sum(fp_sig)/nsim))
     
   }
   
