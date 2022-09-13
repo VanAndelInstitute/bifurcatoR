@@ -56,11 +56,13 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
   #                                    FP = sum(sapply(a.dfs, function(s) I(sigclust::sigclust(as.data.frame(s),nsim=999)@pval<alpha)))/nsim))
   # }
   
-  if("isbimo" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Laplace's Demon",
-                                     power = sum(sapply(n.dfs, function(s) LaplacesDemon::is.multimodal(s)))/nsim,
-                                     FP =  sum(sapply(a.dfs, function(s) LaplacesDemon::is.multimodal(s)))/nsim))
-  }
+  ## Laplace's Demon is a useful method for bimodality, but requires the user to input the minimum propotion of the sample needed to define a mode
+  ## This is being removed for now to limit the number of parameters a user must input.                                                   
+  # if("isbimo" %in% tests){
+  #  pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Laplace's Demon",
+  #                                   power = sum(sapply(n.dfs, function(s) LaplacesDemon::is.multimodal(s)))/nsim,
+  #                                   FP =  sum(sapply(a.dfs, function(s) LaplacesDemon::is.multimodal(s)))/nsim))
+  #}
   
   if("mt" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Mouse Trap",
