@@ -40,7 +40,7 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
     n1 = floor(params$p*n)
     n2 = floor((1-params$p)*n)
     
-    n.dfs = lapply(1:nsim,function(x) c(rweibull(n1,shape=params$sp1,scale=params$sc1),rweibull(n2shape=params$sp2,scale=params$sc2)))
+    n.dfs = lapply(1:nsim,function(x) c(rweibull(n1,shape=params$sp1,scale=params$sc1),rweibull(n2,shape=params$sp2,scale=params$sc2)))
     
     
     a.dfs = lapply(1:nsim,function(x) c(rweibull(n,
