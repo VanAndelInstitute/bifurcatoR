@@ -34,7 +34,8 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
       
       a.dfs = lapply(1:nsim,function(x) rbeta(n,2,2))
       
-    } else if(dist=="weib"){
+    } else {
+      if(dist=="weib"){
     
     n1 = floor(params$p*n)
     n2 = floor((1-params$p)*n)
@@ -46,7 +47,8 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
                                               (n1 * params$sp1 + n2 * params$sp2)/n,
                                               sqrt(((n1-1)*params$sc1^2 + (n2-1)*params$sc2^2)/(n-2)))))
     
-    }                  
+     }  
+    }
   }
   pwr.df = NULL
   if("dip" %in% tests){
