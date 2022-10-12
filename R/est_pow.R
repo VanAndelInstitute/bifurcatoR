@@ -34,7 +34,7 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
       
       a.dfs = lapply(1:nsim,function(x) rbeta(n,2,2))
       
-    } else if(dist=="norm"){
+    } else if(dist=="weib"){
     
     n1 = floor(params$p*n)
     n2 = floor((1-params$p)*n)
