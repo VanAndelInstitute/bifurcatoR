@@ -36,7 +36,7 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
       
     } else {
       if(dist=="weib"){
-      print(params)
+      #print(params)
       n1 = floor(params$p*n)
       n2 = floor((1-params$p)*n)
 
