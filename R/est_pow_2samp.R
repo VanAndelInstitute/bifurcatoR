@@ -77,21 +77,51 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       if(dist == "weibull"){
         if(modes == 1){
           
-        shape = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$shape
-        scale = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$scale
-        n.dfs[[1]] = lapply(1:nsim,function(x) rweibull(n1,1,1))
-        n.dfs[[2]] = lapply(1:nsim,function(x) rweibull(n2,shape=shape,scale=scale))
-        
-        #Create a targically over-simplified mixture of the two by averaging the means
-        #and pooling the variances
-        mu.pool = (n1+n2*(1+params$mean))/(n1+n2)
-        sd.pool = sqrt(((n1-1)*1^2 + (n2-1)*(params$v_scale)^2)/(n1+n2-2))
-        shape.p = mixdist::weibullpar(mu.pool,sd.pool,loc=0)$shape
-        scale.p = mixdist::weibullpar(mu.pool,sd.pool,loc=0)$scale
-        
-        a.dfs[[1]] = lapply(1:nsim,function(x) rweibull(n1,shape=shape.p,scale=scale.p))
-        a.dfs[[2]] = lapply(1:nsim,function(x) rweibull(n2,shape=shape.p,scale=scale.p))
+          shape = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$shape
+          scale = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$scale
+          n.dfs[[1]] = lapply(1:nsim,function(x) rweibull(n1,1,1))
+          n.dfs[[2]] = lapply(1:nsim,function(x) rweibull(n2,shape=shape,scale=scale))
           
+          #Create a targically over-simplified mixture of the two by averaging the means
+          #and pooling the variances
+          mu.pool = (n1+n2*(1+params$mean))/(n1+n2)
+          sd.pool = sqrt(((n1-1)*1^2 + (n2-1)*(params$v_scale)^2)/(n1+n2-2))
+          shape.p = mixdist::weibullpar(mu.pool,sd.pool,loc=0)$shape
+          scale.p = mixdist::weibullpar(mu.pool,sd.pool,loc=0)$scale
+          
+          a.dfs[[1]] = lapply(1:nsim,function(x) rweibull(n1,shape=shape.p,scale=scale.p))
+          a.dfs[[2]] = lapply(1:nsim,function(x) rweibull(n2,shape=shape.p,scale=scale.p))
+          
+        } else {
+          if(modes == 2){
+            n1_1 = floor(params$p_1*n1)
+            n2_1 = floor((1-params$p_1)*n1)
+            
+            n1_2 = floor(params$p_2*n2)
+            n2_2 = floor((1-params$p_2)*n2)
+            
+            n.dfs[[1]] = lapply(1:nsim,function(x) c(rweibull(n1_1,shape = params$sp1_1,scale = params$sc1_1),
+                                                     rweibull(n2_1,shape = params$sp2_1,scale = params$sc2_1)))
+            
+            n.dfs[[2]] = lapply(1:nsim,function(x) c(rweibull(n1_2,shape = params$sp1_2,scale = params$sc1_2),
+                                                     rweibull(n2_2,shape = params$sp2_2,scale = params$sc2_2)))
+            
+            p = (params$p_1*n1+params$p_2*n2)/(n1+n2)
+            sp1 =   (params$sp1_1*n1_1+params$sp1_2*n1_2)/(n1_1+n1_2)
+            sp2 =   (params$sp2_1*n2_1+params$sp2_2*n2_2)/(n2_1+n2_2)
+            sc1 = (params$sc1_1*n1_1+params$sc1_2*n1_2)/(n1_1+n1_2)
+            sc2 = (params$sc2_1*n2_1+params$sc2_2*n2_2)/(n2_1+n2_2)
+            
+            n1_1 = floor(p*n1)
+            n2_1 = floor((1-p)*n1)
+            
+            n1_2 = floor(p*n2)
+            n2_2 = floor((1-p)*n2)
+            
+            
+            a.dfs[[1]] = lapply(1:nsim,function(x) c(rweibull(n1_1,shape = sp1,scale = sc1),rweibull(n2_1,shape = sp2,scale = sc2)))
+            a.dfs[[2]] = lapply(1:nsim,function(x) c(rweibull(n1_2,shape = sp1,scale = sc1),rnorm(n2_2,shape = sp2,scale = sc2)))
+          }
         }
         
       }
@@ -144,7 +174,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   
   #### Insert all other functions here
   if ("Permutations (Raw)" %in% tests) {
-
+    
     # NOTE: Probably want to refactor this and stick it elsewhere eventually.
     meanDiff <- function(y, X){
       abs(mean(y[X == 1]) - mean(y[X == 0]))
@@ -201,8 +231,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     })
     
     pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (Raw)",
-                         power = sum(power_sig)/nsim,
-                         FP = sum(fp_sig)/nsim))
+                                       power = sum(power_sig)/nsim,
+                                       FP = sum(fp_sig)/nsim))
   }
   
   if ("Permutations (MAD)" %in% tests) {
@@ -265,13 +295,12 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     
     
     pwr.df <- rbind(pwr.df, data.frame(Test = "Permutations (MAD)",
-                         power = sum(power_sig)/nsim,
-                         FP = sum(fp_sig)/nsim))
+                                       power = sum(power_sig)/nsim,
+                                       FP = sum(fp_sig)/nsim))
     
   }
   
   return(pwr.df)
   
 }
-
 
