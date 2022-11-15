@@ -120,7 +120,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
             
             
             a.dfs[[1]] = lapply(1:nsim,function(x) c(rweibull(n1_1,shape = sp1,scale = sc1),rweibull(n2_1,shape = sp2,scale = sc2)))
-            a.dfs[[2]] = lapply(1:nsim,function(x) c(rweibull(n1_2,shape = sp1,scale = sc1),rnorm(n2_2,shape = sp2,scale = sc2)))
+            a.dfs[[2]] = lapply(1:nsim,function(x) c(rweibull(n1_2,shape = sp1,scale = sc1),rweibull(n2_2,shape = sp2,scale = sc2)))
           }
         }
         
