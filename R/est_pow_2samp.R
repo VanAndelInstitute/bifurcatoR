@@ -74,7 +74,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     } else {
       
       # need to find suitable support for standard normal and std normal + mean and var*var
-      if(dist == "weibull"){
+      if(dist == "weib"){
         if(modes == 1){
           
           shape = mixdist::weibullpar(1+params$mean,params$v_scale,loc=0)$shape
