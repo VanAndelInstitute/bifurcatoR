@@ -168,8 +168,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   if("ANOVA" %in% tests){
     
     pwr.df = rbind(pwr.df,data.frame( Test = "ANOVA",
-                                      power = sum(sapply(1:nsim, function(s) I(anova(lm(c(n.dfs[[1]][[s]],n.dfs[[2]][[s]]) ~ c(rep("C",n1),rep("T",n2))))$'Pr(>F)'[1]<alpha)))/nsim,
-                                      FP = sum(sapply(1:nsim, function(s) I(anova(lm(c(a.dfs[[1]][[s]],a.dfs[[2]][[s]]) ~ c(rep("C",n1),rep("T",n2))))$'Pr(>F)'[1]<alpha)))/nsim))
+                                      power = sum(sapply(1:nsim, function(s) I(anova(lm(c(n.dfs[[1]][[s]],n.dfs[[2]][[s]]) ~ c(rep("C",length(n.dfs[[1]][[s]]),rep("T",length(n.dfs[[2]][[s]]))))$'Pr(>F)'[1]<alpha)))/nsim,
+                                      FP = sum(sapply(1:nsim, function(s) I(anova(lm(c(a.dfs[[1]][[s]],a.dfs[[2]][[s]]) ~ c(rep("C",length(a.dfs[[1]][[s]]),rep("T",length(a.dfs[[2]][[s]]))))$'Pr(>F)'[1]<alpha)))/nsim))
   }
   
   #### Insert all other functions here
