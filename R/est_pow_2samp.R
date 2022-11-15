@@ -107,8 +107,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
                                                      rweibull(n2_2,shape = params$sp2_2,scale = params$sc2_2)))
             
             p = (params$p_1*n1+params$p_2*n2)/(n1+n2)
-            sp1 =   (params$sp1_1*n1_1+params$sp1_2*n1_2)/(n1_1+n1_2)
-            sp2 =   (params$sp2_1*n2_1+params$sp2_2*n2_2)/(n2_1+n2_2)
+            sp1 = (params$sp1_1*n1_1+params$sp1_2*n1_2)/(n1_1+n1_2)
+            sp2 = (params$sp2_1*n2_1+params$sp2_2*n2_2)/(n2_1+n2_2)
             sc1 = (params$sc1_1*n1_1+params$sc1_2*n1_2)/(n1_1+n1_2)
             sc2 = (params$sc2_1*n2_1+params$sc2_2*n2_2)/(n2_1+n2_2)
             
