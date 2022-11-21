@@ -173,7 +173,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   }
                                                       
   
-  if("NonpANOVA" %in% tests){
+  if("Non-parametric ANOVA" %in% tests){
     
     pwr.df = rbind(pwr.df,data.frame( Test = "Non-Parametric ANOVA",
                                       power = sum(sapply(1:nsim, function(s) I(anova(lm(rank(c(n.dfs[[1]][[s]],n.dfs[[2]][[s]])) ~ c(rep("C",length(n.dfs[[1]][[s]])),rep("T",length(n.dfs[[2]][[s]])))))$'Pr(>F)'[1]<alpha)))/nsim,
