@@ -1,5 +1,5 @@
-
-dxsmall <- readRDS("dxsmall.rds")
+data(dxsmall)
+# dxsmall <- readRDS("dxsmall.rds")
 genescovs <- cbind(as.data.frame(colData(dxsmall)),
                    t(assays(dxsmall)$logcounts))
 is.na(genescovs$FAB) <- genescovs$FAB == "pending" 

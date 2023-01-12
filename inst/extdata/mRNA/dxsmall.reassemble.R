@@ -8,5 +8,5 @@ dxsmall <- SummarizedExperiment(rowData=rowDat,
                                 colData=colDat, 
                                 assays=list(counts=readcounts, 
                                             logcounts=lognormcounts))
-saveRDS(dxsmall, file="dxsmall.rds")
+save(dxsmall, file="../../data/dxsmall.rda", compress="xz")
 
