@@ -16,4 +16,13 @@ data(dxsmall)
 \description{
 A SummarizedExperiment with covariates and mRNA counts from 501 AML cases.
 }
+\examples{
+
+  data(dxsmall)
+  if(requireNamespace("iSEE")) {
+    library(iSEE)
+    iSEE(dxsmall)
+  }
+
+}
 \keyword{datasets}

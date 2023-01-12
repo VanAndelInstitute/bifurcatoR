@@ -7,4 +7,13 @@
 #' @usage data(dxsmall)
 #' @format A \code{SummarizedExperiment} object
 #' @source This data was created using inst/extdata/mRNA/dxsmall.reassemble.R
+#'
+#' @examples
+#'
+#'   data(dxsmall)
+#'   if(requireNamespace("iSEE")) {
+#'     library(iSEE)
+#'     iSEE(dxsmall)
+#'   }
+#' 
 "dxsmall"
