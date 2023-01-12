@@ -2,7 +2,7 @@ Package: bifurcatoR
 Type: Package
 Title: Hunt for bumps in high-dimensional data
 Description: A special case of variance analysis exists when one group may have discernible forking in phenotypes over time. This library provides some tools to design experiments for such cases. 
-Version: 0.3.112
+Version: 0.3.112.1
 Date: 2023-01-12
 Authors@R: c(person("Zach", "Madaj", role=c("aut", "cre"), 
                     email="trichelab+zachm@gmail.com"), 

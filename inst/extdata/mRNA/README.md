@@ -4,18 +4,19 @@ This folder contains an extract of a dozen genes tabulated via featureCounts
 against an ENSEMBL transcriptome and then collapsed by symbol. The logcounts 
 assay is computed against the total counts of all the symbols before subsetting.
 
+
 # Files and descriptions
 
 README.md                   this file
 
-dxsmall.colData.csv         the column data (subject covariates) for dxsmall
-dxsmall.rowData.csv         the row data (gene symbol covariates) for dxsmall 
-dxsmall.readcounts.csv      read count for each gene in each subject specimen
-dxsmall.lognormcounts.csv   log2(1 + (read count for gene / total read count)) 
+* ../../data/dxsmall.rds      a 12x583 SummarizedExperiment: ```data(dxsmall)```
+* dxsmall.colData.csv         the column data (subject covariates) for dxsmall
+* dxsmall.rowData.csv         the row data (gene symbol covariates) for dxsmall 
+* dxsmall.readcounts.csv      read count for each gene in each subject specimen
+* dxsmall.lognormcounts.csv   log2(1 + (read count for gene/total read count)) 
+* dxsmall.reassemble.R        reassemble the dxsmall object from above CSV files
+* dxsmall.plots.R             template for plotting distributions
 
-dxsmall.rds                 a 12x583 SummarizedExperiment object from R
-dxsmall.reassemble.R        reassemble the dxsmall object from above CSV files 
-dxsmall.plots.R             template for plotting distributions
 
 # Sanity checking 
 
@@ -56,12 +57,19 @@ of this relationship, and its biological mechanism, is an open research topic.
 To a first approximation, then, we have two groups (MLL and KDM5A fusions) with
 substantial unexplained bimodality in expression, and one (NUP98-NSD1) without. 
 
+
 # Rows (genes)
 
-The genes chosen for this dataset include five with bimodal correlated mRNA 
-expression, one housekeeping gene (GAPDH), two rarely expressed genes (CFTR
-and NCAM1/CD56), one highly expressed gene (IL3RA/CD123), and three (KDM5D,
-PRAME, and C3orf80) with uninformative variation across the subjects in this
-dataset. MECOM and PRDM16 are particularly noteworthy for their bimodality. 
+The genes chosen for this dataset include:
+
+* five with bimodal correlated mRNA expression
+* one housekeeping gene (GAPDH), two rarely expressed genes (CFTR, NCAM1/CD56)
+* one highly expressed gene (IL3RA/CD123), 
+* three (KDM5D, PRAME, and C3orf80) with uninformative variation across subjects
+
+MECOM and PRDM16 are particularly noteworthy for their bimodality. 
+
+
+### Notes
 
 See dxsmall.plots.R for some skeletal tire-kicking and plot-making code. 
