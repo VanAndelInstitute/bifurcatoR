@@ -2,8 +2,8 @@ Package: bifurcatoR
 Type: Package
 Title: Hunt for bumps in high-dimensional data
 Description: A special case of variance analysis exists when one group may have discernible forking in phenotypes over time. This library provides some tools to design experiments for such cases. 
-Version: 0.1.601
-Date: 2022-06-01
+Version: 0.3.112
+Date: 2023-01-12
 Authors@R: c(person("Zach", "Madaj", role=c("aut", "cre"), 
                     email="trichelab+zachm@gmail.com"), 
              person("Carmen", "Khoo", role=c("aut", "cre"), 
@@ -30,6 +30,6 @@ Imports:
 Suggests:
     covr,
     testthat
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
