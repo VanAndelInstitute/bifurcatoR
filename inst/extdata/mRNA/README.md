@@ -20,13 +20,20 @@ README.md                   this file
 
 # Sanity checking 
 
-If one runs dxsmall.reassemble.R and also reads in dxsmall.rds with 
+If one runs dxsmall.reassemble.R and also reads in dxsmall from /data, 
 
-```dxsmall0 <- readRDS("dxsmall.rds")```
+```
+data(dxsmall)
+dxsmall0 <- dxsmall
+exists(dxsmall0)
+rm(dxsmall)
+source("dxsmall.reassemble.R")
+exists(dxsmall)
+```
 
 then 
 
-```identical(dxsmall, dxsmall0)```
+`identical(dxsmall, dxsmall0)`
 
 should return TRUE. 
 
@@ -72,4 +79,6 @@ MECOM and PRDM16 are particularly noteworthy for their bimodality.
 
 ### Notes
 
-See dxsmall.plots.R for some skeletal tire-kicking and plot-making code. 
+* See dxsmall.plots.R for some skeletal tire-kicking and plot-making code. 
+
+* `help("dxsmall")` for some ideas about exploring the data with `iSEE`.
