@@ -10,10 +10,37 @@
 #'
 #' @examples
 #'
-#'   data(dxsmall)
-#'   if(requireNamespace("iSEE")) {
-#'     library(iSEE)
-#'     iSEE(dxsmall)
-#'   }
+#'  data(dxsmall)
+#'  if(requireNamespace("iSEE")) {
+#' 
+#'    library(SingleCellExperiment)
+#'    se <- as(dxsmall, "SingleCellExperiment") 
+#'
+#'    library(uwot) # for the reduced dimension plot
+#'    reducedDim(se, "UMAP") <- umap(t(logcounts(se)), metric="cosine")
+#'
+#'    library(iSEE)
+#'    app <- iSEE(se,
+#'                initial=list(
+#'                  UMAP=new("ReducedDimensionPlot",
+#'                           ColorByColumnData = "FusionGroup",
+#'                           ColorBy = "Column data", 
+#'                           Type = "UMAP"),
+#'                  Gene=new("RowDataTable"),
+#'                  Expression=new("FeatureAssayPlot", 
+#'                                 Assay = "logcounts", 
+#'                                 XAxis = "Column data", 
+#'                                 XAxisColumnData = "FusionGroup", 
+#'                                 YAxisFeatureSource = "Gene", 
+#'                                 YAxisFeatureDynamicSource = TRUE, 
+#'                                 ColorByColumnData = "FusionGroup", 
+#'                                 ColorBy = "Column data") 
+#'                )
+#'    )
+#'
+#'    # finally, run the damn thing:
+#'    shiny::runApp(app, port=12345)
+#'
+#'  }
 #' 
 "dxsmall"
