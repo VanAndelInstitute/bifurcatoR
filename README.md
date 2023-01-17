@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/VanAndelInstitute/bifurcatoR.png?branch=master)](https://travis-ci.org/VanAndelInstitute/bifurcatoR) 
 
+A library of functions to simulate and test for both structured and unstructured variance inflation due to genetics or other heritable factors.
+
 # For users 
 
 ## Installation and an example dataset
