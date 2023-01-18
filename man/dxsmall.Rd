@@ -19,6 +19,7 @@ A SummarizedExperiment with covariates and mRNA counts from 501 AML cases.
 \examples{
 
  data(dxsmall)
+ dxsmall$MLLrearranged <- dxsmall$FusionGroup == "MLL"
  if(requireNamespace("iSEE")) {
 
    library(SingleCellExperiment)
@@ -31,17 +32,17 @@ A SummarizedExperiment with covariates and mRNA counts from 501 AML cases.
    app <- iSEE(se,
                initial=list(
                  UMAP=new("ReducedDimensionPlot",
-                          ColorByColumnData = "FusionGroup",
+                          ColorByColumnData = "MLLrearranged",
                           ColorBy = "Column data", 
                           Type = "UMAP"),
                  Gene=new("RowDataTable"),
                  Expression=new("FeatureAssayPlot", 
                                 Assay = "logcounts", 
                                 XAxis = "Column data", 
-                                XAxisColumnData = "FusionGroup", 
+                                XAxisColumnData = "MLLrearranged", 
                                 YAxisFeatureSource = "Gene", 
                                 YAxisFeatureDynamicSource = TRUE, 
-                                ColorByColumnData = "FusionGroup", 
+                                ColorByColumnData = "MLLrearranged", 
                                 ColorBy = "Column data") 
                )
    )
