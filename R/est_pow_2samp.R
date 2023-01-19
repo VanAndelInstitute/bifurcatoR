@@ -200,7 +200,6 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       actual_diff <- meanDiff(temp_df$y, temp_df$X)
       # Find shuffled mean differences.
       shuffled_diff <- sapply(1:nperm, function(p){
-        set.seed(s*p*100)
         shuffled_idx <- sample(1:nrow(temp_df))
         shuffled_X <- temp_df$X[shuffled_idx]
         return(meanDiff(temp_df$y, shuffled_X))
@@ -227,7 +226,6 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       actual_diff <- meanDiff(temp_df$y, temp_df$X)
       # Find shuffled mean differences.
       shuffled_diff <- sapply(1:nperm, function(p){
-        set.seed(s*p*100)
         shuffled_idx <- sample(1:nrow(temp_df))
         shuffled_X <- temp_df$X[shuffled_idx]
         return(meanDiff(temp_df$y, shuffled_X))
@@ -263,7 +261,6 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       actual_diff <- madDiff(temp_df$y, temp_df$X)
       # Find shuffled mean differences.
       shuffled_diff <- sapply(1:nperm, function(p){
-        set.seed(s*p*100)
         shuffled_idx <- sample(1:nrow(temp_df))
         shuffled_X <- temp_df$X[shuffled_idx]
         return(madDiff(temp_df$y, shuffled_X))
@@ -290,7 +287,6 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       actual_diff <- madDiff(temp_df$y, temp_df$X)
       # Find shuffled mean differences.
       shuffled_diff <- sapply(1:nperm, function(p){
-        set.seed(s*p*100)
         shuffled_idx <- sample(1:nrow(temp_df))
         shuffled_X <- temp_df$X[shuffled_idx]
         return(madDiff(temp_df$y, shuffled_X))
