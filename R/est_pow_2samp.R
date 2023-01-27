@@ -313,8 +313,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
     }))
     
     pwr.df <- rbind(pwr.df, data.frame(Test = colnames(power_sig),
-                                       power = colSums2(power_sig)/nsim,
-                                       FP = colSums2(fp_sig)/nsim))
+                                       power = colSums(power_sig)/nsim,
+                                       FP = colSums(fp_sig)/nsim))
   }
   
   
