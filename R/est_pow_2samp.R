@@ -106,7 +106,7 @@ perms <- function(temp_df,test.l){
   }
   quantile_val <- apply(shuffled_diff,2,function(x) quantile(x, 1-(alpha/2)))
   if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
-  return(if_sig)
+  return(as.data.frame(if_sig))
 }
 
 
