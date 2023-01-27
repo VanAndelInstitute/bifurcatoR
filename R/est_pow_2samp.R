@@ -17,97 +17,6 @@
 #'
 #' @export
 
-#Should move these eventually
-meanDiff <- function(y, X){
-  abs(mean(y[X == 1]) - mean(y[X == 0]))
-}
-
-madDiff <- function(y, X){
-  abs((mad(y[X == 1], constant = 1) - mad(y[X == 0], constant = 1)))
-}
-
-
-giniDiff <- function(y, X){
-  abs((Hmisc::GiniMd(y[X == 1]) - Hmisc::GiniMd(y[X == 0])))
-}
-
-sdDiff <- function(y, X){
-  abs((sd(y[X == 1]) - sd(y[X == 0])))
-}
-
-
-perms <- function(temp_df,test.l){
-  
-  actual_mean_diff = NA
-  actual_mad_diff = NA
-  actual_sd_diff = NA
-  actual_gini_diff = NA
-  shuffle_mean_diff = NA
-  shuffle_mad_diff = NA
-  shuffle_sd_diff = NA
-  shuffle_gini_diff = NA
-  
-  
-  # Get actual absolute stats.
-  if("Permutations (Raw)" %in% test.l){
-    actual_mean_diff <- meanDiff(temp_df$y, temp_df$X)
-  }
-  
-  if("Permutations (MAD)" %in% test.l){
-    actual_mad_diff <- madDiff(temp_df$y, temp_df$X)
-  }
-  
-  if("Permutations (SD)" %in% test.l){
-    actual_sd_diff <- sdDiff(temp_df$y, temp_df$X)
-  }
-  
-  if("Permutations (GiniMd)" %in% test.l){
-    actual_gini_diff <- giniDiff(temp_df$y, temp_df$X)
-  }
-  
-  actual_diff = data.frame(actual_mean_diff,
-                           actual_mad_diff,
-                           actual_sd_diff,
-                           actual_gini_diff)
-  if(any(is.na(actual_diff))){
-    actual_diff <- actual_diff[,colSums(is.na(actual_diff))<nrow(actual_diff), drop=FALSE]
-  }
-  
-  # Find shuffled stats.
-  shuffled_diff <- as.data.frame(data.table::rbindlist(lapply(1:nperm, function(p){
-    shuffled_idx <- sample(1:nrow(temp_df))
-    shuffled_X <- temp_df$X[shuffled_idx]
-    
-    if("Permutations (Raw)" %in% test.l){
-      shuffle_mean_diff <- meanDiff(temp_df$y, shuffled_X)
-    }
-    
-    if("Permutations (MAD)" %in% test.l){
-      shuffle_mad_diff <- madDiff(temp_df$y, shuffled_X)
-    }
-    
-    if("Permutations (SD)" %in% test.l){
-      shuffle_sd_diff <- sdDiff(temp_df$y, shuffled_X)
-    }
-    
-    if("Permutations (GiniMd)" %in% test.l){
-      shuffle_gini_diff <- giniDiff(temp_df$y, shuffled_X)
-    }
-    
-    return(data.frame(shuffle_mean_diff,
-                      shuffle_mad_diff,
-                      shuffle_sd_diff,
-                      shuffle_gini_diff))
-    
-  })))
-  
-  if(any(is.na(shuffled_diff))){
-    shuffled_diff <- shuffled_diff[,colSums(is.na(shuffled_diff))<nrow(shuffled_diff), drop=FALSE]
-  }
-  quantile_val <- apply(shuffled_diff,2,function(x) quantile(x, 1-(alpha/2)))
-  if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
-  return(as.data.frame(if_sig))
-}
 
 
 
@@ -280,6 +189,99 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
                         "Permutations (MAD)",
                         "Permutations (SD)",
                         "Permutations (GiniMd"))) {
+
+    
+          #Should move these eventually
+      meanDiff <- function(y, X){
+        abs(mean(y[X == 1]) - mean(y[X == 0]))
+      }
+
+      madDiff <- function(y, X){
+        abs((mad(y[X == 1], constant = 1) - mad(y[X == 0], constant = 1)))
+      }
+
+
+      giniDiff <- function(y, X){
+        abs((Hmisc::GiniMd(y[X == 1]) - Hmisc::GiniMd(y[X == 0])))
+      }
+
+      sdDiff <- function(y, X){
+        abs((sd(y[X == 1]) - sd(y[X == 0])))
+      }
+
+
+      perms <- function(temp_df,test.l){
+
+        actual_mean_diff = NA
+        actual_mad_diff = NA
+        actual_sd_diff = NA
+        actual_gini_diff = NA
+        shuffle_mean_diff = NA
+        shuffle_mad_diff = NA
+        shuffle_sd_diff = NA
+        shuffle_gini_diff = NA
+
+
+        # Get actual absolute stats.
+        if("Permutations (Raw)" %in% test.l){
+          actual_mean_diff <- meanDiff(temp_df$y, temp_df$X)
+        }
+
+        if("Permutations (MAD)" %in% test.l){
+          actual_mad_diff <- madDiff(temp_df$y, temp_df$X)
+        }
+
+        if("Permutations (SD)" %in% test.l){
+          actual_sd_diff <- sdDiff(temp_df$y, temp_df$X)
+        }
+
+        if("Permutations (GiniMd)" %in% test.l){
+          actual_gini_diff <- giniDiff(temp_df$y, temp_df$X)
+        }
+
+        actual_diff = data.frame(actual_mean_diff,
+                                 actual_mad_diff,
+                                 actual_sd_diff,
+                                 actual_gini_diff)
+        if(any(is.na(actual_diff))){
+          actual_diff <- actual_diff[,colSums(is.na(actual_diff))<nrow(actual_diff), drop=FALSE]
+        }
+
+        # Find shuffled stats.
+        shuffled_diff <- as.data.frame(data.table::rbindlist(lapply(1:nperm, function(p){
+          shuffled_idx <- sample(1:nrow(temp_df))
+          shuffled_X <- temp_df$X[shuffled_idx]
+
+          if("Permutations (Raw)" %in% test.l){
+            shuffle_mean_diff <- meanDiff(temp_df$y, shuffled_X)
+          }
+
+          if("Permutations (MAD)" %in% test.l){
+            shuffle_mad_diff <- madDiff(temp_df$y, shuffled_X)
+          }
+
+          if("Permutations (SD)" %in% test.l){
+            shuffle_sd_diff <- sdDiff(temp_df$y, shuffled_X)
+          }
+
+          if("Permutations (GiniMd)" %in% test.l){
+            shuffle_gini_diff <- giniDiff(temp_df$y, shuffled_X)
+          }
+
+          return(data.frame(shuffle_mean_diff,
+                            shuffle_mad_diff,
+                            shuffle_sd_diff,
+                            shuffle_gini_diff))
+
+        })))
+
+        if(any(is.na(shuffled_diff))){
+          shuffled_diff <- shuffled_diff[,colSums(is.na(shuffled_diff))<nrow(shuffled_diff), drop=FALSE]
+        }
+        quantile_val <- apply(shuffled_diff,2,function(x) quantile(x, 1-(alpha/2)))
+        if_sig <- ifelse(quantile_val < actual_diff, 1, 0)
+        return(as.data.frame(if_sig))
+      }
 
     # Calculate power
     power_sig <- rbindlist(lapply(1:nsim, function(s) {
