@@ -21,7 +21,6 @@
 
 
 est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
-  set.seed(42)
   n.dfs=list()
   a.dfs=list()
   if(dist=="norm"){
