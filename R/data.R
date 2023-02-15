@@ -11,15 +11,28 @@
 #' @examples
 #'
 #'  data(dxsmall)
-#' 
-#'  # if `iSEE` is installed:
 #'  show(dxsmall)
-#'  rownames(dxsmall)
-#'  names(colData(dxsmall))
-#'  table(dxsmall$FusionGroup)
-#'  table(dxsmall$AgeGroup)
 #' 
 #'  # if `iSEE` is installed:
-#'  iSEEapp(dxsmall)
+#'  if (require("iSEE")) {
+#'    rownames(dxsmall)
+#'    names(colData(dxsmall))
+#'    table(dxsmall$FusionGroup)
+#'    table(dxsmall$AgeGroup)
+#'    iSEEapp(dxsmall)
+#'  }
+#'
+#'  # if `mclust` is installed:
+#'  if (require("mclust")) {
+#'
+#'    fit1 <- Mclust(logcounts(dxsmall)["MECOM", dxsmall$FusionGroup == "MLL"])
+#'    plot(fit1, what="density", xlab="log(MECOM read counts + 1) in KMT2Ar")
+#' 
+#'    fit2 <- Mclust(t(logcounts(dxsmall)[ c("MECOM", "PRDM16"), ]), G=1:3)
+#'    plot(fit2, what="classification")
+#'    plot(fit2, what="uncertainty")
+#'
+#'  }
+#' 
 #' 
 "dxsmall"
