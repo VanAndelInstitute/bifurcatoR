@@ -11,37 +11,28 @@
 #' @examples
 #'
 #'  data(dxsmall)
-#'  dxsmall$MLLrearranged <- dxsmall$FusionGroup == "MLL"
-#'  if(requireNamespace("iSEE")) {
+#'  show(dxsmall)
 #' 
-#'    library(SingleCellExperiment)
-#'    se <- as(dxsmall, "SingleCellExperiment") 
+#'  # if `iSEE` is installed:
+#'  if (require("iSEE")) {
+#'    rownames(dxsmall)
+#'    names(colData(dxsmall))
+#'    table(dxsmall$FusionGroup)
+#'    table(dxsmall$AgeGroup)
+#'    iSEEapp(dxsmall)
+#'  }
 #'
-#'    library(uwot) # for the reduced dimension plot
-#'    reducedDim(se, "UMAP") <- umap(t(logcounts(se)), metric="cosine")
+#'  # if `mclust` is installed:
+#'  if (require("mclust")) {
 #'
-#'    library(iSEE)
-#'    app <- iSEE(se,
-#'                initial=list(
-#'                  UMAP=new("ReducedDimensionPlot",
-#'                           ColorByColumnData = "MLLrearranged",
-#'                           ColorBy = "Column data", 
-#'                           Type = "UMAP"),
-#'                  Gene=new("RowDataTable"),
-#'                  Expression=new("FeatureAssayPlot", 
-#'                                 Assay = "logcounts", 
-#'                                 XAxis = "Column data", 
-#'                                 XAxisColumnData = "MLLrearranged", 
-#'                                 YAxisFeatureSource = "Gene", 
-#'                                 YAxisFeatureDynamicSource = TRUE, 
-#'                                 ColorByColumnData = "MLLrearranged", 
-#'                                 ColorBy = "Column data") 
-#'                )
-#'    )
-#'
-#'    # finally, run the damn thing:
-#'    shiny::runApp(app, port=12345)
+#'    fit1 <- Mclust(logcounts(dxsmall)["MECOM", dxsmall$FusionGroup == "MLL"])
+#'    plot(fit1, what="density", xlab="log(MECOM read counts + 1) in KMT2Ar")
+#' 
+#'    fit2 <- Mclust(t(logcounts(dxsmall)[ c("MECOM", "PRDM16"), ]), G=1:3)
+#'    plot(fit2, what="classification")
+#'    plot(fit2, what="uncertainty")
 #'
 #'  }
+#' 
 #' 
 "dxsmall"
