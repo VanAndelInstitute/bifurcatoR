@@ -59,8 +59,8 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
   
   if("mclust" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Mclust",
-                                     power = sum(sapply(n.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="V",verbose=F,maxG=1)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="V",verbose=F,maxG=1)$p.value<alpha)))/nsim ))
+                                     power = sum(sapply(n.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1)$p.value<alpha)))/nsim ))
   }
   
   ## sigclust is giving me issues so I've dropped it for now. 
