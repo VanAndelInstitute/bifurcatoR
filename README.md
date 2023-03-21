@@ -1,6 +1,6 @@
 # bifurcatoR
 
-[![DOI](https://zenodo.org/badge/493282641.svg)](DOI: 10.5281/zenodo.7757221)
+[![DOI](https://zenodo.org/badge/493282641.svg)](https://doi.org/10.5281/zenodo.7757221)
 [![Build Status](https://travis-ci.org/VanAndelInstitute/bifurcatoR.png?branch=master)](https://travis-ci.org/VanAndelInstitute/bifurcatoR)
 
 A library of functions to simulate and test for both structured and unstructured variance inflation due to genetics or other heritable factors.
