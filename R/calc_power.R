@@ -63,5 +63,5 @@ calc_power = function(n, p1, p2, shift, sel, CI, alpha=0.05, nsim=100) {
   ))
   
 }
-
+###################################################
 ### test on R local on mao-ding's branch by Mao ###
