@@ -6,6 +6,7 @@
 #' @param   dist    generating distribution
 #' @param   params  parameters for the generating distribution
 #' @param   tests   names of tests to run
+#' @param   nboot   number of bootstraps for mclust of modetest
 #'
 #' @return          a power estimate
 #'
@@ -15,7 +16,7 @@
 #' @import          LaplacesDemon
 #' 
 #' @export
-est_pow = function(n,alpha,nsim,dist,params,tests){
+est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
   if(dist=="norm"){
     
     n1 = floor(params$p*n)
@@ -59,8 +60,8 @@ est_pow = function(n,alpha,nsim,dist,params,tests){
   
   if("mclust" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Mclust",
-                                     power = sum(sapply(n.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1)$p.value<alpha)))/nsim ))
+                                     power = sum(sapply(n.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1,nboot=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1,nboot=nboot)$p.value<alpha)))/nsim ))
   }
   
   ## sigclust is giving me issues so I've dropped it for now. 
