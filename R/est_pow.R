@@ -71,37 +71,37 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
                                      FP = sum(sapply(a.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > 0.555)))/nsim))
   }
   
-  if("SI" %in% test){
+  if("SI" %in% tests){
       pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Silverman Bandwidth",
                                        power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "SI",B=nboot)$p.value < alpha)))/nsim,
                                        FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "SI",B=nboot)$p.value < alpha)))/nsim))
   }
   
-  if("dip" %in% test){
+  if("dip" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hartigan Dip Test",
                                      power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "HH",B=nboot)$p.value < alpha)))/nsim,
                                      FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "HH",B=nboot)$p.value < alpha)))/nsim))
   }
   
-  if("HY" %in% test){
+  if("HY" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hall and York Bandwidth",
                                      power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "HY",B=nboot)$p.value < alpha)))/nsim,
                                      FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "HY",B=nboot)$p.value < alpha)))/nsim))
   }
   
-  if("CH" %in% test){
+  if("CH" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Cheng and Hall Excess Mass",
                                      power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "CH",B=nboot)$p.value < alpha)))/nsim,
                                      FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "CH",B=nboot)$p.value < alpha)))/nsim))
   }
   
-  if("ACR" %in% test){
+  if("ACR" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Ameijeiras-Alonso et al. Excess Mass",
                                      power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "ACR",B=nboot)$p.value < alpha)))/nsim,
                                      FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "ACR",B=nboot)$p.value < alpha)))/nsim))
   }
   
-  if("FM" %in% test){
+  if("FM" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Fisher and Marron Carmer-von Mises",
                                      power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "FM",B=nboot)$p.value < alpha)))/nsim,
                                      FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = as.data.frame(s),mod0 = 1,method = "FM",B=nboot)$p.value < alpha)))/nsim))
