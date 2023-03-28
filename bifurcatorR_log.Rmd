@@ -1,32 +1,37 @@
-install.packages("remotes")
-install.packages("BiocManager")
-BiocManager::install("VanAndelInstitute/bifurcatoR", dependencies=c("Depends", "Imports", "LinkingTo", "Suggests"))
+---
+title: "bifurcatoR working log"
+author: "Mao Ding"
+date: "2023/3/28"
+output: 
+  html_document:
+    fig_width: 8
+    code_folding: hide
+    highlight: tango
+    toc: true
+    toc_float:
+      collapsed: true
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=8, fig.height=4,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+## Objective
+Aim to test functions in the bifurcatoR package
+
+### Functions Test
+```{r echo = TRUE}
+#devtools::install_github("carmkhoo/experimentalRepo")
 library(remotes)
 library(BiocManager)
-library(bifurcatoR)
 library(pwr)
 library(dplyr)
 library(olsrr)
+library(bifurcatoR)
+```
 
-help(dxsmall) # try firing up iSEE per the example!
-
-
-
-
-getwd()
-setwd("/home/ma.ding/Nadeau/bifurcatorR_Mao's fork/bifurcatoR_Mao's fork/R")
-
-runApp("/home/ma.ding/Nadeau/bifurcatorR_Mao's fork/bifurcatoR_Mao's fork/R")
-install.packages("iSEE")
-library(iSEE)
-
-# Install Shiny app in R Studio:
-devtools::install_github("carmkhoo/experimentalRepo")
-
-#Run Shiny app in R Studio:
-shinyBifurcatoR::run_app()
-
+```{r echo = TRUE}
 ################################
 ######## Test calc_power ########
 ################################
@@ -34,6 +39,8 @@ calc_power(n = 20, p1 = 0.25, p2 = 0.5, sel= 'Bodyweight', shift = 15, CI = 0)
 calc_power(n = 550, p1 = 0.2, p2 = 0.9, sel= 'Fat Trim', shift = 30, CI = 1)
 calc_power(n = 11050, p1 = 0.9, p2 = 0.6, sel= 'Fat NNAT', shift = 120, CI = 1)
 
+```
+```{r echo = TRUE}
 ################################
 ######## Test est_pow ########
 ################################
@@ -44,8 +51,8 @@ params_3 = list (p = 0.5, mu1 = 0.1, sd1 = 0.2, mu2 = 3.6, sd2 = 1.8, s1 = 9.2, 
 est_pow(n = 20, alpha = 0.05, nsim = 20, dist = "norm", params = params_1,  tests = "Hartigans' dip test")  # input multiple random parameters, returns NULL
 est_pow(n = 20, alpha = 0.05, nsim = 20, dist = "beta", params = params_2,  tests = "mclust") 
 est_pow(n = 20, alpha = 0.02, nsim = 20, dist = "weib", params = params_3,  tests = "Mouse Trap") # input multiple random parameters, returns NULL
-
-
+```
+```{r echo = TRUE}
 #####################################
 ######## Test est_pow_2samp ########
 ####################################
@@ -69,22 +76,22 @@ est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 1, dist = "weib
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 1, dist = "norm", params = params_4, tests = "Anderson-Darling", nperm = 30)     # returns NULL
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 2, dist = "beta", params = params_4, tests = "ANOVA", nperm = 30)  
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 2, dist = "weib", params = params_4, tests = "Non-Parametric ANOVA", nperm = 30) # returns NULL
-
-
+```
+```{r echo = TRUE}
 #####################################
 ######## est_pow_bin ########
 #####################################
 
 est_pow_bin(n = 15, p = 0.5, alpha = 0.05, nsim = 20)
+```
 
+```{r echo = TRUE}
 #####################################
 ######## est_pow_het ########
 #####################################
-install.packages("olsrr")
-library(olsrr)
 est_pow_het(n = 50, p = 0.5, alpha = 0.05, x = 12, nsim = 20)
-
-
+```
+```{r echo = TRUE}
 #####################################
 ######## est_pow ########
 #####################################
@@ -92,11 +99,11 @@ params_1 = list (p = 0.5, mu1 = 0.2, sd1 = 0.5, mu2 = 3, sd2 = 0.4, s1 = 1.2, s2
 est_pow(n = 50, alpha = 0.05, nsim = 20, dist = "norm", params = params_2 , tests = "Hartigans' dip test")   # returns NULL
 est_pow(n = 50, alpha = 0.05, nsim = 20, dist = "beta", params = params_2 , tests = "Mclust")                # returns NULL
 est_pow(n = 50, alpha = 0.05, nsim = 20, dist = "weib", params = params_2 , tests = "Mouse Trap")            # returns NULL
+```
 
+```{r echo = TRUE}
 #####################################
 ######## find_dist ########
 #####################################
 find_dist(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20)
-
-
-
+```
