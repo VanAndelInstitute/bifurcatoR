@@ -6,6 +6,7 @@ output:
   pdf_document:
     toc: yes
   html_document:
+    keep_md: true
     fig_width: 8
     code_folding: hide
     highlight: tango
