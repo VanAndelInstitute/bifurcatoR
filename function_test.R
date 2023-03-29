@@ -28,14 +28,14 @@ devtools::install_github("carmkhoo/experimentalRepo")
 shinyBifurcatoR::run_app()
 
 ################################
-######## Test calc_power ########
+######## calc_power ########
 ################################
 calc_power(n = 20, p1 = 0.25, p2 = 0.5, sel= 'Bodyweight', shift = 15, CI = 0)
 calc_power(n = 550, p1 = 0.2, p2 = 0.9, sel= 'Fat Trim', shift = 30, CI = 1)
 calc_power(n = 11050, p1 = 0.9, p2 = 0.6, sel= 'Fat NNAT', shift = 120, CI = 1)
 
 ################################
-######## Test est_pow ########
+######## est_pow ########
 ################################
 params_1 = list (p = 0.5, mu1 = 0.2, sd1 = 0.5, mu2 = 3, sd2 = 0.4, s1 = 1.2, s2 = 2.3, sp1 = 1.2, sp2 = 1.7, sc1 = 2, sc2 = 0.5)
 params_2 = list (p = 0.2, mu1 = 0.1, sd1 = 0.6, mu2 = 5.3, sd2 = 15, s1 = 0.3, s2 = 6.7, sp1 = 5.1, sp2 = 9, sc1 = 12, sc2 = 3)
@@ -47,7 +47,7 @@ est_pow(n = 20, alpha = 0.02, nsim = 20, dist = "weib", params = params_3,  test
 
 
 #####################################
-######## Test est_pow_2samp ########
+######## est_pow_2samp ########
 ####################################
 
 params_4 = list (p_1 = 0.5, p_2 = 0.7,
@@ -84,14 +84,6 @@ install.packages("olsrr")
 library(olsrr)
 est_pow_het(n = 50, p = 0.5, alpha = 0.05, x = 12, nsim = 20)
 
-
-#####################################
-######## est_pow ########
-#####################################
-params_1 = list (p = 0.5, mu1 = 0.2, sd1 = 0.5, mu2 = 3, sd2 = 0.4, s1 = 1.2, s2 = 2.3, sp1 = 1.2, sp2 = 1.7, sc1 = 2, sc2 = 0.5)
-est_pow(n = 50, alpha = 0.05, nsim = 20, dist = "norm", params = params_2 , tests = "Hartigans' dip test")   # returns NULL
-est_pow(n = 50, alpha = 0.05, nsim = 20, dist = "beta", params = params_2 , tests = "Mclust")                # returns NULL
-est_pow(n = 50, alpha = 0.05, nsim = 20, dist = "weib", params = params_2 , tests = "Mouse Trap")            # returns NULL
 
 #####################################
 ######## find_dist ########
