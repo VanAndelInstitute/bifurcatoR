@@ -1,0 +1,364 @@
+---
+title: "Simulation Study"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+
+mu2_labels <- paste0('Delta mu = ', c(0, 1, 2, 4))
+names(mu2_labels) <- c(0, 1, 2, 4)
+
+sd2_labels <- paste0('SD Inflation ', c(1, 2, 4),"x")
+names(sd2_labels) <- c(1, 2, 4)
+
+all.res <-  rbind(rbind(as.data.frame(readRDS( '/data/home/zachary.madaj/BifurcatoR_sims/module1_norm_weibull_anova_levene_2.1.rds')),
+
+ as.data.frame(readRDS( '/data/home/zachary.madaj/BifurcatoR_sims/module1_norm_weibull_anova_levene_2.2(1).rds'))),
+ as.data.frame(readRDS( '/data/home/zachary.madaj/BifurcatoR_sims/module1_2_40_80.rds')))
+# 
+
+colnames(all.res)[colnames(all.res) == "Perm"] = "Permutations"
+
+
+```
+# Module {.tabset}
+## Module 1 {.tabset}
+
+```{r module1_norm, fig.height=8, fig.width=10, unit='in'}
+
+
+
+# m1.500 = module1[module1$Perm == 500,]
+# m1.5000 = module1[module1$Perm == 5000,]
+# colnames(m1.500)[c(11,13:14)] = c("Perm.500","power.500","FP.500")
+# colnames(m1.5000)[c(11,13:14)] = c("Perm.5000","power.5000","FP.5000")
+# 
+# xx = full_join(m1.500,m1.5000)
+# 
+# ggplot(xx,aes(x=power.500,y=power.5000))+geom_point() + stat_smooth(method="lm",se=F)+theme_classic()
+# 
+
+  # dplyr::bind_rows(., readRDS(paste0(main_dir, 'module1_beta_anova_levene_2.rds'))) %>%
+  # dplyr::bind_rows(., readRDS(paste0(main_dir, 'module1_weibull_anova_levene_2.rds'))) %>%
+  # dplyr::mutate(Text = paste0('Distribution: ', Distribution,
+  #                             '\nMethod: ', Methods,
+  #                             '\nSample Size: ', SampleSize,
+  #                             '\nProp. in Group 2: ', Prop,
+  #                             '\nPower: ', power,
+  #                             '\nFP: ', FP))
+
+
+# module1 = module1[! (module1$Test %in% c("Levene","ANOVA") & module1$Perm == 500),]
+
+# 
+# module1[module1$Test %in% c("Levene","ANOVA"),]$Permutations = rep("")
+
+plot.pwr = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, power,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(mu2 ~ sd2,
+               labeller = labeller(mu2 = mu2_labels,
+                                   sd2 = sd2_labels))+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("Power")
+
+)
+  
+}
+
+
+plot.pwr.b = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, power,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(s1 ~ s2)+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("Power")
+
+)
+  
+}
+
+
+
+plot.fp = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, FP,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(mu2 ~ sd2,
+               labeller = labeller(mu2 = mu2_labels,
+                                   sd2 = sd2_labels))+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("False Positive Rate")
+
+)
+  
+}
+
+
+
+
+plot.fp.b = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, FP,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(s1 ~ s2)+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("False Positive Rate")
+
+)
+  
+}
+
+```
+
+
+
+### Power {.tabset}
+#### Gaussian {.tabset}
+##### Variance 
+
+
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.pwr(dist="norm",p= i,all.res[all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+##### Means
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.pwr(dist="norm",p= i,all.res[! all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+#### Weibull {.tabset}
+
+##### Variance
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.pwr(dist="weib",p= i,all.res[all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+##### Means
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.pwr(dist="weib",p= i,all.res[! all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+
+
+
+### False Positive {.tabset}
+#### Gaussian {.tabset}
+##### Variance 
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.fp(dist="norm",p= i,all.res[all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+##### Means
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.fp(dist="norm",p= i,all.res[! all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+#### Weibull {.tabset}
+
+##### Variance
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.fp(dist="weib",p= i,all.res[all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+##### Means
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(all.res$Prop)){
+  plot.fp(dist="weib",p= i,all.res[! all.res$Test %in% c("Levene","Permutations..MAD.",    "Permutations..SD."    , "Permutations..GiniMd."),])
+}
+
+
+```
+
+
+## Module 2 {.tabset}
+### Power {.tabset}
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+mu2_labels <- paste0('Delta mu = ', c(0, 1, 2, 4,8))
+names(mu2_labels) <- c(0, 1, 2, 4,8)
+
+
+nw.res <- as.data.frame(readRDS( '/data/home/zachary.madaj/module2_set2_n_w_mclust.rds'))
+# 
+
+beta.res <- as.data.frame(readRDS( '/data/home/zachary.madaj/BifurcatoR_sims/module2_set2_b.rds'))
+# 
+
+nw.res$Test[nw.res$Test == "Mouse Trap"] = "Bimodality Coefficient > 0.555"
+beta.res$Test[beta.res$Test == "Mouse Trap"] = "Bimodality Coefficient > 0.555"
+
+```
+
+
+#### Normal {.tabset}
+
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(nw.res$Prop)){
+  plot.pwr(dist="norm",p= i,nw.res)
+}
+
+
+```
+
+#### Weibull {.tabset}
+Pulled for now
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+# for(i in unique(nw.res$Prop)){
+#   plot.pwr(dist="weib",p= i,nw.res)
+# }
+
+
+```
+
+
+#### Beta {.tabset}
+
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+for(i in unique(beta.res$Prop)){
+  plot.pwr.b(dist="beta",p= i,beta.res)
+}
+
+
+```
+
+
+### False Positive {.tabset}
+
+
+
+#### Normal {.tabset}
+
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+for(i in unique(nw.res$Prop)){
+  plot.fp(dist="norm",p= i,nw.res)
+}
+
+
+```
+
+#### Weibull {.tabset}
+Pulled for now
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+# for(i in unique(nw.res$Prop)){
+#   plot.fp(dist="weib",p= i,nw.res)
+# }
+
+
+```
+
+
+#### Beta {.tabset}
+
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+for(i in unique(beta.res$Prop)){
+  plot.fp.b(dist="beta",p= i,beta.res)
+}
+
+```
