@@ -9,6 +9,7 @@ output:
     fig_width: 8
     code_folding: hide
     highlight: tango
+    keep_md: true
     toc: yes
     toc_float:
       collapsed: yes
