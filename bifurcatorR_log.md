@@ -16,16 +16,14 @@ output:
     
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=8, fig.height=4,
-                      echo=FALSE, warning=FALSE, message=FALSE)
-```
+
 
 ## Objective
 Aim to test functions in the bifurcatoR package
 
 ### Functions Test
-```{r echo = TRUE}
+
+```r
 #devtools::install_github("carmkhoo/experimentalRepo")
 library(remotes)
 library(BiocManager)
@@ -35,16 +33,44 @@ library(olsrr)
 library(bifurcatoR)
 ```
 
-```{r echo = TRUE}
+
+```r
 ################################
 ######## calc_power ########
 ################################
 calc_power(n = 20, p1 = 0.25, p2 = 0.5, sel= 'Bodyweight', shift = 15, CI = 0)
-calc_power(n = 550, p1 = 0.2, p2 = 0.9, sel= 'Fat Trim', shift = 30, CI = 1)
-calc_power(n = 11050, p1 = 0.9, p2 = 0.6, sel= 'Fat NNAT', shift = 120, CI = 1)
+```
 
 ```
-```{r echo = TRUE}
+##    N      Test     Power
+## 1 20 Frequency 0.3806378
+## 2 20     Shift 0.9970911
+## 3 20        KS 1.0000000
+```
+
+```r
+calc_power(n = 550, p1 = 0.2, p2 = 0.9, sel= 'Fat Trim', shift = 30, CI = 1)
+```
+
+```
+##     N      Test Power
+## 1 550 Frequency     1
+## 2 550     Shift     1
+## 3 550        KS     1
+```
+
+```r
+calc_power(n = 11050, p1 = 0.9, p2 = 0.6, sel= 'Fat NNAT', shift = 120, CI = 1)
+```
+
+```
+##       N      Test Power
+## 1 11050 Frequency     1
+## 2 11050     Shift     1
+## 3 11050        KS     1
+```
+
+```r
 ################################
 ######## est_pow ########
 ################################
@@ -53,10 +79,30 @@ params_2 = list (p = 0.2, mu1 = 0.1, sd1 = 0.6, mu2 = 5.3, sd2 = 15, s1 = 0.3, s
 params_3 = list (p = 0.5, mu1 = 0.1, sd1 = 0.2, mu2 = 3.6, sd2 = 1.8, s1 = 9.2, s2 = 2.6, sp1 = 2.7, sp2 = 1.5, sc1 = 0.2, sc2 = 0.7)
 
 est_pow(n = 20, alpha = 0.05, nsim = 20, dist = "norm", params = params_1,  tests = "Hartigans' dip test")  # input multiple random parameters, returns NULL
+```
+
+```
+## NULL
+```
+
+```r
 est_pow(n = 20, alpha = 0.05, nsim = 20, dist = "beta", params = params_2,  tests = "mclust") 
+```
+
+```
+##    N   Test power  FP
+## 1 20 Mclust   0.8 0.2
+```
+
+```r
 est_pow(n = 20, alpha = 0.02, nsim = 20, dist = "weib", params = params_3,  tests = "Mouse Trap") # input multiple random parameters, returns NULL
 ```
-```{r echo = TRUE}
+
+```
+## NULL
+```
+
+```r
 #####################################
 ######## est_pow_2samp ########
 ####################################
@@ -75,13 +121,54 @@ params_4 = list (p_1 = 0.5, p_2 = 0.7,
                  sc2_1 = 25, sc2_2 = 7)
 
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 1, dist = "norm", params = params_4, tests = "Kolmogorov-Smirnov", nperm = 30)   # returns NULL
+```
+
+```
+## NULL
+```
+
+```r
 est_pow_2samp(n1 = 10, n2 = 30, alpha = 0.05, nsim = 20, modes = 2, dist = "beta", params = params_4, tests = "Cramer-von Mises", nperm = 30)     # returns NULL
+```
+
+```
+## NULL
+```
+
+```r
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 1, dist = "weib", params = params_4, tests = "DTS", nperm = 30)                  # returns NULL
+```
+
+```
+## NULL
+```
+
+```r
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 1, dist = "norm", params = params_4, tests = "Anderson-Darling", nperm = 30)     # returns NULL
+```
+
+```
+## NULL
+```
+
+```r
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 2, dist = "beta", params = params_4, tests = "ANOVA", nperm = 30)  
+```
+
+```
+##    Test power  FP
+## 1 ANOVA   0.9 0.1
+```
+
+```r
 est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 2, dist = "weib", params = params_4, tests = "Non-Parametric ANOVA", nperm = 30) # returns NULL
 ```
-```{r echo = TRUE}
+
+```
+## NULL
+```
+
+```r
 #####################################
 ######## est_pow_bin ########
 #####################################
@@ -89,17 +176,71 @@ est_pow_2samp(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20, modes = 2, dist = "weib
 est_pow_bin(n = 15, p = 0.5, alpha = 0.05, nsim = 20)
 ```
 
-```{r echo = TRUE}
+```
+## [1] 0
+```
+
+
+```r
 #####################################
 ######## est_pow_het ########
 #####################################
 est_pow_het(n = 50, p = 0.5, alpha = 0.05, x = 12, nsim = 20)
 ```
 
-```{r echo = TRUE}
+```
+## [1] 1
+```
+
+
+```r
 #####################################
 ######## find_dist ########
 #####################################
 find_dist(n1 = 20, n2 = 30, alpha = 0.05, nsim = 20)
+```
+
+```
+##    Distance power
+## 1      0.25  0.00
+## 2      0.50  0.00
+## 3      0.75  0.00
+## 4      1.00  0.00
+## 5      1.25  0.00
+## 6      1.50  0.00
+## 7      1.75  0.00
+## 8      2.00  0.00
+## 9      2.25  0.00
+## 10     2.50  0.00
+## 11     2.75  0.00
+## 12     3.00  0.05
+## 13     3.25  0.15
+## 14     3.50  0.20
+## 15     3.75  0.10
+## 16     4.00  0.20
+## 17     4.25  0.35
+## 18     4.50  0.45
+## 19     4.75  0.60
+## 20     5.00  0.70
+## 21     5.25  0.85
+## 22     5.50  0.90
+## 23     5.75  1.00
+## 24     6.00  1.00
+## 25     6.25  0.95
+## 26     6.50  1.00
+## 27     6.75  1.00
+## 28     7.00  1.00
+## 29     7.25  1.00
+## 30     7.50  1.00
+## 31     7.75  1.00
+## 32     8.00  1.00
+## 33     8.25  1.00
+## 34     8.50  1.00
+## 35     8.75  1.00
+## 36     9.00  1.00
+## 37     9.25  1.00
+## 38     9.50  1.00
+## 39     9.75  1.00
+## 40    10.00  1.00
 ```
   
