@@ -1,5 +1,3 @@
-devtools::install_github("VanAndelInstitute/bifurcatoR",force=T)
-
 suppressPackageStartupMessages({
   library(bifurcatoR)
   library(doParallel)
