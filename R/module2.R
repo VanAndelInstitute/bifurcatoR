@@ -1,5 +1,4 @@
 suppressPackageStartupMessages({
-  library(bifurcatoR)
   library(doParallel)
   library(dplyr)
   library(data.table)
