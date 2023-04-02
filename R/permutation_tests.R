@@ -10,8 +10,7 @@
 #' @export
 
 
-
-perm = function(temp_df,nperm,fxn,alpha) {
+permutation_tests = function(temp_df,nperm,fxn,alpha) {
   
   # Get actual absolute mean difference.
   actual_diff <- do.call(fxn, list(temp_df$y, temp_df$X))
