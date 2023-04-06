@@ -1,0 +1,72 @@
+---
+title: "Mice AY column bimodality"
+author: "Mao Ding"
+date: "2023/4/6"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    fig_width: 8
+    code_folding: hide
+    highlight: tango
+    toc: yes
+    keep_md: true
+    toc_float:
+      collapsed: yes
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=8, fig.height=4,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+## Objective
+Aim to test Joe's mice AY column data bimodality
+
+### Data loading and exploring 
+```{r echo = TRUE}
+library(plotly)
+library(mclust)
+
+data <- read.csv("~/Nadeau/bifurcatorR_Mao's fork/bifurcatoR_Mao's fork/data/mice_AY_column.csv")
+
+
+cat("The sample size is:", nrow(data))
+
+cat("\n\nThe summary of the data is:\n")
+summary(data$MAD)
+```
+
+### Visualize mice MAD using histogram with density curve line
+```{r echo = TRUE}
+plot_ly(x = ~data$MAD, type = "histogram", name = "Histogram", nbinsx = 10) %>%
+       add_lines(x = density(data$MAD)$x, 
+                 y = density(data$MAD)$y,
+                 yaxis = "y2",
+                 name = "Density")%>%
+       layout(title = "Mice MAD",
+              xaxis = list(title = "MAD", zeroline = FALSE),
+              yaxis = list(title = "Frequency", zeroline = FALSE),
+              yaxis2 = list(overlaying = "y", side = "right", rangemode = "tozero"),
+              bargap = 0.1)
+```
+### Model-based Clustering using BIC(Bayesian Information Criterion)
+BIC is the value of the maximized log-likelihood with a penalty on the number of parameters in the model. In general, the larger the value of the BIC, the stronger the evidence for the model and number of clusters.
+
+
+```{r echo = TRUE}
+mod <- densityMclust(data$MAD)
+plot(mod, what = "BIC")
+#plot(mod, what = "density")
+summary(mod)
+```
+
+### Conclusion
+By comparing BIC values above, model E with 2 clusters has the highest BIC value(-164.2088). Therefore, the data is identified as bimodality. The density plot also presents the same characteristic visually, the second peak value is lower than the first one though.
+
+### Reference:
+https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html
+http://sites.stat.washington.edu/raftery/Research/PDF/fraley2003.pdf
+https://pages.mtu.edu/~shanem/psy5220/daily/Day19/modelbasedclustering.html 
+
