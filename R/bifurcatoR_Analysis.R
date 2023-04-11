@@ -32,9 +32,12 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
   }
 
   if("mt" %in% tests){
-    tmp = mousetrap::mt_check_bimodality(as.data.frame(data$value),t,method="BC")$BC
 
-    tmp.boot = unname(unlist(lapply(1:nboot, function(x) mousetrap::mt_check_bimodality(as.data.frame(sample(x,replace=T)),t,method="BC")$BC)))
+    s = as.data.frame(data$value)
+
+    tmp = mousetrap::mt_check_bimodality(s,t,method="BC")$BC
+
+    tmp.boot = unname(unlist(lapply(1:nboot, function(x) mousetrap::mt_check_bimodality(as.data.frame(sample(s,replace=T)),t,method="BC")$BC)))
 
     res = rbind(res,data.frame(Test = "Bimodality Coeficient", nboot = nboot,p.value =  sum(I(tmp.boot<=0.555))/nboot,Stat = unname(tmp) ,CI = paste(round(quantile(tmp.boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
