@@ -203,5 +203,3 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   return(res)
 }
-
-
