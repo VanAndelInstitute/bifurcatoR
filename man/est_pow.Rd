@@ -4,7 +4,7 @@
 \alias{est_pow}
 \title{est_pow}
 \usage{
-est_pow(n, alpha, nsim, dist, params, tests)
+est_pow(n, alpha, nsim, dist, params, tests, nboot)
 }
 \arguments{
 \item{n}{number of \link{somethings}}
