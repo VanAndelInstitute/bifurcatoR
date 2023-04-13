@@ -2,8 +2,8 @@ Package: bifurcatoR
 Type: Package
 Title: Hunt for bumps in high-dimensional data
 Description: A special case of variance analysis exists when one group may have discernible forking in phenotypes over time. This library provides some tools to design experiments for such cases, along with some example data. 
-Version: 0.3.215
-Date: 2023-02-15
+Version: 0.3.313
+Date: 2023-03-13
 Authors@R: c(person("Zach", "Madaj", role=c("aut", "cre"), 
                     email="trichelab+zachm@gmail.com"), 
              person("Carmen", "Khoo", role=c("aut", "cre"), 
@@ -12,7 +12,7 @@ Authors@R: c(person("Zach", "Madaj", role=c("aut", "cre"),
                     email="trichelab+ember@gmail.com"), 
              person("Tim", "Triche", role=c("aut", "cre"), 
                     email="trichelab+timtriche@gmail.com")) 
-Author: Carmen Khoo, Zach Madaj, Ember Tokarski, and Tim Triche
+Author: Carmen Khoo, Zach Madaj, Ember Tokarski, Mao Ding, and Tim Triche
 Maintainer: triche lab <trichelab@gmail.com>
 URL: https://github.com/VanAndelInstitute/bifurcatoR
 BugReports: https://github.com/VanAndelInstitute/bifurcatoR/issues
@@ -25,6 +25,7 @@ Imports:
     diptest,
     twosamples,
     LaplacesDemon,
+    BiocParallel,
     mousetrap,
     shiny,
     dplyr,
