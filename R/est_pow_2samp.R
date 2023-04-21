@@ -14,6 +14,7 @@
 #'
 #' @import          twosamples
 #' @import          car
+#' @import          data.table
 #'
 #' @export
 
@@ -187,7 +188,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   if ( any(tests %in% c("Permutations (Raw)",
                         "Permutations (MAD)",
                         "Permutations (SD)",
-                        "Permutations (GiniMd"))) {
+                        "Permutations (Gini)"))) {
 
 
           #Should move these eventually
@@ -234,7 +235,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         actual_sd_diff <- sdDiff(temp_df$y, temp_df$X)
       }
 
-      if("Permutations (GiniMd)" %in% test.l){
+      if("Permutations (Gini)" %in% test.l){
         actual_gini_diff <- giniDiff(temp_df$y, temp_df$X)
       }
 
@@ -263,14 +264,14 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
           shuffle_sd_diff <- sdDiff(temp_df$y, shuffled_X)
         }
 
-        if("Permutations (GiniMd)" %in% test.l){
+        if("Permutations (Gini)" %in% test.l){
           shuffle_gini_diff <- giniDiff(temp_df$y, shuffled_X)
         }
 
         return(data.frame('Permutations (RAW)' = shuffle_mean_diff,
                           'Permutations (MAD)' = shuffle_mad_diff,
                           'Permutations (SD)' = shuffle_sd_diff,
-                          'Permutations (GiniMd)' = shuffle_gini_diff))
+                          'Permutations (Gini)' = shuffle_gini_diff))
 
       })))
 
