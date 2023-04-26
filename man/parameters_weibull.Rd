@@ -16,9 +16,11 @@ parameters_weibull(dat, ...)
 }\if{html}{\out{</div>}}
 }
 \description{
-The canonical Weibull distribution is expressed as
+hook for Weibull/Gaussian equivalency tricks (and traps)
 }
 \details{
+The canonical Weibull distribution is expressed as
+
 X ~ Weibull(a, b)
 
 where a > 0 is the scale parameter and b > 0 is the shape parameter.
