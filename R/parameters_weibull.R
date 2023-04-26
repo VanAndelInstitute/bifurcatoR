@@ -35,7 +35,7 @@ parameters_weibull <- function(dat, ...) {
   n <- length(dat)
   mu <- mean(dat)
   
-  if (mu <= 0) warning("Mean is <= 0; Weibull approximation will fail.")
+  if (mu <= 0) stop("Mean is <= 0; Weibull approximation will fail.")
  
   sigma <- sd(dat, na.rm=TRUE) 
   mcf <- function(x, mu, sigma) { # borrowed from EnvStats
