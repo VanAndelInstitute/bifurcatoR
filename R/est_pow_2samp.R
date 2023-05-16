@@ -184,139 +184,121 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
                                       FP = sum(sapply(1:nsim, function(s) I(anova(lm(rank(c(a.dfs[[1]][[s]],a.dfs[[2]][[s]])) ~ c(rep("C",length(a.dfs[[1]][[s]])),rep("T",length(a.dfs[[2]][[s]])))))$'Pr(>F)'[1]<alpha)))/nsim))
   }
 
-  #### Insert all other functions here
-  if ( any(tests %in% c("Permutations (Raw)",
-                        "Permutations (MAD)",
-                        "Permutations (SD)",
-                        "Permutations (Gini)"))) {
+  if("Permutations (Raw)" %in% tests){
 
 
-          #Should move these eventually
-      meanDiff <- function(y, X){
-        abs(mean(y[X == 1]) - mean(y[X == 0]))
-      }
+    power = sum(sapply(1:nsim, function(s){
 
-      madDiff <- function(y, X){
-        abs((mad(y[X == 1], constant = 1) - mad(y[X == 0], constant = 1)))
-      }
+    temp_df <- data.frame(
+      y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+      X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
+    )
 
+    return(I(unlist(permutation_tests(temp_df,nboot,"meanDiff",alpha)$p)<alpha))
 
-      giniDiff <- function(y, X){
-        abs((Hmisc::GiniMd(y[X == 1]) - Hmisc::GiniMd(y[X == 0])))
-      }
+    }))/nsim
 
-      sdDiff <- function(y, X){
-        abs((sd(y[X == 1]) - sd(y[X == 0])))
-      }
-
-
-      perms <- function(temp_df,test.l){
-
-      actual_mean_diff = NA
-      actual_mad_diff = NA
-      actual_sd_diff = NA
-      actual_gini_diff = NA
-      shuffle_mean_diff = NA
-      shuffle_mad_diff = NA
-      shuffle_sd_diff = NA
-      shuffle_gini_diff = NA
-
-
-      # Get actual absolute stats.
-      if("Permutations (Raw)" %in% test.l){
-        actual_mean_diff <- meanDiff(temp_df$y, temp_df$X)
-      }
-
-      if("Permutations (MAD)" %in% test.l){
-        actual_mad_diff <- madDiff(temp_df$y, temp_df$X)
-      }
-
-      if("Permutations (SD)" %in% test.l){
-        actual_sd_diff <- sdDiff(temp_df$y, temp_df$X)
-      }
-
-      if("Permutations (Gini)" %in% test.l){
-        actual_gini_diff <- giniDiff(temp_df$y, temp_df$X)
-      }
-
-      actual_diff = data.frame(actual_mean_diff,
-                               actual_mad_diff,
-                               actual_sd_diff,
-                               actual_gini_diff)
-      if(any(is.na(actual_diff))){
-        actual_diff <- actual_diff[,colSums(is.na(actual_diff))<nrow(actual_diff), drop=FALSE]
-      }
-
-      # Find shuffled stats.
-      shuffled_diff <- as.data.frame(data.table::rbindlist(lapply(1:nperm, function(p){
-        shuffled_idx <- sample(1:nrow(temp_df))
-        shuffled_X <- temp_df$X[shuffled_idx]
-
-        if("Permutations (Raw)" %in% test.l){
-          shuffle_mean_diff <- meanDiff(temp_df$y, shuffled_X)
-        }
-
-        if("Permutations (MAD)" %in% test.l){
-          shuffle_mad_diff <- madDiff(temp_df$y, shuffled_X)
-        }
-
-        if("Permutations (SD)" %in% test.l){
-          shuffle_sd_diff <- sdDiff(temp_df$y, shuffled_X)
-        }
-
-        if("Permutations (Gini)" %in% test.l){
-          shuffle_gini_diff <- giniDiff(temp_df$y, shuffled_X)
-        }
-
-        return(data.frame('Permutations (RAW)' = shuffle_mean_diff,
-                          'Permutations (MAD)' = shuffle_mad_diff,
-                          'Permutations (SD)' = shuffle_sd_diff,
-                          'Permutations (Gini)' = shuffle_gini_diff))
-
-      })))
-
-      if(any(is.na(shuffled_diff))){
-        shuffled_diff <- shuffled_diff[,colSums(is.na(shuffled_diff))<nrow(shuffled_diff), drop=FALSE]
-      }
-      quantile_val <- sapply(1:ncol(shuffled_diff),function(x) {quantile(shuffled_diff[,x], 1-(alpha/2))})
-      if_sig = shuffled_diff[1,]
-      if_sig[1,] <- as.numeric(I(quantile_val < actual_diff))
-      return(as.data.frame(if_sig))
-    }
-
-    # Calculate power
-    power_sig <- data.table::rbindlist(lapply(1:nsim, function(s) {
-
-      temp_df <- data.frame(
-        y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
-        X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
-      )
-
-      return(perms(temp_df,tests))
-
-    }))
-
-    # if_sig <- unlist(tmp)
-    # num_sig <- sum(as.numeric(as.character(if_sig)))
-    # ave_pval <- sum(as.numeric(as.character(if_sig)))/nsim
-
-    # Calculate FDR
-    fp_sig <- data.table::rbindlist(lapply(1:nsim, function(s) {
+    FP = sum(sapply(1:nsim, function(s){
 
       temp_df <- data.frame(
         y = c(a.dfs[[1]][[s]], a.dfs[[2]][[s]]),
         X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
       )
 
-      return(perms(temp_df,tests))
+      return(I(unlist(permutation_tests(temp_df,nboot,"meanDiff",alpha)$p)<alpha))
 
-    }))
+    }))/nsim
 
-    pwr.df <- rbind(pwr.df, data.frame(Test = colnames(power_sig),
-                                       power = colSums(power_sig)/nsim,
-                                       FP = colSums(fp_sig)/nsim))
+    pwr.df = rbind(pwr.df,data.frame( Test = "Permutations (Raw)",power,FP))
+
   }
 
+  if("Permutations (SD)" %in% tests){
+
+
+    power = sum(sapply(1:nsim, function(s){
+
+      temp_df <- data.frame(
+        y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
+      )
+
+      return(I(unlist(permutation_tests(temp_df,nboot,"sdDiff",alpha)$p)<alpha))
+
+    }))/nsim
+
+    FP = sum(sapply(1:nsim, function(s){
+
+      temp_df <- data.frame(
+        y = c(a.dfs[[1]][[s]], a.dfs[[2]][[s]]),
+        X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
+      )
+
+      return(I(unlist(permutation_tests(temp_df,nboot,"sdDiff",alpha)$p)<alpha))
+
+    }))/nsim
+
+    pwr.df = rbind(pwr.df,data.frame( Test = "Permutations (SD)",power,FP))
+
+  }
+
+  if("Permutations (MAD)" %in% tests){
+
+
+    power = sum(sapply(1:nsim, function(s){
+
+      temp_df <- data.frame(
+        y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
+      )
+
+      return(I(unlist(permutation_tests(temp_df,nboot,"madDiff",alpha)$p)<alpha))
+
+    }))/nsim
+
+    FP = sum(sapply(1:nsim, function(s){
+
+      temp_df <- data.frame(
+        y = c(a.dfs[[1]][[s]], a.dfs[[2]][[s]]),
+        X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
+      )
+
+      return(I(unlist(permutation_tests(temp_df,nboot,"madDiff",alpha)$p)<alpha))
+
+    }))/nsim
+
+    pwr.df = rbind(pwr.df,data.frame( Test = "Permutations (MAD)",power,FP))
+
+  }
+
+  if("Permutations (Gini)" %in% tests){
+
+
+    power = sum(sapply(1:nsim, function(s){
+
+      temp_df <- data.frame(
+        y = c(n.dfs[[1]][[s]], n.dfs[[2]][[s]]),
+        X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
+      )
+
+      return(I(unlist(permutation_tests(temp_df,nboot,"giniDiff",alpha)$p)<alpha))
+
+    }))/nsim
+
+    FP = sum(sapply(1:nsim, function(s){
+
+      temp_df <- data.frame(
+        y = c(a.dfs[[1]][[s]], a.dfs[[2]][[s]]),
+        X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
+      )
+
+      return(I(unlist(permutation_tests(temp_df,nboot,"giniDiff",alpha)$p)<alpha))
+
+    }))/nsim
+
+    pwr.df = rbind(pwr.df,data.frame( Test = "Permutations (Gini)",power,FP))
+
+  }
 
   return(pwr.df)
 
