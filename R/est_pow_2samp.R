@@ -194,7 +194,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
       X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
     )
 
-    return(I(unlist(permutation_tests(temp_df,nboot,"meanDiff",alpha)$p)<alpha))
+    return(I(unlist(permutation_tests(temp_df,nperm,"meanDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -205,7 +205,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"meanDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"meanDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -223,7 +223,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"sdDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"sdDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -234,7 +234,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"sdDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"sdDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -244,7 +244,6 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
 
   if("Permutations (MAD)" %in% tests){
 
-
     power = sum(sapply(1:nsim, function(s){
 
       temp_df <- data.frame(
@@ -252,7 +251,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"madDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"madDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -263,7 +262,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"madDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"madDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -281,7 +280,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(n.dfs[[1]][[s]])), rep(1, length(n.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"giniDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"giniDiff",alpha)$p)<alpha))
 
     }))/nsim
 
@@ -292,7 +291,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         X = c(rep(0, length(a.dfs[[1]][[s]])), rep(1, length(a.dfs[[2]][[s]])))
       )
 
-      return(I(unlist(permutation_tests(temp_df,nboot,"giniDiff",alpha)$p)<alpha))
+      return(I(unlist(permutation_tests(temp_df,nperm,"giniDiff",alpha)$p)<alpha))
 
     }))/nsim
 
