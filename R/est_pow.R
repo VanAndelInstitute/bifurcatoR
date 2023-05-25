@@ -13,6 +13,9 @@
 #' @import          diptest
 #' @import          mousetrap
 #' @import          LaplacesDemon
+#' @import          multimode
+#' @import          Hmisc
+#' @import          twosamples
 #'
 #' @export
 est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
@@ -51,11 +54,7 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
     }
   }
   pwr.df = NULL
-  if("dip" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hartigans' dip test",
-                                     power = sum(sapply(n.dfs, function(s) I(diptest::dip.test(s)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(diptest::dip.test(s)$p.value<alpha)))/nsim))
-  }
+
 
   if("mclust" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Mclust",
@@ -63,26 +62,52 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
                                      FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1,nboot=nboot)$p.value<alpha)))/nsim ))
   }
 
-  ## sigclust is giving me issues so I've dropped it for now.
-  # if("sigclust" %in% tests){
-  #   pwr.df = rbind(pwr.df,data.frame(N = n, Test = "2-Mean cluster",
-  #                                    power = sum(sapply(n.dfs, function(s) I(sigclust::sigclust(as.data.frame(s),nsim=999)@pval<alpha)))/nsim,
-  #                                    FP = sum(sapply(a.dfs, function(s) I(sigclust::sigclust(as.data.frame(s),nsim=999)@pval<alpha)))/nsim))
-  # }
-
-  ## Laplace's Demon is a useful method for bimodality, but requires the user to input the minimum propotion of the sample needed to define a mode
-  ## This is being removed for now to limit the number of parameters a user must input.
-  # if("isbimo" %in% tests){
-  #  pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Laplace's Demon",
-  #                                   power = sum(sapply(n.dfs, function(s) LaplacesDemon::is.multimodal(s)))/nsim,
-  #                                   FP =  sum(sapply(a.dfs, function(s) LaplacesDemon::is.multimodal(s)))/nsim))
-  #}
 
   if("mt" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Mouse Trap",
-                                     power = sum(sapply(n.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s))$BC > 0.555)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s))$BC > 0.555)))/nsim))
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Bimodality Coefficient",
+                                     power = sum(sapply(n.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim))
   }
+
+  if("dip" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hartigans' dip test",
+                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HH",B=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HH",B=nboot)$p.value<alpha)))/nsim))
+  }
+
+  if("SI" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Silverman Bandwidth test",
+                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "SI",B=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "SI",B=nboot)$p.value<alpha)))/nsim))
+  }
+
+
+  if("HY" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hall and York Bandwidth test",
+                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HY",B=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HY",B=nboot)$p.value<alpha)))/nsim))
+  }
+
+
+  if("CH" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Cheng and Hall Excess Mass",
+                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "CH",B=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "CH",B=nboot)$p.value<alpha)))/nsim))
+  }
+
+  if("ACR" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Ameijeiras-Alonso et al. Excess Mass",
+                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "ACR",B=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "ACR",B=nboot)$p.value<alpha)))/nsim))
+  }
+
+  if("FM" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Fisher and Marron Carmer-von Mises",
+                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "FM",B=nboot)$p.value<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "FM",B=nboot)$p.value<alpha)))/nsim))
+  }
+
+
 
   return(pwr.df)
 
