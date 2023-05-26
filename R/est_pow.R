@@ -71,8 +71,8 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
 
   if("mt" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Bimodality Coefficient",
-                                     power = sum(sapply(n.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (4/9))))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (4/9))))/nsim))
+                                     power = sum(sapply(n.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (5/9))))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (5/9))))/nsim))
   }
 
   if("dip" %in% tests){
