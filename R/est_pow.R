@@ -62,11 +62,17 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
                                      FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1,nboot=nboot)$p.value<alpha)))/nsim ))
   }
 
+  #Pulling bootstrapped BC until we establish a cut-off
+  # if("mt" %in% tests){
+  #   pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Bimodality Coefficient",
+  #                                    power = sum(sapply(n.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim,
+  #                                    FP = sum(sapply(a.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim))
+  # }
 
   if("mt" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Bimodality Coefficient",
-                                     power = sum(sapply(n.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim))
+                                     power = sum(sapply(n.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (4/9))))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (4/9))))/nsim))
   }
 
   if("dip" %in% tests){
