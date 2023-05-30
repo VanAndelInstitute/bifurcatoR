@@ -2,6 +2,9 @@
 .Rhistory
 .Rapp.history
 
+# vim crap
+.*.sw*
+
 # Session Data files
 .RData
 
