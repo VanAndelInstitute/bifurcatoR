@@ -36,3 +36,39 @@
 #' 
 #' 
 "dxsmall"
+
+
+#' Ziru
+#'
+#' A tibble with weight measurements from C57BL/6 male mice over 10 weeks.
+#'
+#' @importFrom utils data
+#' 
+#' @usage data(Ziru)
+#' @format A \code{tibble}
+#' @source This data was created using inst/extdata/processZiru.R
+#'
+#' @examples
+#'
+#'  data(Ziru)
+#'  show(Ziru)
+#' 
+#'  # if `ggplot2` is installed:
+#'  if (require("ggplot2") & require("reshape2")) {
+#'
+#'    Ziru$mouse <- seq_len(nrow(Ziru))
+#'    melted <- melt(Ziru, 
+#'                   id.vars="mouse",
+#'                   variable.name="week",
+#'                   value.name="weight")
+#'    melted$week <- as.ordered(melted$week)
+#'
+#'    ggplot(melted, aes(group=mouse, x=week, y=weight, color=mouse)) + 
+#'      geom_point() + 
+#'      geom_line() + 
+#'      theme_minimal()
+#'
+#'  }
+#'
+#' 
+"Ziru"
