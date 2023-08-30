@@ -87,7 +87,7 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   if("ks" %in% tests){
 
-    tmp = twosamples::ks_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$value == unique(data$value)[2]],nboots=nboot,keep.boots=T)
+    tmp = twosamples::ks_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
 
     res = rbind(res,data.frame(Test = "Kolmogorov-Smirnov Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
@@ -98,7 +98,7 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
   if("cvm" %in% tests){
 
 
-    tmp = twosamples::cvm_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$value == unique(data$value)[2]],nboots=nboot,keep.boots=T)
+    tmp = twosamples::cvm_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
 
     res = rbind(res,data.frame(Test = "Cramer-von Mises Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
@@ -107,7 +107,7 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   if("dts" %in% tests){
 
-    tmp = twosamples::dts_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$value == unique(data$value)[2]],nboots=nboot,keep.boots=T)
+    tmp = twosamples::dts_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
 
     res = rbind(res,data.frame(Test = "DTS Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
@@ -115,7 +115,7 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   if("ad" %in% tests){
 
-    tmp = twosamples::ad_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$value == unique(data$value)[2]],nboots=nboot,keep.boots=T)
+    tmp = twosamples::ad_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
 
     res = rbind(res,data.frame(Test = "Aderson-Darling Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
