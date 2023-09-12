@@ -66,22 +66,22 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
 
   if("WmixR" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Weibull mixR",
-                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(s, H0=1, H1=2, family="weibull", nboot=nboot)$pvalue<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(s, H0=1, H1=2, family="weibull", nboot=nboot)$p.value<alpha)))/nsim ))
+                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="weibull", nboot=nboot)$pvalue<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="weibull", nboot=nboot)$p.value<alpha)))/nsim ))
   }
 
 
   if("GmixR" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Gaussian mixR",
-                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(s, H0=1, H1=2, family="normal", nboot=nboot)$pvalue<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(s, H0=1, H1=2, family="normal", nboot=nboot)$p.value<alpha)))/nsim ))
+                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="normal", nboot=nboot)$pvalue<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="normal", nboot=nboot)$p.value<alpha)))/nsim ))
   }
 
 
   if("GamixR" %in% tests){
     pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Gamma mixR",
-                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(s, H0=1, H1=2, family="gamma", nboot=nboot)$pvalue<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(s, H0=1, H1=2, family="gamma", nboot=nboot)$p.value<alpha)))/nsim ))
+                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="gamma", nboot=nboot)$pvalue<alpha)))/nsim,
+                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="gamma", nboot=nboot)$p.value<alpha)))/nsim ))
   }
 
   #Pulling bootstrapped BC until we establish a cut-off
