@@ -14,6 +14,7 @@
 #' @import          multimode
 #' @import          Hmisc
 #' @import          twosamples
+#' @import          mixR
 #'
 #' @export
 

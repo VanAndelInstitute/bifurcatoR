@@ -16,7 +16,7 @@
 #' @import          multimode
 #' @import          Hmisc
 #' @import          twosamples
-#' @import          mixr
+#' @import          mixR
 #'
 #' @export
 est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
