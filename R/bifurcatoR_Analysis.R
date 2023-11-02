@@ -216,10 +216,10 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   }
 
-  if("WmixR" %in% tests){
+  if("LNmixR" %in% tests){
 
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="weibull", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Weibull mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
+    tmp = bs_lrt(data$value, H0=1, H1=2, family="lognormal", nboot=nboot)
+    res = rbind(res,data.frame(Test = "Lognormal mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
   }
 
