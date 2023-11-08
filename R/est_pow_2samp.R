@@ -77,7 +77,6 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
 
     } else {
 
-      # need to find suitable support for standard normal and std normal + mean and var*var
       if(dist == "weib"){
         if(modes == 1){
 
@@ -128,6 +127,23 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
           }
         }
 
+      } else {
+        if (dist == "weib") {
+          if(modes == 1){
+            logmean = EpiNow2::convert_to_logmean(exp(0.5) + params$mean, params$v_scale*exp((1/2)*1)*sqrt(exp(1) - 1) )
+            logsd = EpiNow2::convert_to_logsd(exp(0.5) + params$mean, params$v_scale*exp((1/2)*1)*sqrt(exp(1) - 1) )
+            n.dfs[[1]] = lapply(1:nsim,function(x) rlnorm(n1,meanlog=0,sdlog=1))
+            n.dfs[[2]] = lapply(1:nsim,function(x) rlnorm(n2,meanlog=logmean,sdlog=logsd))
+
+            #Create a tragically over-simplified mixture of the two by averaging the logmeans
+            #and pooling the logsds
+            mu.pool = (n1+n2*(1+params$mean))/(n1+n2)
+            sd.pool = sqrt(((n1-1)*1^2 + (n2-1)*(params$v_scale)^2)/(n1+n2-2))
+
+            a.dfs[[1]] = lapply(1:nsim,function(x) rlnorm(n1,meanlog = mu.pool,sdlog =sd.pool))
+            a.dfs[[2]] = lapply(1:nsim,function(x) rlnorm(n2,meanlog = mu.pool,sdlog =sd.pool))
+          }
+        }
       }
 
 
