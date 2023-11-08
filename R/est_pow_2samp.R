@@ -128,7 +128,7 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
         }
 
       } else {
-        if (dist == "weib") {
+        if (dist == "lnorm") {
           if(modes == 1){
             logmean = EpiNow2::convert_to_logmean(exp(0.5) + params$mean, params$v_scale*exp((1/2)*1)*sqrt(exp(1) - 1) )
             logsd = EpiNow2::convert_to_logsd(exp(0.5) + params$mean, params$v_scale*exp((1/2)*1)*sqrt(exp(1) - 1) )
