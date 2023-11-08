@@ -137,8 +137,8 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
 
             #Create a tragically over-simplified mixture of the two by averaging the logmeans
             #and pooling the logsds
-            mu.pool = (n1+n2*(1+params$mean))/(n1+n2)
-            sd.pool = sqrt(((n1-1)*1^2 + (n2-1)*(params$v_scale)^2)/(n1+n2-2))
+            mu.pool = (n1+n2*(1+logmean))/(n1+n2)
+            sd.pool = sqrt(((n1-1)*1^2 + (n2-1)*(logsd)^2)/(n1+n2-2))
 
             a.dfs[[1]] = lapply(1:nsim,function(x) rlnorm(n1,meanlog = mu.pool,sdlog =sd.pool))
             a.dfs[[2]] = lapply(1:nsim,function(x) rlnorm(n2,meanlog = mu.pool,sdlog =sd.pool))
