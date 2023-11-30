@@ -18,6 +18,8 @@ est_pow(n, alpha, nsim, dist, params, tests, nboot)
 \item{params}{parameters for the generating distribution}
 
 \item{tests}{names of tests to run}
+
+\item{nboot}{number of bootstraps for mclust and/or modetest}
 }
 \value{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{     a power estimate

@@ -1,3 +1,4 @@
+
 #' bootstrap likelihood ratio tests for mixR fits
 #'
 #' The mixR package provides fast implementations for a number of 1-dimensional
@@ -10,6 +11,7 @@
 #' @param   H0        the number of components in the null model (1)
 #' @param   H1        the number of components in the alternative model (2)
 #' @param   family    fit distribution ("normal","weibull","gamma","lnorm")
+
 #' @param   nboot     number of bootstraps to perform (100)
 #' @param   iter      maximum iterations for EM algorithm (1000)
 #' @param   ...       additional arguments, passed to mixR::bs.test()
@@ -21,6 +23,8 @@
 #' @seealso mixR::bs.test
 #' @seealso mixR
 #'
+#' 
+
 #' @import mixR
 #'
 #' @export

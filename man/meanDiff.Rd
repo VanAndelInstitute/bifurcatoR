@@ -13,6 +13,7 @@ meanDiff(y, X)
 }
 \value{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{ Absolute value of the group 1 vs group 2 mean difference
+
 }\if{html}{\out{</div>}}
 }
 \description{

@@ -1,7 +1,13 @@
 #' hook for Weibull/Gaussian equivalency tricks (and traps)
 #'
-#' The canonical Weibull distribution is expressed as
+#' @param   dat     a vector of data, purportedly from a Weibull distribution
+#' @param   ...     additional arguments to be passed on to MASS::fitdistr
 #' 
+#' @return          an object of class `fitdistr` (see MASS::fitdistr for more)
+#'
+#' @details 
+#' The canonical Weibull distribution is expressed as
+#'
 #' X ~ Weibull(a, b)
 #' 
 #' where a > 0 is the scale parameter and b > 0 is the shape parameter.
@@ -10,11 +16,6 @@
 #' The starting parameters for MASS::fitdistr are computed via the methods of 
 #' moments, and the final estimates are then fitted by maximum likelihood. The
 #' code for the method of moments estimate is modified from EnvStats::eweibull.
-#'
-#' @param   dat     a vector of data, purportedly from a Weibull distribution
-#' @param   ...     additional arguments to be passed on to MASS::fitdistr
-#' 
-#' @return          an object of class `fitdistr` (see MASS::fitdistr for more)
 #' 
 #' @examples
 #'
@@ -35,7 +36,7 @@ parameters_weibull <- function(dat, ...) {
   n <- length(dat)
   mu <- mean(dat)
   
-  if (mu <= 0) warning("Mean is <= 0; Weibull approximation will fail.")
+  if (mu <= 0) stop("Mean is <= 0; Weibull approximation will fail.")
  
   sigma <- sd(dat, na.rm=TRUE) 
   mcf <- function(x, mu, sigma) { # borrowed from EnvStats

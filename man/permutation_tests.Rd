@@ -13,6 +13,7 @@ permutation_tests(temp_df, nperm, fxn, alpha)
 
 \item{fxn}{The function name to call is \link{meanDiff} \link{madDiff} \link{giniDiff} \link{sdDiff}}
 
+
 \item{alpha}{The confidence level}
 }
 \value{

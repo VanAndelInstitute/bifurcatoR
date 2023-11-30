@@ -10,3 +10,4 @@
 meanDiff <- function(y, X){
   abs(mean(y[X == 1]) - mean(y[X == 0]))
 }
+
