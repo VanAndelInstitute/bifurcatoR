@@ -84,6 +84,12 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
                                      FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="gamma", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim ))
   }
 
+  if("LNmixR" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Log normal mixR",
+                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="lnorm", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim,
+                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="lnorm", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim ))
+  }
+
   #Pulling bootstrapped BC until we establish a cut-off
   # if("mt" %in% tests){
   #   pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Bimodality Coefficient",
