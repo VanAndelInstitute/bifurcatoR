@@ -5,7 +5,7 @@
 coldf <- system.file("extdata", "mRNA", "dxsmall.colData.csv",
                      package="bifurcatoR", mustWork=TRUE)
 colDat <- read.csv(coldf, row.names=1, stringsAsFactors=TRUE)
-
+# updated: PAYAFC karyotype is 46,XX therefore sex is Female
 
 # feature covariates for mRNA expression of several genes
 rowdf <- system.file("extdata", "mRNA", "dxsmall.rowData.csv",

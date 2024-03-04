@@ -1,0 +1,76 @@
+---
+title: "Table One for COG merged MLL/NSD1 cohort slices"
+author: "Timothy J. Triche, Jr. (on behalf of all authors)"
+date: "2023-2-1"
+output:
+  html_document:
+    fig_width: 8
+    code_folding: hide
+    highlight: tango
+    toc: yes
+    keep_md: true
+    toc_float:
+      collapsed: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=8, fig.height=4,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+# rmarkdown::render("tableOne.Rmd", "pdf_document") # to render as PDF
+```
+
+# Covariates and outcomes for MLL and NSD1 fusion patients
+
+Patient number 368 does not have an annotated sex or age in the COG CDEs. 
+
+```{r}
+require(bifurcatoR)
+data(dxsmall, package="bifurcatoR")
+covs <- as.data.frame(colData(dxsmall))
+```
+
+## Aggregate 
+
+Tabulate age group, sex, protocol, and outcome overall.
+NA will be tabulated whenever present. 
+
+```{r}
+if (requireNamespace("tableone")) {
+  CreateTableOne(data=covs, includeNA=TRUE)
+}
+```
+
+## Per trial
+
+Tabulate age group, sex, and outcome per trial  
+
+```{r}
+if (requireNamespace("tableone")) {
+  CreateTableOne(data=subset(covs), strata="Protocol", includeNA=TRUE)
+}
+```
+
+
+## By fusion
+
+Tabulate age group, sex, protocol, and outcome by fusion group
+
+```{r}
+if (requireNamespace("tableone")) {
+  CreateTableOne(data=subset(covs), strata="FusionGroup", includeNA=TRUE)
+}
+```
+
+## By fusion, by trial 
+
+Tabulate age group, sex, protocol, and outcome by fusion group and trial. 
+
+```{r}
+if (requireNamespace("tableone")) {
+  CreateTableOne(data=subset(covs), strata=c("FusionGroup","Protocol"), 
+                 includeNA=TRUE)
+}
+```
