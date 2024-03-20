@@ -12,7 +12,7 @@ meanDiff(y, X)
 \item{X}{Generic name for the 2-level grouping variable}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     Absolute value of the group 1 vs group 2 mean difference
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ Absolute value of the group 1 vs group 2 mean difference
 }\if{html}{\out{</div>}}
 }
 \description{

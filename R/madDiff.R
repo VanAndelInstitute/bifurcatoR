@@ -10,3 +10,4 @@
 madDiff <- function(y, X){
   abs((mad(y[X == 1], constant = 1) - mad(y[X == 0], constant = 1)))
 }
+
