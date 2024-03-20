@@ -13,7 +13,7 @@ bs_lrt(x, H0 = 1, H1 = 2, family = "normal", nboot = 100, iter = 1000, ...)
 
 \item{H1}{the number of components in the alternative model (2)}
 
-\item{family}{fit distribution ("normal","weibull","gamma","lognormal")}
+\item{family}{fit distribution ("normal","weibull","gamma","lnorm")}
 
 \item{nboot}{number of bootstraps to perform (100)}
 

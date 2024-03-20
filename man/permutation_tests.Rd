@@ -11,12 +11,12 @@ permutation_tests(temp_df, nperm, fxn, alpha)
 
 \item{nperm}{The number of permutations to be performed}
 
-\item{fxn}{The function name to call is meanDiff madDiff giniDiff sdDiff}
+\item{fxn}{The function name to call is \link{meanDiff} \link{madDiff} \link{giniDiff} \link{sdDiff}}
 
 \item{alpha}{The confidence level}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{ a list with 3 object: a p-value, the actual difference, and the 2.5\% - 97.5\% interval 
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ a 3 level list containingg: a p-value, the actual difference, and the 2.5\% - 97.5\% interval
 }\if{html}{\out{</div>}}
 }
 \description{

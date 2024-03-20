@@ -1,0 +1,207 @@
+---
+title: "Simulation Study"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,warning = FALSE,message = FALSE)
+
+suppressPackageStartupMessages({
+  library(bifurcatoR)
+  library(doParallel)
+  library(cowplot)
+  library(dplyr)
+  library(ggplot2)
+  library(plotly)
+  library(ggpubr)
+  library(data.table)
+  library(parallel)
+  library(mclust)
+  library(gtsummary)
+  library(tidyverse)
+  library(gt)
+  library(SingleCellExperiment)
+  library(mixR)
+})
+
+mu2_labels <- paste0('Delta mu = ', c(0, 2, 4))
+names(mu2_labels) <- c(0, 2, 4)
+
+sd2_labels <- paste0('SD Inflation ', c(1, 2, 4),"x")
+names(sd2_labels) <- c(1, 2, 4)
+
+# 
+
+all.res = readRDS("~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/simulation_results/module2_dxsmall_norm_all_tests.rds")
+
+colnames(all.res)[colnames(all.res) == "Perm"] = "Permutations"
+
+
+```
+
+## dxsmall
+
+
+```{r}
+
+data(dxsmall)
+
+```
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+
+
+mypal <- ggsci::pal_nejm()(9)
+
+#square function
+rl10<-function(x){
+  -log10(x)
+}
+#inverse square function (square root)
+irl10<-function(x){
+  
+  10^(-1*x)
+  
+}
+
+##Not exactly equal between the runs, should maybe look into, rounding for now
+all.res$Prop = round(all.res$Prop,2)
+
+plot_dxsmall = function(module2){
+  
+  module2$FPR = case_when(
+    module2$FP<0.05 ~"FPR < 0.05",
+    module2$FP<0.1 ~"0.05 < FPR < 0.1",
+    TRUE~"FPR > 0.1"
+  )
+  
+  module2$FPR = factor(module2$FPR,levels=c("FPR < 0.05","0.05 < FPR < 0.1","FPR > 0.1"))
+p1 = ggplot(module2, aes(SampleSize, power,
+                        group = Test,
+                        color = Test,size=FPR)) +
+    geom_point(position = position_dodge2(width = .5)) +
+    geom_line(linewidth=0.4,position = position_dodge2(width = .5)) +
+    # stat_smooth(linewidth=0.4,position = position_dodge2(width = .5),se=F) +
+    theme(legend.position = 'none') +
+    # facet_grid(mu2 ~ sd2,
+    #            labeller = labeller(mu2 = mu2_labels,
+    #                                sd2 = sd2_labels))+
+    theme_bw(16)+
+    scale_color_manual(values=unname(mypal))+
+    # scale_size_continuous(breaks=c(0.01,0.05,0.1,0.5,1),range=c(3,0),limits=c(0.00001,1))+
+    scale_size_manual(values=c(3,0.75,0.1))+
+    # ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("Power") + xlab("N") + scale_y_continuous(limits=c(0,1),breaks=seq(0,1,0.2))+scale_x_continuous(breaks=c(0,20,50,100,200,400),trans="log2")
+   
+p1 = p1+ggtitle(paste0("Sampling Ratio = ",module2$Prop[1],":",1-module2$Prop[1]))
+return(p1)
+}
+
+ps = unique(all.res$Prop)
+fig4.e = plot_dxsmall(all.res[all.res$Prop == ps[[1]],])
+
+leg <- ggplotify::as.ggplot(get_legend(fig4.e+theme(legend.position="top",legend.box = "vertical",legend.text = element_text(size=10),legend.title = element_blank())+guides(color=guide_legend(nrow=5,byrow=TRUE))))
+
+fig4.e=fig4.e+theme(legend.position = "none")
+
+fig4.e = plot_grid(leg,fig4.e,ncol=1)
+
+fig4.f = plot_dxsmall(all.res[all.res$Prop == ps[[2]],])
+# leg <- plot_grid(NULL,get_legend(fig4.f+theme(legend.position="top",legend.box = "vertical")+guides(color=guide_legend(nrow=5,byrow=TRUE))),NULL,rel_widths=c(.5,1,.5),ncol=3)
+
+fig4.f=fig4.f+theme(legend.position = "none")
+
+fig4.f = plot_grid(leg,fig4.f,ncol=1)
+
+
+```
+
+
+
+```{r}
+
+df = data.frame(colData(dxsmall))
+df$Sex = replace(df$Sex, df$Sex == "Unknown", NA)
+t_fusiongroup = table(dxsmall$FusionGroup)
+
+t_fusiongroup.m = as.data.frame(melt(t_fusiongroup))
+
+fig4.d = ggplot(t_fusiongroup.m,aes(x=Var1,y=value,fill=Var1)) + geom_bar(stat="identity",color="black") + scale_fill_manual(values = c("#00BA38","#F8766D")) +  
+  theme_bw(16) + xlab("Fusion Group")+ylab("Frequency")+ggtitle("") +scale_y_continuous(expand=c(0,0)) + guides(fill=guide_legend(title="Fusion Group")) +theme(legend.position = "top")  
+
+
+```
+
+
+```{r}
+
+logcount_mll = logcounts(dxsmall)["MECOM", dxsmall$FusionGroup == "MLL"]
+logcount_nsd1 = logcounts(dxsmall)["MECOM", dxsmall$FusionGroup == "NSD1"]
+
+df <- data.frame(
+  Fusion_Group = c(rep("MLL", length(logcount_mll)), rep("NSD1", length(logcount_nsd1))),
+  logcounts = c(logcount_mll, logcount_nsd1)
+)
+
+fig4.a = ggplot(df, aes(x = logcounts, fill = Fusion_Group)) +
+           geom_histogram(aes(y = ..density..), position = "identity", alpha = 0.5, bins = 30) +
+           geom_density(alpha = 0.5) +
+           scale_fill_manual(values = c("#00BA38","#F8766D")) +  
+           theme_bw(16) +
+           theme(text = element_text(size = 19)) +
+           ylab("Density") +
+           xlab("MECOM Logcounts")+ ggtitle("MECOM expression") +
+           guides(fill=guide_legend(title="Fusion Group"))+  
+           scale_y_continuous(expand=c(0,0))+theme(legend.position = "top")
+
+
+
+```
+
+```{r}
+
+mixr_fit_1 = mixfit(logcount_mll, ncomp = 2)
+par(cex.lab = 2, cex.axis = 2, cex.main = 2)
+fig4.b = plot(mixr_fit_1, what="density", title = 'MLL Gaussian Mixture (2 components)', cex.main = 20)+theme_bw(16)+theme(legend.position = "top",legend.box="vertical") +scale_fill_manual(values=c("#DAF5E2","#00BA38"))+ guides(fill=guide_legend(title="Component")) +  theme(legend.key.size = unit(0.5, "cm"))
+
+
+
+
+logcount_nsd1_binned <- bin(logcount_nsd1, brks = seq(min(logcount_nsd1), max(logcount_nsd1), length = 30))
+mixr_fit_2 = mixfit(logcount_nsd1, ncomp = 2, ev = TRUE)
+fig4.c = plot(mixr_fit_2, title = 'NSD1 Gaussian Mixture (2 components)', xlim = c(0,6), ylim = c(0,1),cex.lab = 1.5)+theme_bw(16)+theme(legend.position = "top",legend.box="vertical")+scale_fill_manual(values=c("#FEEBEA","#F8766D"))+ guides(fill=guide_legend(title="Component"))+  theme(legend.key.size = unit(0.5, "cm"))
+
+
+
+
+```
+
+
+
+```{r,fig.height=14,fig.width=15}
+
+library(cowplot)
+
+
+p1 = plot_grid(fig4.a,fig4.d,scale=0.95,labels=c("A","B"),ncol=2)
+
+p2 = plot_grid(fig4.b,fig4.c,scale=0.95,labels=c("C","D"),ncol=2)
+
+p3 = plot_grid(fig4.e,fig4.f,scale=0.95,labels=c("E","F"),ncol=2)
+
+tiff(file = "~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/simulation_results/fig4.tif",height = 3800,width=2800 ,res=200 )
+plot_grid(p1,p2,p3,ncol=1,rel_heights = c(0.6,0.6,1),scale=0.925)
+dev.off()
+
+
+```
+
+
+```{r}
+
+
+```
