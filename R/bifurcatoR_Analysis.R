@@ -40,49 +40,49 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
     tmp.boot = unname(unlist(lapply(1:nboot, function(x) mousetrap::mt_check_bimodality(as.data.frame(s[sample(1:nrow(s),replace=T),]),method="BC")$BC)))
 
-    res = rbind(res,data.frame(Test = "Bimodality Coeficient", nboot = nboot,p.value =  as.numeric(I(tmp < (5/9))),Stat = unname(tmp) ,CI = paste(round(quantile(tmp.boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
+    res = rbind(res,data.frame(Test = "Bimodality Coefficient", nboot = nboot,p.value =  as.numeric(I(tmp < (5/9))),Stat = unname(tmp) ,CI = paste(round(quantile(tmp.boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
 
   }
 
   if("SI" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "SI",B=nboot)
 
-    res = rbind(res,data.frame(Test = tmp$method, nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Silverman Bandwidth test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
 
   }
 
   if("dip" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "HH",B=nboot)
 
-    res = rbind(res,data.frame(Test = tmp$method, nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Hartigans' dip test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
 
   }
 
   if("HY" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "HY",B=nboot)
 
-    res = rbind(res,data.frame(Test = tmp$method, nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Hall and York Bandwidth test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
 
   }
 
   if("CH" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "CH",B=nboot)
 
-    res = rbind(res,data.frame(Test = tmp$method, nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Cheng and Hall Excess Mass", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
 
   }
 
   if("ACR" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "ACR",B=nboot)
 
-    res = rbind(res,data.frame(Test = tmp$method, nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Ameijeiras-Alonso et al. Excess Mass", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
 
   }
 
   if("FM" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "FM",B=nboot)
 
-    res = rbind(res,data.frame(Test = tmp$method, nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Fisher and Marron Carmer-von Mises", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
 
   }
 
