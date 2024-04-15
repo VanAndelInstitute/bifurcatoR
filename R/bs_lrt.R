@@ -38,7 +38,7 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
   tst.p = bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter, ...)
   # If this test comes back NA, it usually means the EM algorithm failed to converge on two unequal modes.
   # Attempt with equal variances to get a p-value. An alternate option would be to set NA -> p =0.99999
-  if(is.na(tst.1)){
+  if(is.na(tst.p$pvalue)){
     tst.p = bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter,ev=T ,...)
   }
   
