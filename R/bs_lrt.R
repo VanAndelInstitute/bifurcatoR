@@ -65,8 +65,8 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
     list(pi = pi, mu = mu, sd = sd)
   }
   
-  unlockBinding("initz", as.environment("package:mixR"))
-  assign("initz", initz2, "package:mixR")
+  # unlockBinding("initz", as.environment("package:mixR"))
+  # assign("initz", initz2, "package:mixR")
   
   unlockBinding("initz",  getNamespace("mixR"))
   assign("initz", initz2,  getNamespace("mixR"))
