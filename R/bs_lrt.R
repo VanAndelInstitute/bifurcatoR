@@ -56,6 +56,11 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
     pi <- count / sum(count)
     mu <- sapply(res, mean)
     sd <- sapply(res, sd)
+    if(any(is.na(sd))){sd[which(is.na(sd))] = sd[which(!is.na(sd))][1] }
+    #If we still have a cluster of size 1, even after fuzzy c means, 
+    #we'll give this cluster equal sd to cluster 1 and let the EM algorithm go
+    
+    
     
     order <- order(mu)
     
