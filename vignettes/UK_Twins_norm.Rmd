@@ -1,0 +1,305 @@
+---
+title: "UKTwins mixR"
+output: html_document
+date: "2024-03-15"
+---
+
+```{r setup, include=FALSE}
+library(patchwork)
+library(mixR) 
+library(kableExtra)
+library(ppclust)
+library(ggplot2)
+library(bifurcatoR)
+library(ggVennDiagram)
+library(cowplot)
+library(ggsci)
+library(clusterProfiler)
+
+knitr::opts_chunk$set(echo = FALSE,cache = F,warning = F,message = F)
+
+#Our own initz with fuzzy c means if kmeans fails
+initz2 <-  function(x, ncomp, init.method = c("kmeans", "hclust","fuzzy")) {
+  
+  init.method = match.arg(init.method)
+  # check if 'x' is a matrix (from grouped data)
+  if(is.matrix(x)) {
+    x <- reinstate(x)
+  }
+  if(init.method == "kmeans") {
+    a <- kmeans(x, centers = ncomp,nstart = 1)$cluster
+    if(any(table(a) < length(x) *0.05)){
+      a <- fpppcm(x,centers = ncomp)$cluster
+    }
+  } else {
+    a <- cutree(hclust(dist(x)), ncomp)
+    # a <- fpppcm(x,centers = ncomp)$cluster
+  } 
+  res <- list()
+  for(i in 1:ncomp) {
+    res[[i]] <- x[a == i]
+  }
+  count <- sapply(res, length)
+  pi <- count / sum(count)
+  mu <- sapply(res, mean)
+  sd <- sapply(res, sd)
+
+  order <- order(mu)
+  
+  pi <- pi[order]
+  mu <- mu[order]
+  sd <- sd[order]
+  list(pi = pi, mu = mu, sd = sd)
+}
+
+unlockBinding("initz", as.environment("package:mixR"))
+assign("initz", initz2, "package:mixR")
+unlockBinding("initz",  getNamespace("mixR"))
+assign("initz", initz2,  getNamespace("mixR"))
+
+
+```
+
+
+```{r, include=F}
+#Load in the UKtwins data
+load("~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/UK_twins.rda")
+
+#Sort by BMI so that we are always doing heavy twin - light
+MuTHER_phenotypes_MZ = MuTHER_phenotypes_MZ[order(MuTHER_phenotypes_MZ$BMI,decreasing = T),]
+
+#Remove TWPID from each twin ID, make the remaining piece of the ID numeric, then create unique twin pair IDs by summing the twin and cotwin ID and adding their product. Both operations being associative, each pair gets the same identifier regardless of who is in the twin/cotwin columns and this should be a unique identifier for each pair. 
+MuTHER_phenotypes_MZ$pair = as.numeric(gsub("TWPID","",MuTHER_phenotypes_MZ$PUBLIC_ID)) + as.numeric(gsub("TWPID","",MuTHER_phenotypes_MZ$PUBLIC_ID_COTWIN)) +as.numeric(gsub("TWPID","",MuTHER_phenotypes_MZ$PUBLIC_ID)) * as.numeric(gsub("TWPID","",MuTHER_phenotypes_MZ$PUBLIC_ID_COTWIN))
+
+#Make a data frame without duplicated twin pairs. Due to the sorting, the pairs removed would be light - heavy. Also remove any IDs where one twin is missing 
+pheno = MuTHER_phenotypes_MZ[!is.na(MuTHER_phenotypes_MZ$pair) & ! duplicated(MuTHER_phenotypes_MZ$pair), ]
+
+#Now remove twin pairs that had missing array information
+pheno = pheno[pheno$PUBLIC_ID %in% colnames(MuTHER_normalized_counts_MZ) & pheno$PUBLIC_ID_COTWIN %in% colnames(MuTHER_normalized_counts_MZ),]
+
+#Make data frame of deltas, I'm sure there's a more clever way to do this, but I'm old fashioned
+exprs = do.call("cbind",lapply(pheno$pair, function(i) MuTHER_normalized_counts_MZ[,pheno$PUBLIC_ID[pheno$pair == i]] - MuTHER_normalized_counts_MZ[,pheno$PUBLIC_ID_COTWIN[pheno$pair == i]]))
+rownames(exprs) = rownames(MuTHER_normalized_counts_MZ)
+colnames(exprs) = pheno$pair
+```
+
+
+```{r, fig.height=16, fig.width=20}
+#All 146 twin pairs are there and 25160 genes
+#dim(exprs)
+#save the file for faster run times
+save(exprs,file = "~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/UK_twins_deltas.rda")
+
+#Keep only top 4000 most variable genes based on differences
+sds = apply(exprs,1,function(x) sd(x) )
+top.sds = sds[order(sds,decreasing = T)][1:4000]
+exprs = as.data.frame(exprs[rownames(exprs) %in% names(top.sds),])
+
+#Some simple functions to return different mixture parameter estimates
+mixbic <- function(x, ncomp=2) fitmix(x, ncomp=ncomp)$bic
+
+
+mixp <- function(x, ncomp=2){
+  
+ p = min(fitmix(x, ncomp=ncomp,family="normal")$p)
+ if(!is.finite(p) ){
+   p = min(fitmix(x, ncomp=ncomp,family="normal",ev=T)$p)
+ }
+  return(p)
+}
+  
+mixmu <- function(x, ncomp=2) fitmix(x, ncomp=ncomp)$mu
+mixsd <- function(x, ncomp=2) fitmix(x, ncomp=ncomp)$sd
+
+# Fit mixture model
+fitmix <- function(x, ncomp=2,family="normal",ev=F) mixfit(as.numeric(x), ncomp=ncomp,family=family,ev=ev)
+
+# Function to test for bimodality using LRT, caution current best practice is to us bootstrap
+fitmix.test <- function(x,family="normal"){ pchisq(bs.test(as.numeric(x), ncomp=c(1,2),family=family,B=1)$w0,df=1,lower.tail = F)}
+
+# Function to test for bimodality using bootstrap
+fitmix.test.bs <- function(x,family="normal"){ bs_lrt(as.numeric(x), family=family,nboot=10000,init.method="kmeans")$pvalue}
+
+# Function to test for bimodality using Bimodality coefficient
+fitbc <- function(x) mousetrap::bimodality_coefficient(as.numeric(x))
+
+# Get each gene's bimodality coefficient
+testbc = apply(exprs, 1, function(x) fitbc(x))
+
+# Testing each gene for bimodality using LRT
+# test.p = apply(exprs, 1, function(x) fitmix.test(x,family="normal"))
+# test.fdr = p.adjust(test.p,method="BH")
+
+# Testng each gene for imodality using bootstrap, this takes awhile, we have a separate script that runs on HPC
+# test.p.bs = apply(exprs, 1, function(x) fitmix.test.bs(x,family="normal"))
+# save(test.p.bs,file = "~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/bs_test_norm_4000_update.rda")
+
+```
+
+
+```{r}
+
+library(bifurcatoR)
+# plot(mixfit(as.numeric(exprs["KRT17",]),family="normal",ncomp=2))
+
+#Load the saved run from the HPC
+load(file = "~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/bs_test_norm_4000_update.rda")
+
+# FDR correct these values
+test.fdr.bs = p.adjust(test.p.bs,method="BH")
+
+# Filter on minimum proportion
+geneps = apply(exprs, 1, mixp )
+dd.filter = names(which(geneps < 0.1))
+
+# Rank based on bimodality coefficient since it's non-parametric
+ranks = testbc[order(testbc,decreasing = T)]
+
+# remove the ones we're filtering out
+ranks = ranks[! names(ranks) %in% dd.filter & names(ranks) %in% names(test.fdr.bs[test.fdr.bs<0.05])]
+
+##Fit mixfit on DD genes
+genes.dd = names(test.fdr.bs)[test.fdr.bs< 0.05 & !is.na(test.fdr.bs)]
+
+plot.fxn = function(i){
+  if(which.min(abs(fitmix(as.numeric(exprs[names(ranks)[i], ]),family="normal")$mu )) == 2){
+    p.i = plot(fitmix(as.numeric(exprs[names(ranks)[i], ]),family="normal"), title=names(ranks)[i],breaks=20)+scale_fill_manual(values=pal_nejm()(2)[1:2])+theme(legend.position = "none")
+  } else {
+     p.i= plot(fitmix(as.numeric(exprs[names(ranks)[i], ]),family="normal"), title=names(ranks)[i],breaks=20)+scale_fill_manual(values=pal_nejm()(2)[c(2,1)])+theme(legend.position = "none")
+  }
+  return(p.i)
+}
+
+# Plot the top 8
+p = lapply(1:8, function(i) plot.fxn(i) )
+wrap_plots(p) + plot_layout(ncol = 4) + plot_annotation('Top 8 Genes Based on BC',theme=theme(plot.title=element_text(hjust=0.5)))
+
+```
+
+## Compare DD to published UPV-B genes
+
+
+```{r}
+
+upv_b = read.csv("~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/42255_2022_629_MOESM8_ESM.csv",header=T,skip=5)[,2]
+
+genes_list <- list("Differntially Dispersed" = names(test.fdr.bs[test.fdr.bs < 0.05 & ! names(test.fdr.bs) %in% dd.filter]), 
+                      "UPV-B" = upv_b[upv_b %in% names(test.fdr.bs)] )
+
+# p.venn = ggVennDiagram(genes_list, category.names = c("DD","UPV B"), label="count") +scale_color_nejm() +   scale_fill_gradient( low="white",high="red") + coord_flip() +theme(text = element_text(size=15))
+
+library(eulerr)
+
+fit = euler(genes_list,shape="circle")
+colorpal = euler(genes_list,shape="circle")$original
+colors = colorRampPalette(c("white","red"))(max(colorpal))
+p.venn = plot(fit, quantities = TRUE,lwd=3,fills =  colors[colorpal])
+
+p.dist = ggplot(data=NULL,aes(x = test.fdr.bs[names(test.fdr.bs) %in% upv_b & ! names(test.fdr.bs) %in% dd.filter])) +
+  geom_histogram() + geom_density(bw = 0.1) + 
+  geom_vline(xintercept=0.05,color="red") +
+  theme_bw(15) +xlab("mixR p-values for genes in UPV B")
+
+p.dens = wrap_plots(p)  + plot_layout(ncol = 4) + plot_annotation('Top differentially dispersed genes ranked by bimodality coefficient') &theme_bw(15) &theme(legend.position = "none",plot.title=element_text(hjust=0.5)) 
+
+leg = ggpubr::get_legend(plot(fitmix(as.numeric(exprs[names(ranks)[8], ]),family="normal"), title=names(ranks)[1],breaks=20)+scale_fill_manual(values=pal_nejm()(2)[c(2,1)],name="Component")+theme(legend.position = "bottom", legend.direction="horizontal"))
+
+p.dens=plot_grid(p.dens,as_ggplot(leg),rel_heights = c(1,0.15),ncol=1)
+
+
+```
+
+### GSEA for DD genes
+
+```{r}
+
+enrich.dd = enrichGO( names(test.fdr.bs[test.fdr.bs < 0.05 & ! names(test.fdr.bs) %in% dd.filter]),keyType = "SYMBOL", universe = rownames(exprs),OrgDb = 'org.Hs.eg.db',ont="ALL"  )
+library(aPEAR)
+
+
+
+
+enrich.upv = enrichGO( upv_b[upv_b %in% names(test.fdr.bs)] ,keyType = "SYMBOL", universe = rownames(exprs),OrgDb = 'org.Hs.eg.db',ont="ALL"  )
+
+
+```
+
+
+### Enrichment for cluster 4?
+
+
+
+```{r}
+
+## Mode score by group. 
+## Get mode assignment for each indv and gene
+set.seed(123)
+get_mode = function(gene){
+   fit.m = fitmix(as.numeric(exprs[gene,]),family="normal",ncomp=2)
+   if(!length(fit.m$mu) > 0){
+     fit.m = fitmix(as.numeric(exprs[gene,]),family="normal",ncomp=2,ev=T)
+   }
+   ix = which(abs(fit.m$mu) == min(abs(fit.m$mu)))    
+   
+   comp = apply(fit.m$comp.prob,1, function(x) which(x == max(x)))
+   if(ix == 2){
+     comp = 3-comp
+   }
+  
+  return(comp - 1)
+}
+
+assign = do.call("cbind",lapply(names(test.fdr.bs[test.fdr.bs < 0.05 & ! names(test.fdr.bs) %in% dd.filter]), function(x)  get_mode(x)))
+
+assign.s = rowSums(assign)/ncol(assign)
+
+pheno$Mode = assign.s
+
+
+
+fit = MASS::rlm(rank(Mode)~COTWIN_clusters,data=pheno)
+library(emmeans)
+res = as.data.frame(summary(emmeans(fit,pairwise~COTWIN_clusters)$contrasts))
+knitr::kable(res,digits=4)
+
+pheno$COTWIN_clusters = factor(pheno$COTWIN_clusters,levels=unique(pheno$COTWIN_clusters),labels=c("Intermediate","Discordant B","Concordant","Discordant A"))
+pheno$COTWIN_clusters = factor(pheno$COTWIN_clusters,levels=c("Concordant","Discordant A","Intermediate","Discordant B"))
+
+clust_e = ggplot(pheno[!is.na(pheno$COTWIN_clusters),], aes(x = COTWIN_clusters,y=Mode,color=COTWIN_clusters)) +
+  geom_jitter(height=0,width=0.25) + 
+  geom_boxplot(fill=NA,outlier.size=-1) + 
+  scale_color_manual(values=c("grey",   "forestgreen","darkorange","red")) +
+  theme_bw(15)+
+  scale_y_continuous(labels = scales::percent) +
+  xlab("Cotwin Cluster") + ylab(expression("Percent genes with cotwin"~Delta~ "\n in component 2")) +
+  theme(legend.position = "none") +
+  geom_segment(aes(x = 1, y = 145/293, xend = 4, yend = 145/293),color="black") +
+  annotate("text",x = 2.5,y = 149.5/293, label= paste0("p = ",round(res$p.value[res$contrast == "concordant - discordant_B"],3))) 
+  # geom_segment(aes(x = 3, y = 66, xend = 4, yend = 66),color="black") +
+  # annotate("text",x = 3.5,y = 67.5, label= paste0("p = ",round(res$p.value[res$contrast == "discordant_A - discordant_B"],3)))
+  
+
+tiff("~/bbc-secondary/research/POSA_20230314_TR01Shiny_VBCS-718/fig5.tif",height=1500,width=1300)
+
+plot_grid(p.dens,
+          plot_grid(p.venn,clust_e,scale=0.85,labels=c("B","C"),ncol=2,rel_widths = c(1,0.8)),
+          plot_grid(cnetplot(enrich.dd, node_label="all", 
+        cex_label_category = 1.2,
+        color_category='firebrick', 
+        color_gene='steelblue') +ggtitle("Over-representation of DD Genes")
+,cnetplot(enrich.upv, node_label="all", 
+        cex_label_category = 1.2,
+        color_category='firebrick', 
+        color_gene='steelblue') +ggtitle("Over-representation of UPV-B Genes")
+,labels=c("D","E"),scale=0.95)
+          ,ncol=1, rel_heights = c(1,0.7,1),labels=c("A",""))
+
+dev.off()
+
+
+```
+
+
+
+
+
