@@ -17,8 +17,6 @@
 #' @import          mixR
 #'
 #' @export
-
-
 bifurcatoR_Analysis = function(data,tests,nboot,alpha){
   res <- data.frame(Test = character(),
                     nboot = numeric(),

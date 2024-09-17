@@ -1,4 +1,4 @@
-
+#' bs_lrt
 #' bootstrap likelihood ratio tests for mixR fits
 #'
 #' The mixR package provides fast implementations for a number of 1-dimensional
@@ -23,8 +23,6 @@
 #' @seealso mixR::bs.test
 #' @seealso mixR
 #'
-#' 
-
 #' @import mixR
 #' @import ppclust
 #'
