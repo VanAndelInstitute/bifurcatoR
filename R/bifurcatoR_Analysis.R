@@ -124,7 +124,7 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
     tmp = car::leveneTest(lm(value~as.factor(data$group),data=data))
 
-    res = rbind(res,data.frame(Test = "Levene's Test", nboot = NA ,p.value =tmp$'Pr(>F)',Stat = tmp$'F value' ,CI = "Not yet available"))
+    res = rbind(res,data.frame(Test = "Levene's Test", nboot = NA ,p.value =tmp$'Pr(>F)'[1],Stat = tmp$'F value'[1] ,CI = "Not yet available"))
 
   }
 
@@ -237,10 +237,5 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   }
 
-  res$p.value = round(res$p.value,3)
-  res$p.value = if(res$p.value == 0){"<0.001"}
-
-  res$Stat = round(res$Stat,3)
-  
   return(res)
 }
