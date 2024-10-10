@@ -237,7 +237,10 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   }
 
+  res$p.value = round(res$p.value,3)
+  res$p.value = if(res$p.value == 0){"<0.001"}
 
-
+  res$Stat = round(res$Stat,3)
+  
   return(res)
 }
