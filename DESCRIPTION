@@ -20,24 +20,24 @@ License: GPLv2
 Depends:
     R (>= 4.0.0)
 Imports:
+    BiocParallel,
+    car,
+    diptest,
+    dplyr,
+    LaplacesDemon,
     MASS,
     mclust,
-    diptest,
-    twosamples,
-    LaplacesDemon,
-    BiocParallel,
+    mixR,
     mousetrap,
     shiny,
-    dplyr,
-    mixR,
-    car
+    twosamples
 Suggests:
     covr,
-    uwot,
-    iSEE, 
+    iSEE,
     SingleCellExperiment,
     table1,
-    testthat
+    testthat,
+    uwot
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
