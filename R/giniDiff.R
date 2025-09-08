@@ -5,7 +5,7 @@
 #'
 #' @return      Absolute value of the difference between group 1 and group 2 Gini's mean difference
 #'  
-#' @impot       Hmisc  
+#' @import       Hmisc  
 #'
 #' @export
 
