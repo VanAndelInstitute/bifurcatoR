@@ -20,15 +20,20 @@ License: GPLv2
 Depends:
     R (>= 4.0.0)
 Imports:
-    BiocParallel,
     car,
+    data.table,
     diptest,
     dplyr,
+    EpiNow2,
+    Hmisc,
     LaplacesDemon,
     MASS,
     mclust,
+    mixdist,
     mixR,
     mousetrap,
+    multimode,
+    ppclust,
     shiny,
     twosamples
 Suggests:
