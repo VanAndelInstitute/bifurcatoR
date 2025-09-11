@@ -16,7 +16,7 @@ Author: Carmen Khoo, Zach Madaj, Ember Tokarski, Mao Ding, and Tim Triche
 Maintainer: triche lab <trichelab@gmail.com>
 URL: https://github.com/VanAndelInstitute/bifurcatoR
 BugReports: https://github.com/VanAndelInstitute/bifurcatoR/issues
-License: GPLv2
+License: GPL-2
 Depends:
     R (>= 4.0.0)
 Imports:
