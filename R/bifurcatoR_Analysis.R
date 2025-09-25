@@ -9,7 +9,6 @@
 #'
 #' @import          mclust
 #' @import          diptest
-#' @import          mousetrap
 #' @import          LaplacesDemon
 #' @import          multimode
 #' @import          Hmisc
