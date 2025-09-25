@@ -10,7 +10,6 @@
 #' @import          diptest
 #' @import          LaplacesDemon
 #' @import          Hmisc
-#' @import          twosamples
 #' @import          mixR
 #'
 #' @export

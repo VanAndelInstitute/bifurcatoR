@@ -12,7 +12,6 @@
 #'
 #' @return          a power estimate
 #'
-#' @import          twosamples
 #' @import          car
 #' @import          data.table
 #'
