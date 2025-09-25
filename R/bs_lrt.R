@@ -23,7 +23,6 @@
 #' @seealso mixR::bs.test
 #' @seealso mixR
 #'
-#' @import ppclust
 #' @importFrom stats cutree dist hclust kmeans
 #'
 #' @export
@@ -40,11 +39,11 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
     if(init.method == "kmeans") {
       a <- kmeans(x, centers = ncomp,nstart = 1)$cluster
       if(any(table(a) < length(x) *0.05)){
-        a <- fpppcm(x,centers = ncomp)$cluster
+        a <- ppclust::fpppcm(x,centers = ncomp)$cluster
       }
     } else {
       a <- cutree(hclust(dist(x)), ncomp)
-      # a <- fpppcm(x,centers = ncomp)$cluster
+      # a <- ppclust::fpppcm(x,centers = ncomp)$cluster
     } 
     res <- list()
     for(i in 1:ncomp) {
