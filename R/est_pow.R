@@ -12,7 +12,6 @@
 #'
 #' @import          diptest
 #' @import          LaplacesDemon
-#' @import          multimode
 #' @import          Hmisc
 #' @import          twosamples
 #' @import          mixR
