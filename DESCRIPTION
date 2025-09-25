@@ -30,6 +30,7 @@ Imports:
     mixR,
     mousetrap,
     multimode,
+    olsrr,
     ppclust,
     pwr,
     shiny,
