@@ -10,7 +10,6 @@
 #' @import          diptest
 #' @import          LaplacesDemon
 #' @import          Hmisc
-#' @import          mixR
 #'
 #' @export
 bifurcatoR_Analysis = function(data,tests,nboot,alpha){

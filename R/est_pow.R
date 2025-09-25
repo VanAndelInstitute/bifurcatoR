@@ -13,7 +13,6 @@
 #' @import          diptest
 #' @import          LaplacesDemon
 #' @import          Hmisc
-#' @import          mixR
 #'
 #' @export
 est_pow = function(n,alpha,nsim,dist,params,tests,nboot){

@@ -23,7 +23,7 @@
 #' @seealso mixR::bs.test
 #' @seealso mixR
 #'
-#' @import mixR
+#' @importFrom mixR bs.test
 #' @import ppclust
 #'
 #' @export
