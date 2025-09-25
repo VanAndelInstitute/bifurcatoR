@@ -13,6 +13,7 @@
 #' @import          diptest
 #' @import          LaplacesDemon
 #' @import          Hmisc
+#' @importFrom      stats rbeta rlnorm rnorm rweibull
 #'
 #' @export
 est_pow = function(n,alpha,nsim,dist,params,tests,nboot){

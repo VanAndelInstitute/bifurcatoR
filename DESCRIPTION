@@ -25,12 +25,14 @@ Imports:
     LaplacesDemon,
     MASS,
     mclust,
+    methods,
     mixdist,
     mixR,
     mousetrap,
     multimode,
     ppclust,
     shiny,
+    stats,
     twosamples
 Suggests:
     covr,

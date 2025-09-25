@@ -24,6 +24,7 @@
 #' @seealso mixR
 #'
 #' @import ppclust
+#' @importFrom stats cutree dist hclust kmeans
 #'
 #' @export
 bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){

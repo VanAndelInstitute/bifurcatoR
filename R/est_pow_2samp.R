@@ -14,12 +14,9 @@
 #'
 #' @import          car
 #' @import          data.table
+#' @importFrom      stats anova ks.test lm rbeta rlnorm rnorm rweibull
 #'
 #' @export
-
-
-
-
 est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
   n.dfs=list()
   a.dfs=list()

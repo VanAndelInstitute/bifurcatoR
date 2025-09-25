@@ -15,6 +15,8 @@
 #'   iSEEapp(dxsmall)
 #' } 
 #'
+#' @importFrom methods new
+#'
 #' @export
 iSEEapp <- function(sce) { 
 

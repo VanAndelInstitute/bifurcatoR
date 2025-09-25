@@ -10,6 +10,7 @@
 #' @import          diptest
 #' @import          LaplacesDemon
 #' @import          Hmisc
+#' @importFrom      stats confint lm quantile
 #'
 #' @export
 bifurcatoR_Analysis = function(data,tests,nboot,alpha){
