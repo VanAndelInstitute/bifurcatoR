@@ -34,7 +34,7 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
     init.method = match.arg(init.method)
     # check if 'x' is a matrix (from grouped data)
     if(is.matrix(x)) {
-      x <- reinstate(x)
+      x <- mixR::reinstate(x)
     }
     if(init.method == "kmeans") {
       a <- kmeans(x, centers = ncomp,nstart = 1)$cluster
