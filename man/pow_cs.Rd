@@ -7,7 +7,7 @@
 pow_cs(ns, p1, p2, shift, sel, CI, alpha = 0.05, nsim = 20)
 }
 \arguments{
-\item{ns}{numbers of \link{somethings}}
+\item{ns}{numbers of somethings}
 
 \item{p1}{pr(event) in subgroup 1}
 

@@ -7,7 +7,7 @@
 est_pow_het(n, p, alpha, x, nsim)
 }
 \arguments{
-\item{n}{number of \link{somethings}}
+\item{n}{number of somethings}
 
 \item{p}{pr(event)}
 
