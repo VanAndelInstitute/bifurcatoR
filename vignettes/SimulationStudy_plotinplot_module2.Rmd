@@ -1,0 +1,446 @@
+---
+title: "Simulation Study"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,warning = FALSE,message = FALSE)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(cowplot)
+
+mu2_labels <- paste0('Delta mu = ', c(0, 2, 4))
+names(mu2_labels) <- c(0, 2, 4)
+
+sd2_labels <- paste0('SD Inflation ', c(1, 2, 4),"x")
+names(sd2_labels) <- c(1, 2, 4)
+
+# 
+
+all.res = readRDS("~/bbc-secondary/container_backup/zachary.madaj/Rprojects/BifurcatoR_sims/module2_n_w_9_tests_sim(1000).rds")
+
+
+colnames(all.res)[colnames(all.res) == "Perm"] = "Permutations"
+
+
+```
+# Module {.tabset}
+## Module 1 {.tabset}
+
+```{r module1_norm, fig.height=8, fig.width=10, unit='in'}
+
+
+plot.pwr = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, power,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(mu2 ~ sd2,
+               labeller = labeller(mu2 = mu2_labels,
+                                   sd2 = sd2_labels))+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("Power")
+
+)
+  
+}
+
+
+plot.pwr.b = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, power,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(s1 ~ s2)+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("Power")
+
+)
+  
+}
+
+
+
+plot.fp = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, FP,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(mu2 ~ sd2,
+               labeller = labeller(mu2 = mu2_labels,
+                                   sd2 = sd2_labels))+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("False Positive Rate")
+
+)
+  
+}
+
+
+
+
+plot.fp.b = function(dist,p,module1){
+  
+print(
+  ggplot(module1[module1$Prop==p &module1$Distribution == dist,], aes(SampleSize, FP,
+                        group = interaction( Test, Distribution),
+                        color = Test)) +
+    geom_point() +
+    geom_line() + 
+    theme(legend.position = 'none') +
+    facet_grid(s1 ~ s2)+
+    theme_classic2(14)+
+    scale_color_viridis_d()+
+    ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("False Positive Rate")
+
+)
+  
+}
+
+```
+
+### Bimodality {.tabset}
+
+```{r , fig.height=8, fig.width=10, unit='in'}
+library(ggsci)
+
+mypal <- ggsci::pal_nejm()(9)
+
+#square function
+rl10<-function(x){
+  -log10(x)
+}
+#inverse square function (square root)
+irl10<-function(x){
+  
+  10^(-1*x)
+  
+}
+
+
+all.res$Combos = paste0(all.res$mu2,all.res$sd2)
+
+
+all.res$Combos[all.res$Distribution == "weib" ] = as.numeric(all.res$Combos[all.res$Distribution == "weib" ])-10
+
+
+# 
+# 
+all.res$Combos = as.numeric(all.res$Combos)
+
+all.res$Combos[nchar(all.res$Combos) == 1] = paste0("0",all.res$Combos[nchar(all.res$Combos) == 1  ])
+# 
+# 
+all.res$Combos = factor(all.res$Combos,levels=unique(all.res$Combos)[order(unique(all.res$Combos))])
+
+plot_both = function(dist,p,module1,combo){
+  
+  module1$FPR = case_when(
+    module1$FP<0.05 ~"FPR < 0.05",
+    module1$FP<0.1 ~"0.05 < FPR < 0.1",
+    TRUE~"FPR > 0.1"
+  )
+  
+  module1$FPR = factor(module1$FPR,levels=c("FPR < 0.05","0.05 < FPR < 0.1","FPR > 0.1"))
+p1 = ggplot(module1[module1$Prop==p &module1$Distribution == dist &module1$Combos == combo,], aes(SampleSize, power,
+                        group = interaction( Test, Distribution),
+                        color = Test,size=FPR)) +
+    geom_point(position = position_dodge2(width = .5)) +
+    geom_line(linewidth=0.4,position = position_dodge2(width = .5)) +
+    # stat_smooth(linewidth=0.4,position = position_dodge2(width = .5),se=F) +
+    theme(legend.position = 'none') +
+    # facet_grid(mu2 ~ sd2,
+    #            labeller = labeller(mu2 = mu2_labels,
+    #                                sd2 = sd2_labels))+
+    theme_classic2(16)+
+    scale_color_manual(values=unname(mypal))+
+    # scale_size_continuous(breaks=c(0.01,0.05,0.1,0.5,1),range=c(3,0),limits=c(0.00001,1))+
+    scale_size_manual(values=c(1,0.5,0.1))+
+    # ggtitle(paste0("Mixing Proportion =", p))+
+    ylab("Power") + xlab("N") + scale_y_continuous(limits=c(0,1),breaks=seq(0,1,0.2))+scale_x_continuous(breaks=c(0,20,50,100,200,400),trans="log2")+geom_hline(yintercept = 0.8, linetype=2,alpha=0.2)
+   
+  leg <- get_legend(p1+theme(legend.position="top",legend.box = "vertical")+guides(color=guide_legend(nrow=3,byrow=TRUE)))
+
+p1=p1+theme(legend.position = "none")
+
+module1$delta_mu = module1$mu2- module1$mu1
+module1$sd_inflation = module1$sd2
+
+df_n_w = module1[module1$Prop==p & module1$Distribution == dist &module1$Combos == combo,]
+
+df_norm = unique(subset(data.frame(df_n_w[df_n_w$Distribution == dist,]),select=c(Distribution, Prop,  mu1, mu2, sd1, sd2, delta_mu, sd_inflation)))
+
+p2 = ggplot2::ggplot() +
+      # ggplot2::geom_density(, ggplot2::aes(x = value,color=group),linewidth=.7,trim=TRUE,alpha=0.55) +
+      ggplot2::ylab("Population Density") +
+      ggplot2::xlab("Values") +
+      ggplot2::theme(legend.text = ggplot2::element_text(14))+
+      # ggplot2::ggtitle(paste0("Proportion: ",p))+
+  scale_color_manual(values=c("black"))+theme_void(16)+theme(legend.title=element_blank(),plot.title = element_text(hjust = 0.5),title = element_text(size=10))
+# +ggtitle(paste0("Delta mu = ",df_norm$delta_mu[1],"; ","SD Inflation = ",df_norm$sd_inflation[1],"x"))
+
+if(dist == "norm"){
+  
+#   p2 = p2 +
+#           stat_function(
+# fun = dnorm,
+# args = c(mean = df_norm$mu1[1], sd = df_norm$sd1[1]),aes(color="Reference Group"),alpha=0.5,linewidth=0.7) + 
+#   
+    # p2 = p2 + stat_function(fun = function(x) {dnorm(x, mean = df_norm$mu1[1], sd = df_norm$sd1[1]) * p },aes(color="Reference Group"),alpha=0.5,linewidth=0.7) +
+    # 
+#     stat_function(
+# fun = dnorm,
+# args = c(mean = df_norm$mu2[1], sd = df_norm$sd2[1]),alpha=0.5,linewidth=0.7,aes(color="Comparison Group")) +scale_x_continuous(limits=c(-15,15))
+      
+     p2 = p2 + stat_function(fun = function(x) {(dnorm(x, mean = df_norm$mu1[1], sd = df_norm$sd1[1]) * p)  + (dnorm(x, mean = df_norm$mu2[1], sd = df_norm$sd2[1]) * (1-p)) },alpha=0.5,linewidth=0.7,aes(color="Population Distribution"))+scale_x_continuous(limits=c(-15,15))+scale_y_continuous(limits=c(0,0.5))
+  
+} else {
+  if (dist =="weib"){
+     p2 = p2 +
+#           stat_function(
+# fun = dweibull,
+# args = c(shape = mixdist::weibullpar(df_norm$mu1[1],df_norm$sd1[1], loc = 0)$shape, scale = mixdist::weibullpar(df_norm$mu1[1],df_norm$sd1[1], loc = 0)$scale),aes(color="Reference Group"),alpha=0.5,linewidth=0.7) + 
+        # stat_function(fun = function(x) {dweibull(x, shape =  mixdist::weibullpar(df_norm$mu1[1],df_norm$sd1[1], loc = 0)$shape, scale =  mixdist::weibullpar(df_norm$mu1[1],df_norm$sd1[1], loc = 0)$scale) * p },aes(color="Reference Group"),alpha=0.5,linewidth=0.7) +
+        # 
+        stat_function(fun = function(x) {(dweibull(x, shape =  mixdist::weibullpar(df_norm$mu1[1],df_norm$sd1[1], loc = 0)$shape, scale =  mixdist::weibullpar(df_norm$mu1[1],df_norm$sd1[1], loc = 0)$scale) * p) +(dweibull(x, shape =  mixdist::weibullpar(df_norm$mu2[1],df_norm$sd2[1], loc = 0)$shape, scale =  mixdist::weibullpar(df_norm$mu2[1],df_norm$sd2[1], loc = 0)$scale) * (1-p)) },alpha=0.5,linewidth=0.7,aes(color="Population Distribution"))+scale_x_continuous(limits=c(0,15))
+        
+  }
+}
+
+  p2_leg = get_legend(p2+theme(legend.position = "top",legend.box = "horizontal"))
+  
+  p2 = p2+theme(legend.position = "none")
+  pc = plot_grid(NULL,p2,NULL,rel_widths = c(.35,1,.1),ncol=3)
+  
+  #If there is a title, overwrite it
+  if(combo == "01"){
+    title_col <- ggdraw() + draw_label("Same Standard Deviation", fontface='bold',size=12)
+    
+    title_row <- ggdraw() + draw_label("No Mean Difference", fontface='bold',size=12,angle=90)
+
+    pc = plot_grid(NULL,title_col,plot_grid(NULL,p2,NULL,rel_widths = c(.4,1,.1),ncol=3),ncol=1,rel_heights = c(0.075,0.5,1))
+    
+    pc2 = plot_grid(NULL,title_row,NULL,ncol=1,rel_heights = c(0.2,1,0.05))
+
+  } 
+  
+  if(combo == "02"){
+    title <- ggdraw() + draw_label("Doubled Standard Deviation", fontface='bold',size=12)
+    pc = plot_grid(NULL,title,plot_grid(NULL,p2,NULL,rel_widths = c(.4,1,.1),ncol=3),ncol=1,rel_heights = c(0.075,0.5,1))
+
+  } 
+  
+  
+  if(combo == "04"){
+    title <- ggdraw() + draw_label("Quadrupled Standard Deviation", fontface='bold',size=12)
+    pc = plot_grid(NULL,title,plot_grid(NULL,p2,NULL,rel_widths = c(.4,1,.1),ncol=3),ncol=1,rel_heights = c(0.075,0.5,1))
+
+  }
+  
+    if(combo == "21"){
+      title_row <- ggdraw() + draw_label("Mean Difference of 2", fontface='bold',size=12,angle=90)
+
+      pc2 = plot_grid(NULL,title_row,NULL,ncol=1,rel_heights = c(0.2,1,0.05))
+
+    }
+
+    if(combo == "41"){
+      title_row <- ggdraw() + draw_label("Mean Difference of 4", fontface='bold',size=12,angle=90)
+
+      pc2 = plot_grid(NULL,title_row,NULL,ncol=1,rel_heights = c(0.2,1,0.05))
+
+    }
+  if(combo %in% c("01","21","41")){
+    pc.f = plot_grid(pc2,plot_grid(pc,p1,rel_heights = c(0.3,1),ncol = 1),ncol=2,rel_widths = c(0.1,1))
+  
+  } else {
+    pc.f = plot_grid(pc,p1,rel_heights = c(0.3,1),ncol = 1)
+  }
+return(list(pc.f,plot_grid(leg,ncol=1)))
+
+}
+
+
+
+var_tests = unique(all.res$Test)
+
+
+```
+
+
+#### both
+
+```{r, fig.height=35,fig.width=11}
+com_plots = list()
+
+for(p in unique(all.res[all.res$Test %in% var_tests,]$Prop)){
+  plots = lapply(levels(all.res$Combos),function(z) plot_both("norm",p,all.res[all.res$Test %in% var_tests,],z)[[1]])
+  
+  p_leg = plot_both("norm",p,all.res[all.res$Test %in% var_tests,],all.res$Combos[1])[[2]]
+  
+  p_title = ggdraw() + 
+    draw_label(paste0("Sampling ratio ", ifelse(p<0.5, gsub("/",":",MASS::fractions( p/(1-p))),paste0(p/(1-p),":1"))),size=20)
+  
+  # print(plot_grid(plot_grid(plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+  #           plots[[4]],plots[[5]],plots[[6]],
+  #           plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.075,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+
+  # print(plot_grid(plot_grid(plot_grid(p_title,,ncol=1,rel_heights=c(0.075,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+
+  com_plots[[as.character(p)]] = plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+            plots[[4]],plots[[5]],plots[[6]],
+            plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.075,1))
+  
+}
+  p_title = ggdraw() + 
+    draw_label("Normally Distributed Samples",size=22)
+  
+pn = plot_grid(p_title,p_leg,com_plots[[1]],com_plots[[2]],com_plots[[3]],ncol=1,scale=0.925,rel_heights=c(0.075,0.15,1,1,1))+
+    theme(plot.background = element_rect(color = "black"))
+
+
+
+```
+
+
+
+```{r, fig.height=37,fig.width=30}
+
+all.res[all.res$Distribution == "weib",]$mu2 = all.res[all.res$Distribution == "weib",]$mu2+1
+
+
+# for(p in unique(all.res[all.res$Test %in% var_tests,]$Prop)){
+# plots = lapply(levels(all.res$Combos),function(z) plot_both("weib",p,all.res[all.res$Test %in% var_tests,],z)[[1]])
+# 
+# p_leg = plot_both("weib",p,all.res[all.res$Test %in% var_tests,],all.res$Combos[1])[[2]]
+# 
+# p_title = ggdraw() + 
+#   draw_label(paste0("Mixing Proportion = ",p),size=20)
+# 
+# print(plot_grid(plot_grid(plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+#           plots[[4]],plots[[5]],plots[[6]],
+#           plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.05,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+# 
+# }
+
+com_plots = list()
+for(p in unique(all.res[all.res$Test %in% var_tests,]$Prop)){
+  plots = lapply(levels(all.res$Combos),function(z) plot_both("weib",p,all.res[all.res$Test %in% var_tests,],z)[[1]])
+  
+  p_leg = plot_both("weib",p,all.res[all.res$Test %in% var_tests,],all.res$Combos[1])[[2]]
+  
+  p_title = ggdraw() + 
+    draw_label(paste0("Sampling ratio ", ifelse(p<0.5, gsub("/",":",MASS::fractions( p/(1-p))),paste0(p/(1-p),":1"))),size=20)
+  
+  # print(plot_grid(plot_grid(plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+  #           plots[[4]],plots[[5]],plots[[6]],
+  #           plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.075,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+
+  # print(plot_grid(plot_grid(plot_grid(p_title,,ncol=1,rel_heights=c(0.075,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+
+  com_plots[[as.character(p)]] = plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+            plots[[4]],plots[[5]],plots[[6]],
+            plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.075,1))
+  
+}
+
+  p_title = ggdraw() + 
+    draw_label("Weibull Distributed Samples",size=22)
+  
+
+pw = plot_grid(p_title,p_leg,com_plots[[1]],com_plots[[2]],com_plots[[3]],ncol=1,scale=0.925,rel_heights=c(0.075,0.15,1,1,1))+
+    theme(plot.background = element_rect(color = "black"))
+
+
+  p_title = ggdraw() + 
+    draw_label("Beta Distributed Samples",size=22)
+  
+
+pb = plot_grid(p_title,NULL,NULL,NULL,ncol=1,scale=0.925,rel_heights=c(0.075,0.15,1,1,1))+
+    theme(plot.background = element_rect(color = "black"))
+
+
+
+# plot_grid(pn,pw,p_leg,scale=  c(0.95,0.95,0.5),ncol=3,rel_widths = c(1,1,0.2))
+tiff(file = "~/bbc-secondary/container_backup/zachary.madaj/Rprojects/BifurcatoR_sims/module2_fig.tif",height = 1750,width=1500  )
+plot_grid(pn,pw,scale=  c(0.95,0.95),ncol=2,rel_widths = c(1,1))
+dev.off()
+
+
+```
+
+
+```{r}
+
+
+## Beta
+# 
+# all.res = readRDS("~/bbc-secondary/container_backup/zachary.madaj/Rprojects/BifurcatoR_sims/module2_n_w_all_tests_sim(1000).rds")
+# 
+# 
+# colnames(all.res)[colnames(all.res) == "Perm"] = "Permutations"
+# 
+# 
+# 
+# com_plots = list()
+# for(p in unique(all.res[all.res$Test %in% var_tests,]$Prop)){
+#   plots = lapply(levels(all.res$Combos),function(z) plot_both("weib",p,all.res[all.res$Test %in% var_tests,],z)[[1]])
+#   
+#   p_leg = plot_both("weib",p,all.res[all.res$Test %in% var_tests,],all.res$Combos[1])[[2]]
+#   
+#   p_title = ggdraw() + 
+#     draw_label(paste0("Sampling ratio ", ifelse(p<0.5, gsub("/",":",MASS::fractions( p/(1-p))),paste0(p/(1-p),":1"))),size=20)
+#   
+#   # print(plot_grid(plot_grid(plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+#   #           plots[[4]],plots[[5]],plots[[6]],
+#   #           plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.075,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+# 
+#   # print(plot_grid(plot_grid(plot_grid(p_title,,ncol=1,rel_heights=c(0.075,1)),scale = c(1,0.1),NULL,p_leg,rel_widths = c(1,0.05,0.25),ncol=3)))
+# 
+#   com_plots[[as.character(p)]] = plot_grid(p_title,plot_grid(plots[[1]],plots[[2]],plots[[3]],
+#             plots[[4]],plots[[5]],plots[[6]],
+#             plots[[7]],plots[[8]],plots[[9]],ncol=3),ncol=1,rel_heights=c(0.075,1))
+#   
+# }
+# 
+#   p_title = ggdraw() + 
+#     draw_label("Weibull Distributed Samples",size=22)
+#   
+# 
+# pw = plot_grid(p_title,p_leg,com_plots[[1]],com_plots[[2]],com_plots[[3]],ncol=1,scale=0.925,rel_heights=c(0.075,0.15,1,1,1))+
+#     theme(plot.background = element_rect(color = "black"))
+# 
+# 
+# # plot_grid(pn,pw,p_leg,scale=  c(0.95,0.95,0.5),ncol=3,rel_widths = c(1,1,0.2))
+# 
+# plot_grid(pn,pw,scale=  c(0.95,0.95),ncol=2,rel_widths = c(1,1))
+# 
+# 
+
+
+```
+
