@@ -4,14 +4,10 @@ Title: Hunt for bumps in high-dimensional (or low-dimensional!) data
 Description: A special case of variance analysis exists when one group may have discernible forking in phenotypes over time. This library provides some tools to design experiments for such cases, along with some example data. 
 Version: 0.99.20240320
 Date: 2024-03-20
-Authors@R: c(person("Zach", "Madaj", role=c("aut", "cre"), 
-                    email="trichelab+zachm@gmail.com"), 
-             person("Carmen", "Khoo", role=c("aut", "cre"), 
-                    email="trichelab+ckhoo@gmail.com"), 
-             person("Ember", "Tokarski", role=c("ctb"), 
-                    email="trichelab+ember@gmail.com"), 
-             person("Tim", "Triche", role=c("aut", "cre"), 
-                    email="trichelab+timtriche@gmail.com")) 
+Authors@R: c(person("Zach", "Madaj", role=c("aut", "cre"), email="trichelab+zachm@gmail.com"),
+    person("Carmen", "Khoo", role=c("aut"), email="trichelab+ckhoo@gmail.com"),
+    person("Ember", "Tokarski", role=c("ctb"), email="trichelab+ember@gmail.com"),
+    person("Tim", "Triche", role=c("aut"), email="trichelab+timtriche@gmail.com"))
 Author: Carmen Khoo, Zach Madaj, Ember Tokarski, Mao Ding, and Tim Triche
 Maintainer: triche lab <trichelab@gmail.com>
 URL: https://github.com/VanAndelInstitute/bifurcatoR
@@ -20,24 +16,29 @@ License: GPLv2
 Depends:
     R (>= 4.0.0)
 Imports:
+    car,
+    data.table,
+    diptest,
+    dplyr,
+    EpiNow2,
+    Hmisc,
+    LaplacesDemon,
     MASS,
     mclust,
-    diptest,
-    twosamples,
-    LaplacesDemon,
-    BiocParallel,
-    mousetrap,
-    shiny,
-    dplyr,
+    mixdist,
     mixR,
-    car
+    mousetrap,
+    multimode,
+    ppclust,
+    shiny,
+    twosamples
 Suggests:
     covr,
-    uwot,
-    iSEE, 
+    iSEE,
     SingleCellExperiment,
     table1,
-    testthat
+    testthat,
+    uwot
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
