@@ -10,14 +10,10 @@
 #'
 #' @return          a power estimate
 #'
-#' @import          mclust
 #' @import          diptest
-#' @import          mousetrap
 #' @import          LaplacesDemon
-#' @import          multimode
 #' @import          Hmisc
-#' @import          twosamples
-#' @import          mixR
+#' @importFrom      stats rbeta rlnorm rnorm rweibull
 #'
 #' @export
 est_pow = function(n,alpha,nsim,dist,params,tests,nboot){

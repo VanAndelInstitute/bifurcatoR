@@ -28,6 +28,7 @@
 #' @seealso         MASS::fitdistr
 #' 
 #' @importFrom      MASS fitdistr
+#' @importFrom      stats nlminb sd
 #'
 #' @export
 parameters_weibull <- function(dat, ...) {

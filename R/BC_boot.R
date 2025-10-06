@@ -5,8 +5,6 @@
 #'
 #' @return        bootstrapped p-value
 #'
-#' @import          mousetrap
-#'
 #' @export
 
 BC_boot = function(x,nboot){

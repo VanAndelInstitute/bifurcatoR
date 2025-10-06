@@ -2,7 +2,8 @@
 % Please edit documentation in R/bs_lrt.R
 \name{bs_lrt}
 \alias{bs_lrt}
-\title{bootstrap likelihood ratio tests for mixR fits}
+\title{bs_lrt
+bootstrap likelihood ratio tests for mixR fits}
 \usage{
 bs_lrt(x, H0 = 1, H1 = 2, family = "normal", nboot = 100, iter = 1000, ...)
 }

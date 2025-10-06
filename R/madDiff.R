@@ -5,6 +5,7 @@
 #'
 #' @return      Absolute value of the difference between group 1 and group 2 median absolute deviation
 #' 
+#' @importFrom stats mad
 #' @export
 
 madDiff <- function(y, X){

@@ -23,8 +23,7 @@
 #' @seealso mixR::bs.test
 #' @seealso mixR
 #'
-#' @import mixR
-#' @import ppclust
+#' @importFrom stats cutree dist hclust kmeans
 #'
 #' @export
 bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
@@ -35,16 +34,16 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
     init.method = match.arg(init.method)
     # check if 'x' is a matrix (from grouped data)
     if(is.matrix(x)) {
-      x <- reinstate(x)
+      x <- mixR::reinstate(x)
     }
     if(init.method == "kmeans") {
       a <- kmeans(x, centers = ncomp,nstart = 1)$cluster
       if(any(table(a) < length(x) *0.05)){
-        a <- fpppcm(x,centers = ncomp)$cluster
+        a <- ppclust::fpppcm(x,centers = ncomp)$cluster
       }
     } else {
       a <- cutree(hclust(dist(x)), ncomp)
-      # a <- fpppcm(x,centers = ncomp)$cluster
+      # a <- ppclust::fpppcm(x,centers = ncomp)$cluster
     } 
     res <- list()
     for(i in 1:ncomp) {
@@ -79,11 +78,11 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
   if(!is.numeric(H1) || H1 < H0) stop("H1 must be an integer greater than H0.")
 
   # perform the bootstrap test
-  tst.p = bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter, ...)
+  tst.p = mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter, ...)
   # If this test comes back NA, it usually means the EM algorithm failed to converge on two unequal modes.
   # Attempt with equal variances to get a p-value. An alternate option would be to set NA -> p =0.99999
   if(is.na(tst.p$pvalue)){
-    tst.p = bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter,ev=T ,...)
+    tst.p = mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter,ev=T ,...)
   }
   
   return(tst.p)

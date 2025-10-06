@@ -15,6 +15,8 @@
 #'   iSEEapp(dxsmall)
 #' } 
 #'
+#' @importFrom methods new
+#'
 #' @export
 iSEEapp <- function(sce) { 
 
@@ -24,7 +26,7 @@ iSEEapp <- function(sce) {
     message("BiocManager::install('iSEE')")
     stop("Cannot launch without `iSEE`.")
   } else { 
-    iSEE(sce,
+    iSEE::iSEE(sce,
          initial=list(UMAP=new("ReducedDimensionPlot",
                                ColorByColumnData = "FusionGroup",
                                ColorBy = "Column data", 

@@ -7,6 +7,8 @@
 #'
 #' @return        a data.frame
 #' 
+#' @importFrom stats rnorm
+#' 
 #' @export
 find_dist = function(n1,n2,alpha,nsim){
   power = sapply(seq(.25,10,.25), function(z)  sum(sapply(1:nsim,function(y) as.numeric(I(dip.test( c(rnorm(n1,0,1),rnorm(n2,z,1)))$p.value<alpha))))/nsim)

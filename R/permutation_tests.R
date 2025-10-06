@@ -7,12 +7,10 @@
 #'
 #' @return      a 3 level list containingg: a p-value, the actual difference, and the 2.5% - 97.5% interval
 #'
+#' @importFrom stats ecdf quantile
+#'
 #' @export
-
-
-
 permutation_tests = function(temp_df,nperm,fxn,alpha) {
-
   # Get actual absolute mean difference.
   actual_diff <- do.call(fxn, list(temp_df$y, temp_df$X))
   # Find shuffled mean differences.

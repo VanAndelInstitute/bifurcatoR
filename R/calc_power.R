@@ -10,10 +10,11 @@
 #' @param   nsim  number of simulations (100) 
 #' 
 #' @import  dplyr
+#' @importFrom stats ks.test
 #' 
 #' @export 
 calc_power = function(n, p1, p2, shift, sel, CI, alpha=0.05, nsim=100) {
-  Freq = pwr.2p.test(n = n, ES.h(p1 = p1, p2 = p2), sig.level = alpha)$power
+  Freq = pwr::pwr.2p.test(n = n, pwr::ES.h(p1 = p1, p2 = p2), sig.level = alpha)$power
   
   delta = case_when(
     sel == "Bodyweight" ~ (1 + shift / 100) * 1.313 - 1.313,
@@ -42,7 +43,7 @@ calc_power = function(n, p1, p2, shift, sel, CI, alpha=0.05, nsim=100) {
                                                  100) / 2) * 1.231)
     ) / (round(p1 * n, 0) + round(p2 * n, 0))
   )
-  Shift = pwr.t2n.test(
+  Shift = pwr::pwr.t2n.test(
     n1 = max(floor(.95 * p1 * n), 2),
     n2 = max(floor(.95 * p2 * n), 2),
     d = delta / sd,
