@@ -1,6 +1,6 @@
 #' est_pow
 #'
-#' @param   n       number of [somethings]
+#' @param   n       number of somethings
 #' @param   alpha   default significance level (0.05)
 #' @param   nsim    number of simulations (20)
 #' @param   dist    generating distribution

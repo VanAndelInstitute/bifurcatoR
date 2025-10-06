@@ -1,6 +1,6 @@
 #' est_pow_bin
 #' 
-#' @param   n     number of [somethings] 
+#' @param   n     number of somethings
 #' @param   p     pr(event)
 #' @param   alpha default significance level (0.05)
 #' @param   nsim  number of simulations (20) 

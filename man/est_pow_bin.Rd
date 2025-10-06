@@ -7,7 +7,7 @@
 est_pow_bin(n, p, alpha = 0.05, nsim = 20)
 }
 \arguments{
-\item{n}{number of \link{somethings}}
+\item{n}{number of somethings}
 
 \item{p}{pr(event)}
 

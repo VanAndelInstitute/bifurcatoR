@@ -1,6 +1,6 @@
 #' calculate power 
 #' 
-#' @param   n     number of [something] 
+#' @param   n     number of something
 #' @param   p1    pr(event) in subgroup 1
 #' @param   p2    pr(event) in subgroup 2
 #' @param   shift scaled distance between means

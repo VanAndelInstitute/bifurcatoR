@@ -1,6 +1,6 @@
 #' est_pow_het
 #' 
-#' @param   n     number of [somethings] 
+#' @param   n     number of somethings
 #' @param   p     pr(event)
 #' @param   alpha default significance level (0.05)
 #' @param   x     I have no idea what this does 

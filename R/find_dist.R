@@ -1,7 +1,7 @@
 #' find_dist
 #' 
-#' @param   n1    number of [somethings] in group 1
-#' @param   n2    number of [somethings] in group 2 
+#' @param   n1    number of somethings in group 1
+#' @param   n2    number of somethings in group 2
 #' @param   alpha default significance level (0.05)
 #' @param   nsim  number of simulations (20) 
 #'
