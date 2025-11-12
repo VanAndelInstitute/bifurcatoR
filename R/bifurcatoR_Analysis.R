@@ -24,6 +24,11 @@ bifurcatoR_Analysis = function(data, tests, nboot, alpha) {
   do.call(rbind, res_list)
 }
 
+.ci <- function(x, alpha, nboot) {
+  q <- quantile(x, p = c(alpha / 2, 1 - alpha / 2))
+  round(q, floor(log10(nboot)) + 1)
+}
+
 mclust <- function(data, nboot, alpha) {
   tmp = mclust::mclustBootstrapLRT(
     data$value,
@@ -32,14 +37,12 @@ mclust <- function(data, nboot, alpha) {
     maxG = 1,
     nboot = nboot
   )
-  q <- quantile(tmp$boot, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Mclust",
     nboot = nboot,
     p.value = tmp$p.value,
     Stat = tmp$obs,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$boot, alpha, nboot), collapse = ", ")
   )
 }
 
@@ -53,14 +56,12 @@ mt <- function(data, nboot, alpha) {
     )$BC
   })
   tmp.boot = unname(unlist(boot.list))
-  q <- quantile(tmp.boot, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Bimodality Coefficient",
     nboot = nboot,
     p.value = as.numeric(I(tmp < (5 / 9))),
     Stat = unname(tmp),
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp.boot, alpha, nboot), collapse = ", ")
   )
 }
 
@@ -140,14 +141,12 @@ ks <- function(data, nboot, alpha) {
     nboots = nboot,
     keep.boots = T
   )
-  q <- quantile(attributes(tmp)$bootstraps, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Kolmogorov-Smirnov Test",
     nboot = nboot,
     p.value = tmp[[2]],
     Stat = tmp[[1]],
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(attributes(tmp)$bootstraps, alpha, nboot), collapse = ", ")
   )
 }
 
@@ -158,14 +157,12 @@ cvm <- function(data, nboot, alpha) {
     nboots = nboot,
     keep.boots = T
   )
-  q <- quantile(attributes(tmp)$bootstraps, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Cramer-von Mises Test",
     nboot = nboot,
     p.value = tmp[[2]],
     Stat = tmp[[1]],
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(attributes(tmp)$bootstraps), collapse = ", ")
   )
 }
 
@@ -176,14 +173,12 @@ dts <- function(data, nboot, alpha) {
     nboots = nboot,
     keep.boots = T
   )
-  q <- quantile(attributes(tmp)$bootstraps, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "DTS Test",
     nboot = nboot,
     p.value = tmp[[2]],
     Stat = tmp[[1]],
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(attributes(tmp)$bootstraps), collapse = ", ")
   )
 }
 
@@ -194,14 +189,12 @@ ad <- function(data, nboot, alpha) {
     nboots = nboot,
     keep.boots = T
   )
-  q <- quantile(attributes(tmp)$bootstraps, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Aderson-Darling Test",
     nboot = nboot,
     p.value = tmp[[2]],
     Stat = tmp[[1]],
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(attributes(tmp)$bootstraps), collapse = ", ")
   )
 }
 
@@ -222,14 +215,12 @@ Levene <- function(data, nboot) {
     X = as.numeric(as.factor(data$group)) - 1
   )
   tmp = permutation_tests(temp_df, nboot, "meanDiff", alpha)
-  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Permutations (Raw)",
     nboot = nboot,
     p.value = tmp$p,
     Stat = tmp$diff,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$crit, alpha, nboot), collapse = ", ")
   )
 }
 
@@ -239,14 +230,12 @@ Levene <- function(data, nboot) {
     X = as.numeric(as.factor(data$group)) - 1
   )
   tmp = permutation_tests(temp_df, nboot, "sdDiff", alpha)
-  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Permutations (SD)",
     nboot = nboot,
     p.value = tmp$p,
     Stat = tmp$diff,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$crit), collapse = ", ")
   )
 }
 
@@ -257,14 +246,12 @@ Levene <- function(data, nboot) {
     X = as.numeric(as.factor(data$group)) - 1
   )
   tmp = permutation_tests(temp_df, nboot, "madDiff", alpha)
-  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Permutations (MAD)",
     nboot = nboot,
     p.value = tmp$p,
     Stat = tmp$diff,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$crit), collapse = ", ")
   )
 }
 
@@ -274,14 +261,12 @@ Levene <- function(data, nboot) {
     X = as.numeric(as.factor(data$group)) - 1
   )
   tmp = permutation_tests(temp_df, nboot, "giniDiff", alpha)
-  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Permutations (GiniMd)",
     nboot = nboot,
     p.value = tmp$p,
     Stat = tmp$diff,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$crit), collapse = ", ")
   )
 }
 
@@ -313,54 +298,44 @@ ANOVA <- function(data, nboot, alpha) {
 
 `WmixR` <- function(data, nboot, alpha) {
   tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "weibull", nboot = nboot)
-
-  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
-
   data.frame(
     Test = "Weibull mixR",
     nboot = nboot,
     p.value = tmp$pvalue,
     Stat = tmp$w0,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$w1, alpha, nboot), collapse = ", ")
   )
 }
 
 `LNmixR` <- function(data, nboot, alpha) {
   tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "lnorm", nboot = nboot)
-  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Lognormal mixR",
     nboot = nboot,
     p.value = tmp$pvalue,
     Stat = tmp$w0,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$w1), collapse = ", ")
   )
 }
 
 `GmixR` <- function(data, nboot, alpha) {
   tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "normal", nboot = nboot)
-  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Gaussian mixR",
     nboot = nboot,
     p.value = tmp$pvalue,
     Stat = tmp$w0,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$w1), collapse = ", ")
   )
 }
 
 `GamixR` <- function(data, nboot, alpha) {
   tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "gamma", nboot = nboot)
-  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
-  ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Gamma mixR",
     nboot = nboot,
     p.value = tmp$pvalue,
     Stat = tmp$w0,
-    CI = paste(ci, collapse = ", ")
+    CI = paste(.ci(tmp$w1), collapse = ", ")
   )
 }
