@@ -25,16 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("cvm" %in% tests){
-
-
-    tmp = twosamples::cvm_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
-
-    res = rbind(res,data.frame(Test = "Cramer-von Mises Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
   if("dts" %in% tests){
 
     tmp = twosamples::dts_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
@@ -291,6 +281,24 @@ ks <- function(data, nboot, alpha) {
   ci <- round(q, floor(log10(nboot)) + 1)
   data.frame(
     Test = "Kolmogorov-Smirnov Test",
+    nboot = nboot,
+    p.value = tmp[[2]],
+    Stat = tmp[[1]],
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+cvm <- function(data, nboot, alpha) {
+  tmp = twosamples::cvm_test(
+    data$value[data$group == unique(data$group)[1]],
+    data$value[data$group == unique(data$group)[2]],
+    nboots = nboot,
+    keep.boots = T
+  )
+  q <- quantile(attributes(tmp)$bootstraps, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Cramer-von Mises Test",
     nboot = nboot,
     p.value = tmp[[2]],
     Stat = tmp[[1]],
