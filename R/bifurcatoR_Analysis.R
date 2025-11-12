@@ -25,13 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("dip" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "HH",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Hartigans' dip test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
   if("HY" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "HY",B=nboot)
 
@@ -266,3 +259,18 @@ SI <- function(data, nboot) {
     CI = "Not yet available"
   )
 }
+
+dip <- function(data, nboot) {
+  tmp = multimode::modetest(data$value, mod0 = 1, method = "HH", B = nboot)
+  res = rbind(
+    res,
+    data.frame(
+      Test = "Hartigans' dip test",
+      nboot = nboot,
+      p.value = tmp$p.value,
+      Stat = unname(tmp$statistic),
+      CI = "Not yet available"
+    )
+  )
+}
+
