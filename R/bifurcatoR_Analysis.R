@@ -25,13 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("FM" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "FM",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Fisher and Marron Carmer-von Mises", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
   if("ks" %in% tests){
 
     tmp = twosamples::ks_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
@@ -279,6 +272,17 @@ ACR <- function(data, nboot) {
   tmp = multimode::modetest(data$value, mod0 = 1, method = "ACR", B = nboot)
   data.frame(
     Test = "Ameijeiras-Alonso et al. Excess Mass",
+    nboot = nboot,
+    p.value = tmp$p.value,
+    Stat = unname(tmp$statistic),
+    CI = "Not yet available"
+  )
+}
+
+FM <- function(data, nboot) {
+  tmp = multimode::modetest(data$value, mod0 = 1, method = "FM", B = nboot)
+  data.frame(
+    Test = "Fisher and Marron Carmer-von Mises",
     nboot = nboot,
     p.value = tmp$p.value,
     Stat = unname(tmp$statistic),
