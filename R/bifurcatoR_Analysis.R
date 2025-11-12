@@ -17,18 +17,11 @@
 #' @import          mixR
 #'
 #' @export
-bifurcatoR_Analysis = function(data,tests,nboot,alpha){
-  res <- data.frame(Test = character(),
-                    nboot = numeric(),
-                    p.value = numeric(),
-                    Stat = numeric(),
-                    CI = numeric()
-  )
-
-
-
-
-  return(res)
+bifurcatoR_Analysis = function(data, tests, nboot, alpha) {
+  res_list <- lapply(tests, function(i) {
+    eval(call(i, data, nboot, alpha))
+  })
+  do.call(rbind, res_list)
 }
 
 mclust <- function(data, nboot, alpha) {
