@@ -296,10 +296,20 @@ ANOVA <- function(data, nboot, alpha) {
   )
 }
 
-`WmixR` <- function(data, nboot, alpha) {
-  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "weibull", nboot = nboot)
+mixR <- function(family, data, nboot, alpha) {
+  model <- switch(family,
+    WmixR = c(name = "Weibull", dist = "weibull"),
+    LNmixR = c(name = "Lognormal", dist = "lnorm"),
+    GmixR = c(name = "Gaussian", dist = "normal"),
+    GamixR = c(name = "Gamma", dist = "gamma"),
+  )
+
+  model_name <- paste(model['name'], "mixR")
+  model_dist <- model['dist']
+
+  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = model_dist, nboot = nboot)
   data.frame(
-    Test = "Weibull mixR",
+    Test = model_name,
     nboot = nboot,
     p.value = tmp$pvalue,
     Stat = tmp$w0,
@@ -307,35 +317,18 @@ ANOVA <- function(data, nboot, alpha) {
   )
 }
 
+`WmixR` <- function(data, nboot, alpha) {
+  mixR("WmixR", data, nboot, alpha)
+}
+
 `LNmixR` <- function(data, nboot, alpha) {
-  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "lnorm", nboot = nboot)
-  data.frame(
-    Test = "Lognormal mixR",
-    nboot = nboot,
-    p.value = tmp$pvalue,
-    Stat = tmp$w0,
-    CI = paste(.ci(tmp$w1), collapse = ", ")
-  )
+  mixR("LNmixR", data, nboot, alpha)
 }
 
 `GmixR` <- function(data, nboot, alpha) {
-  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "normal", nboot = nboot)
-  data.frame(
-    Test = "Gaussian mixR",
-    nboot = nboot,
-    p.value = tmp$pvalue,
-    Stat = tmp$w0,
-    CI = paste(.ci(tmp$w1), collapse = ", ")
-  )
+  mixR("GmixR", data, nboot, alpha)
 }
 
 `GamixR` <- function(data, nboot, alpha) {
-  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "gamma", nboot = nboot)
-  data.frame(
-    Test = "Gamma mixR",
-    nboot = nboot,
-    p.value = tmp$pvalue,
-    Stat = tmp$w0,
-    CI = paste(.ci(tmp$w1), collapse = ", ")
-  )
+  mixR("GamixR", data, nboot, alpha)
 }
