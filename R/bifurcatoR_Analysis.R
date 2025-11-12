@@ -25,13 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("SI" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "SI",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Silverman Bandwidth test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
   if("dip" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "HH",B=nboot)
 
@@ -263,3 +256,13 @@ mt <- function(data, nboot, alpha) {
   )
 }
 
+SI <- function(data, nboot) {
+  tmp = multimode::modetest(data$value, mod0 = 1, method = "SI", B = nboot)
+  data.frame(
+    Test = "Silverman Bandwidth test",
+    nboot = nboot,
+    p.value = tmp$p.value,
+    Stat = unname(tmp$statistic),
+    CI = "Not yet available"
+  )
+}
