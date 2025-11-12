@@ -25,11 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("mclust" %in% tests){
-    tmp = mclust::mclustBootstrapLRT(data$value,modelName="E",verbose=F,maxG=1,nboot=nboot)
-    res = rbind(res,data.frame(Test = "Mclust", nboot = nboot,p.value = tmp$p.value,Stat = tmp$obs ,CI = paste(round(quantile(tmp$boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-  }
-
   if("mt" %in% tests){
 
     s = as.data.frame(data$value)
@@ -239,3 +234,23 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
 
   return(res)
 }
+
+mclust <- function(data, nboot, alpha) {
+  tmp = mclust::mclustBootstrapLRT(
+    data$value,
+    modelName = "E",
+    verbose = F,
+    maxG = 1,
+    nboot = nboot
+  )
+  q <- quantile(tmp$boot, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Mclust",
+    nboot = nboot,
+    p.value = tmp$p.value,
+    Stat = tmp$obs,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
