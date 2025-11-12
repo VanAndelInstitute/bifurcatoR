@@ -25,16 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("Levene" %in% tests){
-
-    tmp = car::leveneTest(lm(value~as.factor(data$group),data=data))
-
-    res = rbind(res,data.frame(Test = "Levene's Test", nboot = NA ,p.value =tmp$'Pr(>F)'[1],Stat = tmp$'F value'[1] ,CI = "Not yet available"))
-
-  }
-
-
-
   if ("Permutations (Raw)" %in% tests) {
 
     temp_df = data.frame(
@@ -323,6 +313,17 @@ ad <- function(data, nboot, alpha) {
     p.value = tmp[[2]],
     Stat = tmp[[1]],
     CI = paste(ci, collapse = ", ")
+  )
+}
+
+Levene <- function(data, nboot) {
+  tmp = car::leveneTest(lm(value ~ as.factor(data$group), data = data))
+  data.frame(
+    Test = "Levene's Test",
+    nboot = NA,
+    p.value = tmp$'Pr(>F)'[1],
+    Stat = tmp$'F value'[1],
+    CI = "Not yet available"
   )
 }
 
