@@ -25,25 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("ANOVA" %in% tests){
-
-    tmp = lm(value~as.factor(data$group),data=data)
-
-    res = rbind(res,data.frame(Test = "ANOVA", nboot = NA ,p.value = summary(tmp)$coefficients[2,4] ,Stat = tmp$coefficients[2] ,CI = paste(round(confint(tmp)[2,],floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("Non-parametric ANOVA" %in% tests){
-
-    tmp = lm(rank(value)~as.factor(data$group),data=data)
-
-    res = rbind(res,data.frame(Test = "Non-parametric ANOVA", nboot = NA ,p.value = summary(tmp)$coefficients[2,4] ,Stat = tmp$coefficients[2] ,CI = paste(round(confint(tmp)[2,],floor(log10(nboot)) + 1),collapse=", " )))
-
-
-  }
-
-
   if("WmixR" %in% tests){
 
 
@@ -341,4 +322,29 @@ Levene <- function(data, nboot) {
   )
 }
 
+
+ANOVA <- function(data, nboot, alpha) {
+  tmp = lm(value ~ as.factor(data$group), data = data)
+  ci <- round(confint(tmp)[2, ], floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "ANOVA",
+    nboot = NA,
+    p.value = summary(tmp)$coefficients[2, 4],
+    Stat = tmp$coefficients[2],
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+
+`Non-parametric ANOVA` <- function(data, nboot, alpha) {
+  tmp = lm(rank(value) ~ as.factor(data$group), data = data)
+  ci <- round(confint(tmp)[2, ], floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Non-parametric ANOVA",
+    nboot = NA,
+    p.value = summary(tmp)$coefficients[2, 4],
+    Stat = tmp$coefficients[2],
+    CI = paste(ci, collapse = ", ")
+  )
+}
 
