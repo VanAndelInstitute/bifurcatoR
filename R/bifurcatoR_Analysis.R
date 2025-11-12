@@ -25,13 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("ACR" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "ACR",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Ameijeiras-Alonso et al. Excess Mass", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
   if("FM" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "FM",B=nboot)
 
@@ -275,6 +268,17 @@ CH <- function(data, nboot) {
   tmp = multimode::modetest(data$value, mod0 = 1, method = "CH", B = nboot)
   data.frame(
     Test = "Cheng and Hall Excess Mass",
+    nboot = nboot,
+    p.value = tmp$p.value,
+    Stat = unname(tmp$statistic),
+    CI = "Not yet available"
+  )
+}
+
+ACR <- function(data, nboot) {
+  tmp = multimode::modetest(data$value, mod0 = 1, method = "ACR", B = nboot)
+  data.frame(
+    Test = "Ameijeiras-Alonso et al. Excess Mass",
     nboot = nboot,
     p.value = tmp$p.value,
     Stat = unname(tmp$statistic),
