@@ -25,61 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if ("Permutations (Raw)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"meanDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (Raw)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if ("Permutations (SD)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"sdDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (SD)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if ("Permutations (MAD)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"madDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (MAD)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if ("Permutations (GiniMd)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"giniDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (GiniMd)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-
   if("ANOVA" %in% tests){
 
     tmp = lm(value~as.factor(data$group),data=data)
@@ -326,4 +271,74 @@ Levene <- function(data, nboot) {
     CI = "Not yet available"
   )
 }
+
+`Permutations (Raw)` <- function(data, nboot, alpha) {
+  temp_df = data.frame(
+    y = data$value,
+    X = as.numeric(as.factor(data$group)) - 1
+  )
+  tmp = permutation_tests(temp_df, nboot, "meanDiff", alpha)
+  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Permutations (Raw)",
+    nboot = nboot,
+    p.value = tmp$p,
+    Stat = tmp$diff,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+`Permutations (SD)` <- function(data, nboot, alpha) {
+  temp_df = data.frame(
+    y = data$value,
+    X = as.numeric(as.factor(data$group)) - 1
+  )
+  tmp = permutation_tests(temp_df, nboot, "sdDiff", alpha)
+  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Permutations (SD)",
+    nboot = nboot,
+    p.value = tmp$p,
+    Stat = tmp$diff,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+
+`Permutations (MAD)` <- function(data, nboot, alpha) {
+  temp_df = data.frame(
+    y = data$value,
+    X = as.numeric(as.factor(data$group)) - 1
+  )
+  tmp = permutation_tests(temp_df, nboot, "madDiff", alpha)
+  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Permutations (MAD)",
+    nboot = nboot,
+    p.value = tmp$p,
+    Stat = tmp$diff,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+`Permutations (GiniMd)` <- function(data, nboot, alpha) {
+  temp_df = data.frame(
+    y = data$value,
+    X = as.numeric(as.factor(data$group)) - 1
+  )
+  tmp = permutation_tests(temp_df, nboot, "giniDiff", alpha)
+  q <- quantile(tmp$crit, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Permutations (GiniMd)",
+    nboot = nboot,
+    p.value = tmp$p,
+    Stat = tmp$diff,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
 
