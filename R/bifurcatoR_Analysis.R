@@ -25,38 +25,8 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("WmixR" %in% tests){
 
 
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="weibull", nboot=nboot)
-
-    res = rbind(res,data.frame(Test = "Weibull mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-
-  }
-
-  if("LNmixR" %in% tests){
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="lnorm", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Lognormal mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("GmixR" %in% tests){
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="normal", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Gaussian mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("GamixR" %in% tests){
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="gamma", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Gamma mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
 
   return(res)
 }
@@ -348,3 +318,56 @@ ANOVA <- function(data, nboot, alpha) {
   )
 }
 
+`WmixR` <- function(data, nboot, alpha) {
+  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "weibull", nboot = nboot)
+
+  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+
+  data.frame(
+    Test = "Weibull mixR",
+    nboot = nboot,
+    p.value = tmp$pvalue,
+    Stat = tmp$w0,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+`LNmixR` <- function(data, nboot, alpha) {
+  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "lnorm", nboot = nboot)
+  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Lognormal mixR",
+    nboot = nboot,
+    p.value = tmp$pvalue,
+    Stat = tmp$w0,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+`GmixR` <- function(data, nboot, alpha) {
+  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "normal", nboot = nboot)
+  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Gaussian mixR",
+    nboot = nboot,
+    p.value = tmp$pvalue,
+    Stat = tmp$w0,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+`GamixR` <- function(data, nboot, alpha) {
+  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = "gamma", nboot = nboot)
+  q <- quantile(tmp$w1, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Gamma mixR",
+    nboot = nboot,
+    p.value = tmp$pvalue,
+    Stat = tmp$w0,
+    CI = paste(ci, collapse = ", ")
+  )
+}
