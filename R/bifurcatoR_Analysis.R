@@ -25,18 +25,6 @@ bifurcatoR_Analysis = function(data,tests,nboot,alpha){
                     CI = numeric()
   )
 
-  if("mt" %in% tests){
-
-    s = as.data.frame(data$value)
-
-    tmp = mousetrap::mt_check_bimodality(s,method="BC")$BC
-
-    tmp.boot = unname(unlist(lapply(1:nboot, function(x) mousetrap::mt_check_bimodality(as.data.frame(s[sample(1:nrow(s),replace=T),]),method="BC")$BC)))
-
-    res = rbind(res,data.frame(Test = "Bimodality Coefficient", nboot = nboot,p.value =  as.numeric(I(tmp < (5/9))),Stat = unname(tmp) ,CI = paste(round(quantile(tmp.boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
   if("SI" %in% tests){
     tmp = multimode::modetest(data$value,mod0 = 1,method = "SI",B=nboot)
 
@@ -250,6 +238,27 @@ mclust <- function(data, nboot, alpha) {
     nboot = nboot,
     p.value = tmp$p.value,
     Stat = tmp$obs,
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+mt <- function(data, nboot, alpha) {
+  s = as.data.frame(data$value)
+  tmp = mousetrap::mt_check_bimodality(s, method = "BC")$BC
+  boot.list <- lapply(1:nboot, function(x) {
+    mousetrap::mt_check_bimodality(
+      as.data.frame(s[sample(1:nrow(s), replace = T), ]),
+      method = "BC"
+    )$BC
+  })
+  tmp.boot = unname(unlist(boot.list))
+  q <- quantile(tmp.boot, p = c(alpha / 2, 1 - alpha / 2))
+  ci <- round(q, floor(log10(nboot)) + 1)
+  data.frame(
+    Test = "Bimodality Coefficient",
+    nboot = nboot,
+    p.value = as.numeric(I(tmp < (5 / 9))),
+    Stat = unname(tmp),
     CI = paste(ci, collapse = ", ")
   )
 }
