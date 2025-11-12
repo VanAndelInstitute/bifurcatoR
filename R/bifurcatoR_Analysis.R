@@ -317,18 +317,18 @@ mixR <- function(family, data, nboot, alpha) {
   )
 }
 
-`WmixR` <- function(data, nboot, alpha) {
+WmixR <- function(data, nboot, alpha) {
   mixR("WmixR", data, nboot, alpha)
 }
 
-`LNmixR` <- function(data, nboot, alpha) {
+LNmixR <- function(data, nboot, alpha) {
   mixR("LNmixR", data, nboot, alpha)
 }
 
-`GmixR` <- function(data, nboot, alpha) {
+GmixR <- function(data, nboot, alpha) {
   mixR("GmixR", data, nboot, alpha)
 }
 
-`GamixR` <- function(data, nboot, alpha) {
+GamixR <- function(data, nboot, alpha) {
   mixR("GamixR", data, nboot, alpha)
 }
