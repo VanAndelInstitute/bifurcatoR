@@ -198,11 +198,14 @@ permutation_tester <- function(type, data, nboot, alpha) {
   permutation_tester("GiniMd", data, nboot, alpha)
 }
 
-ANOVA <- function(data, nboot, alpha) {
-  tmp = lm(value ~ as.factor(data$group), data = data)
+anova_tester <- function(type, data, nboot, alpha) {
+  tmp <- switch(type,
+    `Parametric ANOVA` = lm(value ~ as.factor(data$group), data = data),
+    `Non-parametric ANOVA` = lm(rank(value) ~ as.factor(data$group), data = data)
+  )
   ci <- round(confint(tmp)[2, ], floor(log10(nboot)) + 1)
   data.frame(
-    Test = "ANOVA",
+    Test = type,
     nboot = NA,
     p.value = summary(tmp)$coefficients[2, 4],
     Stat = tmp$coefficients[2],
@@ -210,17 +213,12 @@ ANOVA <- function(data, nboot, alpha) {
   )
 }
 
+anova.p <- function(data, nboot, alpha) {
+  anova_tester("Parametric ANOVA", data, nboot, alpha)
+}
 
-`Non-parametric ANOVA` <- function(data, nboot, alpha) {
-  tmp = lm(rank(value) ~ as.factor(data$group), data = data)
-  ci <- round(confint(tmp)[2, ], floor(log10(nboot)) + 1)
-  data.frame(
-    Test = "Non-parametric ANOVA",
-    nboot = NA,
-    p.value = summary(tmp)$coefficients[2, 4],
-    Stat = tmp$coefficients[2],
-    CI = paste(ci, collapse = ", ")
-  )
+anova.np <- function(data, nboot, alpha) {
+  anova_tester("Non-parametric ANOVA", data, nboot, alpha)
 }
 
 mixR <- function(family, data, nboot, alpha) {
