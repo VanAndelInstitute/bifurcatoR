@@ -65,10 +65,19 @@ mt <- function(data, nboot, alpha) {
   )
 }
 
-SI <- function(data, nboot) {
-  tmp = multimode::modetest(data$value, mod0 = 1, method = "SI", B = nboot)
+modetester <- function(type, data, nboot) {
+  model_name <- switch(type,
+    SI = "Silverman Bandwidth test",
+    HH = "Hartigans' dip test",
+    HY = "Hall and York Bandwidth test",
+    CH = "Cheng and Hall Excess Mass",
+    ACR = "Ameijeiras-Alonso et al. Excess Mass",
+    FM = "Fisher and Marron Carmer-von Mises"
+  )
+
+  tmp = multimode::modetest(data$value, mod0 = 1, method = type, B = nboot)
   data.frame(
-    Test = "Silverman Bandwidth test",
+    Test = model_name,
     nboot = nboot,
     p.value = tmp$p.value,
     Stat = unname(tmp$statistic),
@@ -76,66 +85,29 @@ SI <- function(data, nboot) {
   )
 }
 
-dip <- function(data, nboot) {
-  tmp = multimode::modetest(data$value, mod0 = 1, method = "HH", B = nboot)
-  res = rbind(
-    res,
-    data.frame(
-      Test = "Hartigans' dip test",
-      nboot = nboot,
-      p.value = tmp$p.value,
-      Stat = unname(tmp$statistic),
-      CI = "Not yet available"
-    )
-  )
+SI <- function(data, nboot, ...) {
+  modetester("SI", data, nboot)
 }
 
-HY <- function(data, nboot) {
-  tmp = multimode::modetest(data$value, mod0 = 1, method = "HY", B = nboot)
-  data.frame(
-    Test = "Hall and York Bandwidth test",
-    nboot = nboot,
-    p.value = tmp$p.value,
-    Stat = unname(tmp$statistic),
-    CI = "Not yet available"
-  )
+dip <- function(data, nboot, ...) {
+  modetester("HH", data, nboot)
 }
 
-CH <- function(data, nboot) {
-  tmp = multimode::modetest(data$value, mod0 = 1, method = "CH", B = nboot)
-  data.frame(
-    Test = "Cheng and Hall Excess Mass",
-    nboot = nboot,
-    p.value = tmp$p.value,
-    Stat = unname(tmp$statistic),
-    CI = "Not yet available"
-  )
+HY <- function(data, nboot, ...) {
+  modetester("HY", data, nboot)
 }
 
-ACR <- function(data, nboot) {
-  tmp = multimode::modetest(data$value, mod0 = 1, method = "ACR", B = nboot)
-  data.frame(
-    Test = "Ameijeiras-Alonso et al. Excess Mass",
-    nboot = nboot,
-    p.value = tmp$p.value,
-    Stat = unname(tmp$statistic),
-    CI = "Not yet available"
-  )
+CH <- function(data, nboot, ...) {
+  modetester("CH", data, nboot)
 }
 
-FM <- function(data, nboot) {
-  tmp = multimode::modetest(data$value, mod0 = 1, method = "FM", B = nboot)
-  data.frame(
-    Test = "Fisher and Marron Carmer-von Mises",
-    nboot = nboot,
-    p.value = tmp$p.value,
-    Stat = unname(tmp$statistic),
-    CI = "Not yet available"
-  )
+ACR <- function(data, nboot, ...) {
+  modetester("ACR", data, nboot)
 }
 
-ks <- function(data, nboot, alpha) {
-  tmp = twosamples::ks_test(
+FM <- function(data, nboot, ...) {
+  modetester("FM", data, nboot)
+}
     data$value[data$group == unique(data$group)[1]],
     data$value[data$group == unique(data$group)[2]],
     nboots = nboot,
