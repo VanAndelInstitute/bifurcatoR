@@ -3,7 +3,35 @@
 #' @param   data    data frame with 2 columns, a two-level group column and numeric value column
 #' @param   alpha   default significance level (0.05)
 #' @param   nboot   number of bootstraps or permutations
-#' @param   tests   names of tests to run
+#' @param   tests   names of tests to run. See details below for supported tests.
+#'
+#' @details
+#' - `mclust`
+#' - `mt`
+#'
+#' - Modetests
+#'   - `SI`
+#'   - `dip`
+#'   - `HY`
+#'   - `CH`
+#'   - `ACR`
+#'   - `FM`
+#'
+#' - Permutation tests
+#'   - `perm.raw`
+#'   - `perm.sd`
+#'   - `perm.mad`
+#'   - `perm.ginimd`
+#'
+#' - ANOVA
+#'   - `anova.p`: Parametric ANOVA
+#'   - `anova.np`: Non-parametric ANOVA
+#'
+#' - mixR
+#'   - `WmixR`: Weibull
+#'   - `LNmixR`: Lognormal
+#'   - `GmixR`: Gaussian
+#'   - `GamixR`: Gamma
 #'
 #' @return          a data frame where each row corresponds to the results of test, p-values, test stats, and confidence intervals where possible
 #'
