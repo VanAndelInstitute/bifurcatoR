@@ -108,13 +108,23 @@ ACR <- function(data, nboot, ...) {
 FM <- function(data, nboot, ...) {
   modetester("FM", data, nboot)
 }
+
+twosample_tester <- function(type, data, nboot, alpha) {
+  model <- switch(type,
+    ks = c(fun = twosamples::ks_test, name = "Kolmogorov-Smirnov Test"),
+    cvm = c(fun = twosamples::cvm_test, name = "Cramer-von Mises Test"),
+    dts = c(fun = twosamples::dts_test, name = "DTS Test"),
+    ad = c(fun = twosamples::ad_test, name = "Aderson-Darling Test")
+  )
+  twosample_test <- model['fun']
+  tmp = twosample_test(
     data$value[data$group == unique(data$group)[1]],
     data$value[data$group == unique(data$group)[2]],
     nboots = nboot,
     keep.boots = T
   )
   data.frame(
-    Test = "Kolmogorov-Smirnov Test",
+    Test = model['name'],
     nboot = nboot,
     p.value = tmp[[2]],
     Stat = tmp[[1]],
@@ -122,52 +132,20 @@ FM <- function(data, nboot, ...) {
   )
 }
 
+ks <- function(data, nboot, alpha) {
+  twosample_tester("ks", data, nboot, alpha)
+}
+
 cvm <- function(data, nboot, alpha) {
-  tmp = twosamples::cvm_test(
-    data$value[data$group == unique(data$group)[1]],
-    data$value[data$group == unique(data$group)[2]],
-    nboots = nboot,
-    keep.boots = T
-  )
-  data.frame(
-    Test = "Cramer-von Mises Test",
-    nboot = nboot,
-    p.value = tmp[[2]],
-    Stat = tmp[[1]],
-    CI = paste(.ci(attributes(tmp)$bootstraps), collapse = ", ")
-  )
+  twosample_tester("cvm", data, nboot, alpha)
 }
 
 dts <- function(data, nboot, alpha) {
-  tmp = twosamples::dts_test(
-    data$value[data$group == unique(data$group)[1]],
-    data$value[data$group == unique(data$group)[2]],
-    nboots = nboot,
-    keep.boots = T
-  )
-  data.frame(
-    Test = "DTS Test",
-    nboot = nboot,
-    p.value = tmp[[2]],
-    Stat = tmp[[1]],
-    CI = paste(.ci(attributes(tmp)$bootstraps), collapse = ", ")
-  )
+  twosample_tester("dts", data, nboot, alpha)
 }
 
 ad <- function(data, nboot, alpha) {
-  tmp = twosamples::ad_test(
-    data$value[data$group == unique(data$group)[1]],
-    data$value[data$group == unique(data$group)[2]],
-    nboots = nboot,
-    keep.boots = T
-  )
-  data.frame(
-    Test = "Aderson-Darling Test",
-    nboot = nboot,
-    p.value = tmp[[2]],
-    Stat = tmp[[1]],
-    CI = paste(.ci(attributes(tmp)$bootstraps), collapse = ", ")
-  )
+  twosample_tester("ad", data, nboot, alpha)
 }
 
 Levene <- function(data, nboot) {
