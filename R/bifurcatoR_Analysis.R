@@ -159,14 +159,22 @@ Levene <- function(data, nboot) {
   )
 }
 
-`Permutations (Raw)` <- function(data, nboot, alpha) {
+permutation_tester <- function(type, data, nboot, alpha) {
+  difftype <- switch(type,
+    Raw = "meanDiff",
+    SD = "sdDiff",
+    MAD = "madDiff",
+    GiniMd = "giniDiff"
+  )
+
   temp_df = data.frame(
     y = data$value,
     X = as.numeric(as.factor(data$group)) - 1
   )
-  tmp = permutation_tests(temp_df, nboot, "meanDiff", alpha)
+
+  tmp = permutation_tests(temp_df, nboot, difftype, alpha)
   data.frame(
-    Test = "Permutations (Raw)",
+    Test = paste0("Permutations (", type, ")"),
     nboot = nboot,
     p.value = tmp$p,
     Stat = tmp$diff,
@@ -174,52 +182,21 @@ Levene <- function(data, nboot) {
   )
 }
 
-`Permutations (SD)` <- function(data, nboot, alpha) {
-  temp_df = data.frame(
-    y = data$value,
-    X = as.numeric(as.factor(data$group)) - 1
-  )
-  tmp = permutation_tests(temp_df, nboot, "sdDiff", alpha)
-  data.frame(
-    Test = "Permutations (SD)",
-    nboot = nboot,
-    p.value = tmp$p,
-    Stat = tmp$diff,
-    CI = paste(.ci(tmp$crit), collapse = ", ")
-  )
+`perm.raw` <- function(data, nboot, alpha) {
+  permutation_tester("Raw", data, nboot, alpha)
 }
 
-
-`Permutations (MAD)` <- function(data, nboot, alpha) {
-  temp_df = data.frame(
-    y = data$value,
-    X = as.numeric(as.factor(data$group)) - 1
-  )
-  tmp = permutation_tests(temp_df, nboot, "madDiff", alpha)
-  data.frame(
-    Test = "Permutations (MAD)",
-    nboot = nboot,
-    p.value = tmp$p,
-    Stat = tmp$diff,
-    CI = paste(.ci(tmp$crit), collapse = ", ")
-  )
+`perm.sd` <- function(data, nboot, alpha) {
+  permutation_tester("SD", data, nboot, alpha)
 }
 
-`Permutations (GiniMd)` <- function(data, nboot, alpha) {
-  temp_df = data.frame(
-    y = data$value,
-    X = as.numeric(as.factor(data$group)) - 1
-  )
-  tmp = permutation_tests(temp_df, nboot, "giniDiff", alpha)
-  data.frame(
-    Test = "Permutations (GiniMd)",
-    nboot = nboot,
-    p.value = tmp$p,
-    Stat = tmp$diff,
-    CI = paste(.ci(tmp$crit), collapse = ", ")
-  )
+`perm.mad` <- function(data, nboot, alpha) {
+  permutation_tester("MAD", data, nboot, alpha)
 }
 
+`perm.ginimd` <- function(data, nboot, alpha) {
+  permutation_tester("GiniMd", data, nboot, alpha)
+}
 
 ANOVA <- function(data, nboot, alpha) {
   tmp = lm(value ~ as.factor(data$group), data = data)
