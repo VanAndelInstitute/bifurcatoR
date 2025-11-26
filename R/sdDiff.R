@@ -5,7 +5,8 @@
 #'
 #' @return      Absolute value of the difference between group 1 and group 2 standard deviation
 #'
-
+#' @importFrom stats sd
+#'
 #' @export
 
 sdDiff <- function(y, X){

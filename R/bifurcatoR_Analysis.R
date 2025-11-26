@@ -7,14 +7,10 @@
 #'
 #' @return          a data frame where each row corresponds to the results of test, p-values, test stats, and confidence intervals where possible
 #'
-#' @import          mclust
 #' @import          diptest
-#' @import          mousetrap
 #' @import          LaplacesDemon
-#' @import          multimode
 #' @import          Hmisc
-#' @import          twosamples
-#' @import          mixR
+#' @importFrom      stats confint lm quantile
 #'
 #' @export
 bifurcatoR_Analysis = function(data,tests,nboot,alpha){
