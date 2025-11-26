@@ -7,7 +7,7 @@
 calc_power(n, p1, p2, shift, sel, CI, alpha = 0.05, nsim = 100)
 }
 \arguments{
-\item{n}{number of \link{something}}
+\item{n}{number of something}
 
 \item{p1}{pr(event) in subgroup 1}
 
