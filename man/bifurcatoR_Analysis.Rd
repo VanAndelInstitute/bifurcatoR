@@ -9,7 +9,7 @@ bifurcatoR_Analysis(data, tests, nboot, alpha)
 \arguments{
 \item{data}{data frame with 2 columns, a two-level group column and numeric value column}
 
-\item{tests}{names of tests to run}
+\item{tests}{names of tests to run. See details below for supported tests.}
 
 \item{nboot}{number of bootstraps or permutations}
 
@@ -21,4 +21,38 @@ bifurcatoR_Analysis(data, tests, nboot, alpha)
 }
 \description{
 bifurcatoR_Analysis
+}
+\details{
+\itemize{
+\item \code{mclust}
+\item \code{mt}
+\item Modetests
+\itemize{
+\item \code{SI}
+\item \code{dip}
+\item \code{HY}
+\item \code{CH}
+\item \code{ACR}
+\item \code{FM}
+}
+\item Permutation tests
+\itemize{
+\item \code{perm.raw}
+\item \code{perm.sd}
+\item \code{perm.mad}
+\item \code{perm.ginimd}
+}
+\item Anova
+\itemize{
+\item \code{ANOVA}
+\item \verb{Non-parametric ANOVA}
+}
+\item mixR
+\itemize{
+\item \code{WmixR}: Weibull
+\item \code{LNmixR}: Lognormal
+\item \code{GmixR}: Gaussian
+\item \code{GamixR}: Gamma
+}
+}
 }

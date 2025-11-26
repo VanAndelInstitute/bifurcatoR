@@ -3,7 +3,35 @@
 #' @param   data    data frame with 2 columns, a two-level group column and numeric value column
 #' @param   alpha   default significance level (0.05)
 #' @param   nboot   number of bootstraps or permutations
-#' @param   tests   names of tests to run
+#' @param   tests   names of tests to run. See details below for supported tests.
+#'
+#' @details
+#' - `mclust`
+#' - `mt`
+#'
+#' - Modetests
+#'   - `SI`
+#'   - `dip`
+#'   - `HY`
+#'   - `CH`
+#'   - `ACR`
+#'   - `FM`
+#'
+#' - Permutation tests
+#'   - `perm.raw`
+#'   - `perm.sd`
+#'   - `perm.mad`
+#'   - `perm.ginimd`
+#'
+#' - ANOVA
+#'   - `anova.p`: Parametric ANOVA
+#'   - `anova.np`: Non-parametric ANOVA
+#'
+#' - mixR
+#'   - `WmixR`: Weibull
+#'   - `LNmixR`: Lognormal
+#'   - `GmixR`: Gaussian
+#'   - `GamixR`: Gamma
 #'
 #' @return          a data frame where each row corresponds to the results of test, p-values, test stats, and confidence intervals where possible
 #'
@@ -13,225 +41,243 @@
 #' @importFrom      stats confint lm quantile
 #'
 #' @export
-bifurcatoR_Analysis = function(data,tests,nboot,alpha){
-  res <- data.frame(Test = character(),
-                    nboot = numeric(),
-                    p.value = numeric(),
-                    Stat = numeric(),
-                    CI = numeric()
+bifurcatoR_Analysis = function(data, tests, nboot, alpha) {
+  res_list <- lapply(tests, function(i) {
+    eval(call(i, data, nboot, alpha))
+  })
+  do.call(rbind, res_list)
+}
+
+.ci <- function(x, alpha, nboot) {
+  q <- quantile(x, p = c(alpha / 2, 1 - alpha / 2))
+  round(q, floor(log10(nboot)) + 1)
+}
+
+mclust <- function(data, nboot, alpha) {
+  tmp = mclust::mclustBootstrapLRT(
+    data$value,
+    modelName = "E",
+    verbose = F,
+    maxG = 1,
+    nboot = nboot
+  )
+  data.frame(
+    Test = "Mclust",
+    nboot = nboot,
+    p.value = tmp$p.value,
+    Stat = tmp$obs,
+    CI = paste(.ci(tmp$boot, alpha, nboot), collapse = ", ")
+  )
+}
+
+mt <- function(data, nboot, alpha) {
+  s = as.data.frame(data$value)
+  tmp = mousetrap::mt_check_bimodality(s, method = "BC")$BC
+  boot.list <- lapply(1:nboot, function(x) {
+    mousetrap::mt_check_bimodality(
+      as.data.frame(s[sample(1:nrow(s), replace = T), ]),
+      method = "BC"
+    )$BC
+  })
+  tmp.boot = unname(unlist(boot.list))
+  data.frame(
+    Test = "Bimodality Coefficient",
+    nboot = nboot,
+    p.value = as.numeric(I(tmp < (5 / 9))),
+    Stat = unname(tmp),
+    CI = paste(.ci(tmp.boot, alpha, nboot), collapse = ", ")
+  )
+}
+
+modetester <- function(type, data, nboot) {
+  model_name <- switch(type,
+    SI = "Silverman Bandwidth test",
+    HH = "Hartigans' dip test",
+    HY = "Hall and York Bandwidth test",
+    CH = "Cheng and Hall Excess Mass",
+    ACR = "Ameijeiras-Alonso et al. Excess Mass",
+    FM = "Fisher and Marron Carmer-von Mises"
   )
 
-  if("mclust" %in% tests){
-    tmp = mclust::mclustBootstrapLRT(data$value,modelName="E",verbose=F,maxG=1,nboot=nboot)
-    res = rbind(res,data.frame(Test = "Mclust", nboot = nboot,p.value = tmp$p.value,Stat = tmp$obs ,CI = paste(round(quantile(tmp$boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-  }
-
-  if("mt" %in% tests){
-
-    s = as.data.frame(data$value)
-
-    tmp = mousetrap::mt_check_bimodality(s,method="BC")$BC
-
-    tmp.boot = unname(unlist(lapply(1:nboot, function(x) mousetrap::mt_check_bimodality(as.data.frame(s[sample(1:nrow(s),replace=T),]),method="BC")$BC)))
-
-    res = rbind(res,data.frame(Test = "Bimodality Coefficient", nboot = nboot,p.value =  as.numeric(I(tmp < (5/9))),Stat = unname(tmp) ,CI = paste(round(quantile(tmp.boot,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if("SI" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "SI",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Silverman Bandwidth test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
-  if("dip" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "HH",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Hartigans' dip test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
-  if("HY" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "HY",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Hall and York Bandwidth test", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
-  if("CH" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "CH",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Cheng and Hall Excess Mass", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
-  if("ACR" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "ACR",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Ameijeiras-Alonso et al. Excess Mass", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
-  if("FM" %in% tests){
-    tmp = multimode::modetest(data$value,mod0 = 1,method = "FM",B=nboot)
-
-    res = rbind(res,data.frame(Test = "Fisher and Marron Carmer-von Mises", nboot = nboot,p.value = tmp$p.value,Stat = unname(tmp$statistic) ,CI = "Not yet available"))
-
-  }
-
-  if("ks" %in% tests){
-
-    tmp = twosamples::ks_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
-
-    res = rbind(res,data.frame(Test = "Kolmogorov-Smirnov Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-
-  }
-
-
-  if("cvm" %in% tests){
-
-
-    tmp = twosamples::cvm_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
-
-    res = rbind(res,data.frame(Test = "Cramer-von Mises Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("dts" %in% tests){
-
-    tmp = twosamples::dts_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
-
-    res = rbind(res,data.frame(Test = "DTS Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if("ad" %in% tests){
-
-    tmp = twosamples::ad_test(data$value[data$group == unique(data$group)[1]] ,data$value[data$group == unique(data$group)[2]],nboots=nboot,keep.boots=T)
-
-    res = rbind(res,data.frame(Test = "Aderson-Darling Test", nboot = nboot,p.value = tmp[[2]],Stat = tmp[[1]] ,CI = paste(round(quantile(attributes(tmp)$bootstraps,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if("Levene" %in% tests){
-
-    tmp = car::leveneTest(lm(value~as.factor(data$group),data=data))
-
-    res = rbind(res,data.frame(Test = "Levene's Test", nboot = NA ,p.value =tmp$'Pr(>F)'[1],Stat = tmp$'F value'[1] ,CI = "Not yet available"))
-
-  }
-
-
-
-  if ("Permutations (Raw)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"meanDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (Raw)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if ("Permutations (SD)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"sdDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (SD)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  if ("Permutations (MAD)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"madDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (MAD)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if ("Permutations (GiniMd)" %in% tests) {
-
-    temp_df = data.frame(
-      y = data$value,
-      X= as.numeric(as.factor(data$group))-1
-    )
-
-    tmp = permutation_tests(temp_df,nboot,"giniDiff",alpha)
-
-    res = rbind(res,data.frame(Test = "Permutations (GiniMd)", nboot = nboot ,p.value = tmp$p ,Stat = tmp$diff ,CI = paste(round(quantile(tmp$crit,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-
-  if("ANOVA" %in% tests){
-
-    tmp = lm(value~as.factor(data$group),data=data)
-
-    res = rbind(res,data.frame(Test = "ANOVA", nboot = NA ,p.value = summary(tmp)$coefficients[2,4] ,Stat = tmp$coefficients[2] ,CI = paste(round(confint(tmp)[2,],floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("Non-parametric ANOVA" %in% tests){
-
-    tmp = lm(rank(value)~as.factor(data$group),data=data)
-
-    res = rbind(res,data.frame(Test = "Non-parametric ANOVA", nboot = NA ,p.value = summary(tmp)$coefficients[2,4] ,Stat = tmp$coefficients[2] ,CI = paste(round(confint(tmp)[2,],floor(log10(nboot)) + 1),collapse=", " )))
-
-
-  }
-
-
-  if("WmixR" %in% tests){
-
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="weibull", nboot=nboot)
-
-    res = rbind(res,data.frame(Test = "Weibull mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-
-  }
-
-  if("LNmixR" %in% tests){
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="lnorm", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Lognormal mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("GmixR" %in% tests){
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="normal", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Gaussian mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-
-  if("GamixR" %in% tests){
-
-    tmp = bs_lrt(data$value, H0=1, H1=2, family="gamma", nboot=nboot)
-    res = rbind(res,data.frame(Test = "Gamma mixR", nboot = nboot ,p.value = tmp$pvalue ,Stat = tmp$w0 ,CI = paste(round(quantile(tmp$w1,p=c(alpha/2,1-alpha/2)),floor(log10(nboot)) + 1),collapse=", " )))
-
-  }
-
-  return(res)
+  tmp = multimode::modetest(data$value, mod0 = 1, method = type, B = nboot)
+  data.frame(
+    Test = model_name,
+    nboot = nboot,
+    p.value = tmp$p.value,
+    Stat = unname(tmp$statistic),
+    CI = "Not yet available"
+  )
+}
+
+SI <- function(data, nboot, ...) {
+  modetester("SI", data, nboot)
+}
+
+dip <- function(data, nboot, ...) {
+  modetester("HH", data, nboot)
+}
+
+HY <- function(data, nboot, ...) {
+  modetester("HY", data, nboot)
+}
+
+CH <- function(data, nboot, ...) {
+  modetester("CH", data, nboot)
+}
+
+ACR <- function(data, nboot, ...) {
+  modetester("ACR", data, nboot)
+}
+
+FM <- function(data, nboot, ...) {
+  modetester("FM", data, nboot)
+}
+
+twosample_tester <- function(type, data, nboot, alpha) {
+  model <- switch(type,
+    ks = c(fun = twosamples::ks_test, name = "Kolmogorov-Smirnov Test"),
+    cvm = c(fun = twosamples::cvm_test, name = "Cramer-von Mises Test"),
+    dts = c(fun = twosamples::dts_test, name = "DTS Test"),
+    ad = c(fun = twosamples::ad_test, name = "Aderson-Darling Test")
+  )
+  twosample_test <- model['fun']
+  tmp = twosample_test(
+    data$value[data$group == unique(data$group)[1]],
+    data$value[data$group == unique(data$group)[2]],
+    nboots = nboot,
+    keep.boots = T
+  )
+  data.frame(
+    Test = model['name'],
+    nboot = nboot,
+    p.value = tmp[[2]],
+    Stat = tmp[[1]],
+    CI = paste(.ci(attributes(tmp)$bootstraps, alpha, nboot), collapse = ", ")
+  )
+}
+
+ks <- function(data, nboot, alpha) {
+  twosample_tester("ks", data, nboot, alpha)
+}
+
+cvm <- function(data, nboot, alpha) {
+  twosample_tester("cvm", data, nboot, alpha)
+}
+
+dts <- function(data, nboot, alpha) {
+  twosample_tester("dts", data, nboot, alpha)
+}
+
+ad <- function(data, nboot, alpha) {
+  twosample_tester("ad", data, nboot, alpha)
+}
+
+Levene <- function(data, nboot) {
+  tmp = car::leveneTest(lm(value ~ as.factor(data$group), data = data))
+  data.frame(
+    Test = "Levene's Test",
+    nboot = NA,
+    p.value = tmp$'Pr(>F)'[1],
+    Stat = tmp$'F value'[1],
+    CI = "Not yet available"
+  )
+}
+
+permutation_tester <- function(type, data, nboot, alpha) {
+  difftype <- switch(type,
+    Raw = "meanDiff",
+    SD = "sdDiff",
+    MAD = "madDiff",
+    GiniMd = "giniDiff"
+  )
+
+  temp_df = data.frame(
+    y = data$value,
+    X = as.numeric(as.factor(data$group)) - 1
+  )
+
+  tmp = permutation_tests(temp_df, nboot, difftype, alpha)
+  data.frame(
+    Test = paste0("Permutations (", type, ")"),
+    nboot = nboot,
+    p.value = tmp$p,
+    Stat = tmp$diff,
+    CI = paste(.ci(tmp$crit, alpha, nboot), collapse = ", ")
+  )
+}
+
+`perm.raw` <- function(data, nboot, alpha) {
+  permutation_tester("Raw", data, nboot, alpha)
+}
+
+`perm.sd` <- function(data, nboot, alpha) {
+  permutation_tester("SD", data, nboot, alpha)
+}
+
+`perm.mad` <- function(data, nboot, alpha) {
+  permutation_tester("MAD", data, nboot, alpha)
+}
+
+`perm.ginimd` <- function(data, nboot, alpha) {
+  permutation_tester("GiniMd", data, nboot, alpha)
+}
+
+anova_tester <- function(type, data, nboot, alpha) {
+  tmp <- switch(type,
+    `Parametric ANOVA` = lm(value ~ as.factor(data$group), data = data),
+    `Non-parametric ANOVA` = lm(rank(value) ~ as.factor(data$group), data = data)
+  )
+  ci <- round(confint(tmp)[2, ], floor(log10(nboot)) + 1)
+  data.frame(
+    Test = type,
+    nboot = NA,
+    p.value = summary(tmp)$coefficients[2, 4],
+    Stat = tmp$coefficients[2],
+    CI = paste(ci, collapse = ", ")
+  )
+}
+
+anova.p <- function(data, nboot, alpha) {
+  anova_tester("Parametric ANOVA", data, nboot, alpha)
+}
+
+anova.np <- function(data, nboot, alpha) {
+  anova_tester("Non-parametric ANOVA", data, nboot, alpha)
+}
+
+mixR <- function(family, data, nboot, alpha) {
+  model <- switch(family,
+    WmixR = c(name = "Weibull", dist = "weibull"),
+    LNmixR = c(name = "Lognormal", dist = "lnorm"),
+    GmixR = c(name = "Gaussian", dist = "normal"),
+    GamixR = c(name = "Gamma", dist = "gamma"),
+  )
+
+  model_name <- paste(model['name'], "mixR")
+  model_dist <- model['dist']
+
+  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = model_dist, nboot = nboot)
+  data.frame(
+    Test = model_name,
+    nboot = nboot,
+    p.value = tmp$pvalue,
+    Stat = tmp$w0,
+    CI = paste(.ci(tmp$w1, alpha, nboot), collapse = ", ")
+  )
+}
+
+WmixR <- function(data, nboot, alpha) {
+  mixR("WmixR", data, nboot, alpha)
+}
+
+LNmixR <- function(data, nboot, alpha) {
+  mixR("LNmixR", data, nboot, alpha)
+}
+
+GmixR <- function(data, nboot, alpha) {
+  mixR("GmixR", data, nboot, alpha)
+}
+
+GamixR <- function(data, nboot, alpha) {
+  mixR("GamixR", data, nboot, alpha)
 }
