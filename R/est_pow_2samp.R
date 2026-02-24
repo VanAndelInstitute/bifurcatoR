@@ -173,6 +173,18 @@ est_pow_2samp = function(n1,n2,alpha,nsim,modes,dist,params,tests,nperm){
                                       FP = sum(sapply(1:nsim, function(s) I(twosamples::ad_test(a.dfs[[1]][[s]],a.dfs[[2]][[s]],nboots=nsim)[2]<alpha)))/nsim))
   }
 
+  if("wass" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame( Test = "Wasserstein distance",
+                                      power = sum(sapply(1:nsim, function(s) I(twosamples::wass_test(n.dfs[[1]][[s]],n.dfs[[2]][[s]],nboots=nsim)[2]<alpha)))/nsim,
+                                      FP = sum(sapply(1:nsim, function(s) I(twosamples::wass_test(a.dfs[[1]][[s]],a.dfs[[2]][[s]],nboots=nsim)[2]<alpha)))/nsim))
+  }
+  
+  if("kuip" %in% tests){
+    pwr.df = rbind(pwr.df,data.frame( Test = "Kuiper test",
+                                      power = sum(sapply(1:nsim, function(s) I(twosamples::kuiper_test(n.dfs[[1]][[s]],n.dfs[[2]][[s]],nboots=nsim)[2]<alpha)))/nsim,
+                                      FP = sum(sapply(1:nsim, function(s) I(twosamples::kuiper_test(a.dfs[[1]][[s]],a.dfs[[2]][[s]],nboots=nsim)[2]<alpha)))/nsim))
+  }
+  
   if("Levene" %in% tests){
 
     pwr.df = rbind(pwr.df,data.frame( Test = "Levene",
