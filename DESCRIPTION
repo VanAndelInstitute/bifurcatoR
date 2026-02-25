@@ -30,6 +30,7 @@ Imports:
     mixR,
     mousetrap,
     multimode,
+    mvtnorm,
     olsrr,
     ppclust,
     pwr,
@@ -40,8 +41,7 @@ Suggests:
     covr,
     SingleCellExperiment,
     table1,
-    testthat,
-    uwot
+    testthat
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
