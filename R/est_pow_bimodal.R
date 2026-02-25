@@ -1,6 +1,6 @@
 #' est_pow_bimodal
 #'
-#' @param   n       number of [somethings] c(mode 1, mode 2)
+#' @param   n       number of samples c(mode 1, mode 2)
 #' @param   alpha   default significance level (0.05)
 #' @param   nsim    number of simulations (20)
 #' @param   dist    generating distribution

@@ -1,6 +1,6 @@
 #' convert_params
 #'
-#' @param   n       number of [somethings]. This should have two elements
+#' @param   n       number of samples. This should have two elements
 #' @param   dist    The distribution family
 #' @param   params  2 level list with mu and sd for both modes or samples
 #'

@@ -237,10 +237,12 @@ anova_tester <- function(type, data, nboot, alpha) {
   )
 }
 
+#' @export
 anova.p <- function(data, nboot, alpha) {
   anova_tester("Parametric ANOVA", data, nboot, alpha)
 }
 
+#' @export
 anova.np <- function(data, nboot, alpha) {
   anova_tester("Non-parametric ANOVA", data, nboot, alpha)
 }

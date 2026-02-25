@@ -4,19 +4,19 @@
 \alias{permutation_tests}
 \title{permutation_tests}
 \usage{
-permutation_tests(temp_df, nperm, fxn, alpha)
+permutation_tests(y, X, nperm, fxn_names, alpha)
 }
 \arguments{
-\item{temp_df}{Generic name for the data frame to be permuted columns are the group variable X and the value variable y}
-
 \item{nperm}{The number of permutations to be performed}
 
-\item{fxn}{The function name to call is \link{meanDiff} \link{madDiff} \link{giniDiff} \link{sdDiff}}
-
 \item{alpha}{The confidence level}
+
+\item{temp_df}{Generic name for the data frame to be permuted columns are the group variable X and the value variable y}
+
+\item{fxn}{The function name to call is \link{meanDiff} \link{madDiff} \link{giniDiff} \link{sdDiff}}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{ a 3 level list containingg: a p-value, the actual difference, and the 2.5\% - 97.5\% interval
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ a 3 level list containing: a p-value, the actual difference, and the 2.5\% - 97.5\% interval
 }\if{html}{\out{</div>}}
 }
 \description{

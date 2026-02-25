@@ -1,7 +1,7 @@
 #' est_pow_2_mixtures
 #'
-#' @param   n_group1      number of [somethings] in c(group 1 mode 1 , group 1 mode 2)
-#' @param   n_group2      number of [somethings] in c(group 2 mode 1, group 2 mode 2)
+#' @param   n_group1      number of samples in c(group 1 mode 1 , group 1 mode 2)
+#' @param   n_group2      number of samples in c(group 2 mode 1, group 2 mode 2)
 #' @param   alpha   default significance level (0.05)
 #' @param   nsim    number of simulations (20)
 #' @param   modes   modes of the two groups

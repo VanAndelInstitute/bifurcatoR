@@ -1,6 +1,6 @@
 #' est_pow_2_clust_copula
 #'
-#' @param   n       number of [somethings] c(cluster 1, cluster 2)
+#' @param   n       number of somethings c(cluster 1, cluster 2)
 #' @param   alpha   default significance level (0.05)
 #' @param   nsim    number of simulations (20)
 #' @param   dist    generating distribution

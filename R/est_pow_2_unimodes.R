@@ -1,6 +1,6 @@
 #' est_pow_2_unimodes
 #'
-#' @param   n      number of [somethings] in c(group 1, group 2)
+#' @param   n      number of samples in c(group 1, group 2)
 #' @param   alpha   default significance level (0.05)
 #' @param   nsim    number of simulations (20)
 #' @param   modes   modes of the two groups

@@ -42,10 +42,10 @@ bifurcatoR_Analysis
 \item \code{perm.mad}
 \item \code{perm.ginimd}
 }
-\item Anova
+\item ANOVA
 \itemize{
-\item \code{ANOVA}
-\item \verb{Non-parametric ANOVA}
+\item \code{anova.p}: Parametric ANOVA
+\item \code{anova.np}: Non-parametric ANOVA
 }
 \item mixR
 \itemize{
