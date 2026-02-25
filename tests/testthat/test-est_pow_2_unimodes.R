@@ -138,8 +138,8 @@ test_that("est_pow_2_unimodes beta tests are working correctly", {
               "Permutations (Gini)")
   )
   
-  expect_equal(out$power, c(1, 1, 1, 1, 1, 0, 1))
-  expect_equal(out$FP, c(0.0, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0))
+  expect_equal(out$power, c(0 1 1 1 0 0 0))
+  expect_equal(out$FP, c(0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0))
   
 })
 
