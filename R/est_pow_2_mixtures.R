@@ -61,6 +61,9 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
   if ("levene" %in% tests) {
     test_fns$levene <- function(x) leveneTest(c(x[[1]], x[[2]]), group)$"Pr(>F)"[1] < alpha
   }
+  if ("welch" %in% tests) {
+    test_fns$ANOVA <- function(x) t.test(x[[1]],x[[2]])$p.value < alpha
+  }
   if ("ANOVA" %in% tests) {
     test_fns$ANOVA <- function(x) anova(lm(c(x[[1]], x[[2]]) ~ group))$"Pr(>F)"[1] < alpha
   }
@@ -170,6 +173,7 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
     ad = "Anderson-Darling",
     wass =  "Wasserstein distance",
     kuiper = "Kuiper",
+    welch = "Welch's t-test",
     levene = "Levene's",
     ANOVA = "ANOVA",
     Non_p_ANOVA = "Non-parametric ANOVA",
