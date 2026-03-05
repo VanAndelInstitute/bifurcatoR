@@ -62,7 +62,7 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
     test_fns$levene <- function(x) leveneTest(c(x[[1]], x[[2]]), group)$"Pr(>F)"[1] < alpha
   }
   if ("welch" %in% tests) {
-    test_fns$ANOVA <- function(x) t.test(x[[1]],x[[2]])$p.value < alpha
+    test_fns$welch <- function(x) t.test(x[[1]],x[[2]])$p.value < alpha
   }
   if ("ANOVA" %in% tests) {
     test_fns$ANOVA <- function(x) anova(lm(c(x[[1]], x[[2]]) ~ group))$"Pr(>F)"[1] < alpha

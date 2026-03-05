@@ -52,7 +52,7 @@ est_pow_2_unimodes <- function(n,
     test_fns$ANOVA <- function(x) anova(lm(c(x[[1]], x[[2]]) ~ group))$"Pr(>F)"[1] < alpha
   }
   if ("welch" %in% tests) {
-    test_fns$ANOVA <- function(x) t.test(x[[1]],x[[2]])$p.value < alpha
+    test_fns$welch <- function(x) t.test(x[[1]],x[[2]])$p.value < alpha
   }
   if ("Non-parametric ANOVA" %in% tests) {
     test_fns$Non_p_ANOVA <- function(x) anova(lm(rank(c(x[[1]], x[[2]])) ~ group))$"Pr(>F)"[1] < alpha
