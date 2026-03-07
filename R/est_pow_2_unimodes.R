@@ -32,7 +32,7 @@ est_pow_2_unimodes <- function(n,
   nsim <- as.integer(nsim)
   
   if (missing(tests) || is.null(tests)) tests <- character()
-  stopifnot(is.character(tests))
+  if (!is.character(tests)) stop("tests must be a character vector.", call. = FALSE)
   
   group <- factor(c(rep("A", n[1]), rep("B", n[2])))
   group.numeric <- as.integer(group) - 1L

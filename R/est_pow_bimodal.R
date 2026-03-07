@@ -21,9 +21,10 @@
 #' @export
 est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "weibull", "gamma", "lnorm") ,params,tests){
   dist <- match.arg(dist, c("norm","beta","weibull","gamma","lnorm"))
-  if (!is.numeric(n) || length(n) != 2 || n <= 0) stop("n must be length 2")
-  if (!is.numeric(alpha) || alpha <= 0 || alpha >= 1) stop("alpha must be in (0,1).")
-  if (!is.numeric(nsim) || nsim <= 0) stop("nsim must be > 0.")
+  stopifnot(is.numeric(n), length(n) == 2, all(is.finite(n)), all(n > 0))
+
+  stopifnot(is.numeric(alpha), length(alpha) == 1, is.finite(alpha), alpha > 0, alpha < 1)
+  stopifnot(is.numeric(nsim), length(nsim) == 1, is.finite(nsim), nsim > 0)
 
   if (missing(tests) || is.null(tests)) tests <- character()
   if (!is.character(tests)) stop("tests must be a character vector.", call. = FALSE)

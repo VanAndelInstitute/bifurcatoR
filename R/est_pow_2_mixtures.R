@@ -36,8 +36,8 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
   nsim <- as.integer(nsim);  stopifnot(nsim > 0)
 
   if (missing(tests) || is.null(tests)) tests <- character()
-  stopifnot(is.character(tests))
-
+  if (!is.character(tests)) stop("tests must be a character vector.", call. = FALSE)
+  
   dist <- match.arg(dist)
   
   group <- factor(c(rep("A", n1), rep("B", n2)))
