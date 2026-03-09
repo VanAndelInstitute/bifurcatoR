@@ -48,6 +48,19 @@ est_pow_2_unimodes <- function(n,
   if ("levene" %in% tests) {
     test_fns$levene <- function(x) leveneTest(c(x[[1]], x[[2]]), group)$"Pr(>F)"[1] < alpha
   }
+  
+  if ("bartlett" %in% tests) {
+    test_fns$levene <- function(x) bartlett.test(x)$p.value < alpha
+  }
+  
+  if ("fligner" %in% tests) {
+    test_fns$levene <- function(x) fligner.test(x)$p.value < alpha
+  }
+  
+  if ("f_test" %in% tests) {
+    test_fns$f_test <- function(x) var.test(x[[1]], x[[2]])$p.value < alpha
+  }
+  
   if ("ANOVA" %in% tests) {
     test_fns$ANOVA <- function(x) anova(lm(c(x[[1]], x[[2]]) ~ group))$"Pr(>F)"[1] < alpha
   }
@@ -145,6 +158,9 @@ est_pow_2_unimodes <- function(n,
   test_labels <- c(
     welch = "Welch's t-test",
     levene = "Levene's",
+    f_test = "F-test",
+    bartlett = "Bartlett's test",
+    fligner = "Fligner-Killeen test",
     ANOVA = "ANOVA",
     Non_p_ANOVA = "Non-parametric ANOVA",
     perm_raw = "Permutations (Raw)",

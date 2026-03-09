@@ -61,12 +61,27 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
   if ("levene" %in% tests) {
     test_fns$levene <- function(x) leveneTest(c(x[[1]], x[[2]]), group)$"Pr(>F)"[1] < alpha
   }
+  
+  if ("bartlett" %in% tests) {
+    test_fns$levene <- function(x) bartlett.test(x)$p.value < alpha
+  }
+  
+  if ("fligner" %in% tests) {
+    test_fns$levene <- function(x) fligner.test(x)$p.value < alpha
+  }
+  
+  if ("f_test" %in% tests) {
+    test_fns$f_test <- function(x) var.test(x[[1]], x[[2]])$p.value < alpha
+  }
+  
   if ("welch" %in% tests) {
     test_fns$welch <- function(x) t.test(x[[1]],x[[2]])$p.value < alpha
   }
+  
   if ("ANOVA" %in% tests) {
     test_fns$ANOVA <- function(x) anova(lm(c(x[[1]], x[[2]]) ~ group))$"Pr(>F)"[1] < alpha
   }
+  
   if ("Non-parametric ANOVA" %in% tests) {
     test_fns$Non_p_ANOVA <- function(x) anova(lm(rank(c(x[[1]], x[[2]])) ~ group))$"Pr(>F)"[1] < alpha
   }
@@ -175,6 +190,9 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
     kuiper = "Kuiper",
     welch = "Welch's t-test",
     levene = "Levene's",
+    f_test = "F-test",
+    bartlett = "Bartlett's test",
+    fligner = "Fligner-Killeen test",
     ANOVA = "ANOVA",
     Non_p_ANOVA = "Non-parametric ANOVA",
     perm_raw = "Permutations (Raw)",
