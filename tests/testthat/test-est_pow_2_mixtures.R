@@ -13,7 +13,17 @@ test_that("est_pow_2_mixtures: returns expected columns", {
     nsim = 3,
     dist = "norm",
     params = params,
-    tests = c("ANOVA", "levene", "Permutations (Raw)", "cvm")
+    tests = c("ANOVA",
+              "Non-parametric ANOVA",
+              "levene",
+              "f_test",
+              "fligner",
+              "bartlett",
+              "Permutations (Raw)",
+              "Permutations (SD)",
+              "Permutations (MAD)",
+              "Permutations (Gini)",
+              "cvm")
   )
   
   expect_s3_class(out, "data.frame")

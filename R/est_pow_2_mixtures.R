@@ -63,11 +63,11 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
   }
   
   if ("bartlett" %in% tests) {
-    test_fns$levene <- function(x) bartlett.test(x)$p.value < alpha
+    test_fns$bartlett <- function(x) bartlett.test(x)$p.value < alpha
   }
   
   if ("fligner" %in% tests) {
-    test_fns$levene <- function(x) fligner.test(x)$p.value < alpha
+    test_fns$fligner <- function(x) fligner.test(x)$p.value < alpha
   }
   
   if ("f_test" %in% tests) {

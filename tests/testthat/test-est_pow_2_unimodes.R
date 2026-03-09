@@ -34,14 +34,17 @@ test_that("est_pow_2_unimodes normality tests are working correctly", {
     tests = c("ANOVA",
               "Non-parametric ANOVA",
               "levene",
+              "f_test",
+              "fligner",
+              "bartlett",
               "Permutations (Raw)",
               "Permutations (SD)",
               "Permutations (MAD)",
               "Permutations (Gini)")
   )
   
-  expect_equal(out$power, c(0,1,1,1,0,0,0))
-  expect_equal(out$FP, c(0.1, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0))
+  expect_equal(out$power, c(0,0,0,0,1,1,1,0,0,0))
+  expect_equal(out$FP, c(0.0,0.0, 0.0, 0.0, 0.0, 0.0,0.0, 0.0, 0.0, 0.0))
   
 })
 
