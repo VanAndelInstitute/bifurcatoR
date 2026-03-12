@@ -106,8 +106,12 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
     rlnorm(n1, p_list[[1]]$meanlog, p_list[[1]]$sdlog),
     rlnorm(n2, p_list[[2]]$meanlog, p_list[[2]]$sdlog)
   )
-  draw_beta <- function(n, p_list) rbeta(n, p_list[[1]]$shape1, p_list[[1]]$shape2)
-  
+  draw_beta <- function(n1, n2, p_list) c(
+    rbeta(n1, p_list[[1]]$shape1, p_list[[1]]$shape2),
+    rbeta(n2, p_list[[2]]$shape1, p_list[[2]]$shape2)
+  )
+
+    
   get_alt <- function() {
     switch(
       dist,
@@ -115,7 +119,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
       weibull  = draw2_weibull(n[1], n[2], par.alt),
       gamma = draw2_gamma(n[1], n[2], par.alt),
       lnorm = draw2_lnorm(n[1], n[2], par.alt),
-      beta  = draw_beta(n, par.alt)
+      beta  = draw_beta(n[1], n[2], par.alt)
     )
   }
   

@@ -128,7 +128,7 @@ est_pow_2_clust_copula = function(n,alpha = 0.05,nsim = 20 ,dist = c("norm", "be
         weibull  = rbind(draw_cop_weibull(n[1], par$cluster1,rho[1]),  draw_cop_weibull(n[2], par$cluster2,rho[2])),
         gamma = rbind(draw_cop_gamma(n[1], par$cluster1,rho[1]), draw_cop_gamma(n[2], par$cluster2,rho[2])),
         lnorm = rbind(draw_cop_lnorm(n[1], par$cluster1,rho[1]), draw_cop_lnorm(n[2], par$cluster2,rho[2])),
-        beta  = rbind(draw_cop_beta(n, par,rho[1]))
+        beta  = rbind(draw_cop_beta(n[1], par$cluster1,rho[1]), draw_cop_beta(n[2], par$cluster2,rho[2]))
       )
     }
   }

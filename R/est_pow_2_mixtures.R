@@ -38,8 +38,6 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
   if (missing(tests) || is.null(tests)) tests <- character()
   if (!is.character(tests)) stop("tests must be a character vector.", call. = FALSE)
   
-  dist <- match.arg(dist)
-  
   group <- factor(c(rep("A", n1), rep("B", n2)))
   group.numeric <- as.integer(group) - 1L
   
@@ -138,7 +136,10 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
     rlnorm(n_vec[1], p_list[[1]]$meanlog, p_list[[1]]$sdlog),
     rlnorm(n_vec[2], p_list[[2]]$meanlog, p_list[[2]]$sdlog)
   )
-  draw_beta <- function(n, p_list) rbeta(n, p_list[[1]]$shape1, p_list[[1]]$shape2)
+  draw_beta <- function(n_vec, p_list) c(
+    rbeta(n_vec[1], p_list[[1]]$shape1, p_list[[1]]$shape2),
+    rbeta(n_vec[2], p_list[[2]]$shape1, p_list[[2]]$shape2)
+  )
   
   make_generator <- function(par) {
     function() {
@@ -148,7 +149,7 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
         weibull  = list(draw2_weibull(n_group1, par$group1),  draw2_weibull(n_group2, par$group2)),
         gamma = list(draw2_gamma(n_group1, par$group1), draw2_gamma(n_group2, par$group2)),
         lnorm = list(draw2_lnorm(n_group1, par$group1), draw2_lnorm(n_group2, par$group2)),
-        beta  = list(draw_beta(n1, par$group1),         draw_beta(n2, par$group2))
+        beta  = list(draw_beta(n_group1, par$group1),   draw_beta(n_group2, par$group2))
       )
     }
   }
@@ -203,7 +204,6 @@ est_pow_2_mixtures <- function(n_group1,n_group2, alpha = 0.05, nsim = 20, dist 
   
   nm <- test_names
   data.frame(
-    N     = n1 + n2,
     Test  = unname(test_labels[nm]),
     power = rej_alt[nm] / nsim,
     FP    = rej_null[nm] / nsim,
