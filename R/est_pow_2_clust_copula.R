@@ -75,11 +75,13 @@ est_pow_2_clust_copula = function(n,alpha = 0.05,nsim = 20 ,dist = c("norm", "be
   test_fns <- list()
   
   # modetest family: avoid repeating boilerplate
+  # mclustBootstrapLRT will continue if a model cannot be fit, it will choose the next best.
+  # Leaving this behavior as is and not flagging it as this is likely how the method would be used in practice.
   add_mclusttest <- function(key, method) {
     if (key %in% tests) {
       force(method)
-      test_fns[[key]] <<- function(x){mclustBootstrapLRT(x, modelName=method,
-                                                         verbose=FALSE, maxG=1, nboot=500)$p.value < alpha}
+      test_fns[[key]] <<- function(x){mclust::mclustBootstrapLRT(x, modelName=method,
+                                                         verbose=FALSE, maxG=2, nboot=500)$p.value < alpha}
     }
   }
   
@@ -91,7 +93,7 @@ est_pow_2_clust_copula = function(n,alpha = 0.05,nsim = 20 ,dist = c("norm", "be
   add_mclusttest("mclust_VVV", "VVV")
   
   if("sigclust" %in% tests){
-    test_fns$sigclust <- function(x){sigclust(x, nsim = 1000)@pval < alpha}
+    test_fns$sigclust <- function(x){sigclust(x, nsim = 500,icovest = 2)@pval < alpha}
   }
   
   test_names <- names(test_fns)
@@ -151,12 +153,12 @@ est_pow_2_clust_copula = function(n,alpha = 0.05,nsim = 20 ,dist = c("norm", "be
   nm <- names(test_fns)
   
   test_labels <- c(
-    mclust_EII = "Spherical, equal volume",
-    mclust_VII = "Spherical, unequal volume",
-    mclust_EEI = "Diagonal, equal volume",
-    mclust_VVI = "Diagonal, varying volume, varying shape",
-    mclust_EEE = "Same volume, shape, orientation",
-    mclust_VVV = "Varying volume, shape, and volume",
+    mclust_EII = "EII Spherical, equal volume",
+    mclust_VII = "VII Spherical, unequal volume",
+    mclust_EEI = "EEI Diagonal, equal volume",
+    mclust_VVI = "VVI Diagonal, varying volume",
+    mclust_EEE = "EEE Same volume, shape, orientation",
+    mclust_VVV = "VVV Varying volume, shape, and volume",
     sigclust = "sigclust"
   )
   

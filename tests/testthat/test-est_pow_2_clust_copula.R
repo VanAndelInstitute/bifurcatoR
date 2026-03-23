@@ -2,17 +2,17 @@ test_that("est_pow_2_clust_copula: returns expected columns", {
   
   set.seed(1)
   params <- list(
-    cluster1 = list(list(mean = 1, sd = 1), list(mean = 2, sd = 1)),
-    cluster2 = list(list(mean = 10, sd = 2), list(mean = 10, sd = 2))
+    cluster1 = list(list(mean = 0, sd = 1), list(mean = 4, sd = 4)),
+    cluster2 = list(list(mean = 10, sd = 2), list(mean = 10, sd = 0.2))
   )
   
   out <- est_pow_2_clust_copula(
-    n = c(50,25),
+    n = c(15,15),
     alpha = 0.05,
     nsim = 3,
     dist = "norm",
     params = params,
-    tests = c("mclust_EEE","mclust_VVV")
+    tests = c("mclust_EEI","mclust_EII","mclust_VII","sigclust")
   )
   
   expect_s3_class(out, "data.frame")
