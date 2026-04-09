@@ -22,8 +22,10 @@ est_pow_2_unimodes <- function(n,
                                dist = c("norm", "beta", "weibull", "gamma", "lnorm"),
                                params,
                                tests){
+  dist <- as.character(dist)
+  dist <- match.arg(dist, c("norm", "beta", "weibull", "gamma", "lnorm"))
   
-  ## error checks ##
+  ## error checks ####dist error checks ##
   stopifnot(is.numeric(n), length(n) == 2, all(is.finite(n)), all(n > 0))
   n <- as.integer(n)
   stopifnot(is.numeric(alpha), length(alpha) == 1, is.finite(alpha), alpha > 0, alpha < 1)

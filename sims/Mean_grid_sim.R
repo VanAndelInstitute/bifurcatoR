@@ -12,7 +12,7 @@ dists <- c("norm","beta","weibull","gamma","lnorm")
 total_n <- c(8,16,32,64,128,256,512,1048)
 s_ratios <- c(0.25,0.5,0.75) #sampling ratios
 
-tests <-   test_labels <- c("welch", "ANOVA" , "Non_p_ANOVA", "perm_raw" )
+all.tests <-   test_labels <- c("welch", "ANOVA" , "Non-parametric ANOVA", "Permutations (Raw)" )
 
 ## params need to be set based off the distribution.
 ## If normal, one mean should be 0 for standard normal and the other can just be mus
@@ -48,12 +48,12 @@ sim_mean <- function(i){
     n2 =  params.sim$total_n[i] - n1
     est_pow_2_unimodes(n =c(n1,n2) ,
                        alpha = 0.05,
-                       nsim = 5,
+                       nsim = 2000,
                        dist = params.sim$dists[i],
                        params = params,
-                       tests = tests)
+                       tests = all.tests)
     
 }
 
-lapply(1:nrow(params.sim),function(x) sim_mean(x) )
+lapply(1:3,function(x) sim_mean(x) )
 
