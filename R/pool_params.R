@@ -9,6 +9,8 @@
 #'
 #' @return
 #' A list of length 2, each element containing the pooled `mean` and `sd`.
+#' @export
+
 
 pool_params <- function(n, params) {
   n1 <- as.integer(n[1]); n2 <- as.integer(n[2])
