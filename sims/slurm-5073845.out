@@ -1,0 +1,22 @@
+Loading [1mbbc2/R/R-4.5.0[22m
+  [94mLoading requirement[0m: bbc2/jdk/jdk-17.0.7 bbc2/ImageMagick/ImageMagick-7.1.1-33
+    bbc2/gcc/gcc-12.2.0
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+There were 13 warnings (use warnings() to see them)

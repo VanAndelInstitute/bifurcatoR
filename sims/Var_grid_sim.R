@@ -10,7 +10,8 @@ dists <- c("norm","beta","weibull","gamma","lnorm")
 total_n <- c(8,16,32,64,128,256,512,1048)
 s_ratios <- c(0.25,0.5,0.75) #sampling ratios
 
-all.tests <-   test_labels <- c("welch", "ANOVA" , "Non-parametric ANOVA", "Permutations (Raw)" )
+all.tests <-   test_labels <- c("levene","bartlett","fligner","f_test",
+                                "Permutations (SD)","Permutations (Gini)","Permutations (MAD)" )
 
 ## params need to be set based off the distribution.
 ## If normal, one mean should be 0 for standard normal and the other can just be mus
@@ -62,5 +63,5 @@ sim_mean <- function(i){
 ncore <- ceiling(parallel::detectCores()*0.9)
 mean.sims <- rbindlist(mclapply(1:nrow(params.sim),function(x) sim_mean(x) ,mc.cores = ncore))
 
-write.csv(mean.sims,file = paste0("/varidata/research/projects/bbc/research/POSA_20230314_TR01Shiny_VBCS-718/bifurcatoR_main/sims/2000_mean_grid_sim.csv"),row.names = F)
+write.csv(mean.sims,file = paste0("/varidata/research/projects/bbc/research/POSA_20230314_TR01Shiny_VBCS-718/bifurcatoR_main/sims/2000_var_grid_sim.csv"),row.names = F)
 

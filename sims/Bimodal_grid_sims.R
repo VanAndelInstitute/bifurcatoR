@@ -10,7 +10,9 @@ dists <- c("norm","beta","weibull","gamma","lnorm")
 total_n <- c(8,16,32,64,128,256,512,1048)
 s_ratios <- c(0.25,0.5,0.75) #sampling ratios
 
-all.tests <-   test_labels <- c("welch", "ANOVA" , "Non-parametric ANOVA", "Permutations (Raw)" )
+all.tests <-   test_labels <- c("mclust_E", "mclust_V" , "mt",
+                                "dip","SI","CH","HY","ACR","FM",
+                                "WmixR","NmixR","GmixR","LNmixR")
 
 ## params need to be set based off the distribution.
 ## If normal, one mean should be 0 for standard normal and the other can just be mus
@@ -32,35 +34,36 @@ sd1 <- case_when(params.sim$dists == "beta" ~ 0.288,
 sim_mean <- function(i){
   
   mu2 <- ifelse(params.sim[i,]$dist == "norm", params.sim$mus[i] + mu1[i],
-                 ifelse(params.sim[i,]$dist == "beta", 1/max(params.sim$mus[i],1) *mu1[i],
-                         max(params.sim$mus[i],1) *mu1[i])) 
+                ifelse(params.sim[i,]$dist == "beta", 1/max(params.sim$mus[i],1) *mu1[i],
+                       max(params.sim$mus[i],1) *mu1[i])) 
   
   sd2 <- ifelse(params.sim[i,]$dist == "beta", 1/params.sim$sdx[i] *sd1[i],
-                       params.sim$sdx[i] *sd1[i]) 
+                params.sim$sdx[i] *sd1[i]) 
   
   
   params <- list(list(mean = mu1[i],sd=sd1[i]),list(mean = mu2,sd=sd2))
   
   #beta max sd is 0.28867; max mean is 0.999999
-    n1 = params.sim$total_n[i] * params.sim$s_ratios[i]
-    n2 =  params.sim$total_n[i] - n1
-    sims <- est_pow_2_unimodes(n =c(n1,n2) ,
-                       alpha = 0.05,
-                       nsim = 5000,
-                       dist = params.sim$dists[i],
-                       params = params,
-                       tests = all.tests)
-    
-    return(data.frame(sims,
-               delta = params.sim$mus[i],
-               sd_fc = params.sim$sdx[i],
-               dist = params.sim$dists[i],
-               s_ratios = params.sim$s_ratios[i]))
-    
+  n1 = params.sim$total_n[i] * params.sim$s_ratios[i]
+  n2 =  params.sim$total_n[i] - n1
+  sims <- est_pow_bimodal(n =c(n1,n2) ,
+                             alpha = 0.05,
+                             nsim = 5,
+                             dist = params.sim$dists[i],
+                             params = params,
+                             tests = all.tests)
+  
+  return(data.frame(sims,
+                    delta = params.sim$mus[i],
+                    sd_fc = params.sim$sdx[i],
+                    dist = params.sim$dists[i],
+                    s_ratios = params.sim$s_ratios[i]))
+  
 }
 
 ncore <- ceiling(parallel::detectCores()*0.9)
-mean.sims <- rbindlist(mclapply(1:nrow(params.sim),function(x) sim_mean(x) ,mc.cores = ncore))
+# mean.sims <- rbindlist(mclapply(1:nrow(params.sim),function(x) sim_mean(x) ,mc.cores = ncore))
+mean.sims <- rbindlist(mclapply(1:10,function(x) sim_mean(x) ,mc.cores = ncore))
 
-write.csv(mean.sims,file = paste0("/varidata/research/projects/bbc/research/POSA_20230314_TR01Shiny_VBCS-718/bifurcatoR_main/sims/2000_mean_grid_sim.csv"),row.names = F)
+write.csv(mean.sims,file = paste0("/varidata/research/projects/bbc/research/POSA_20230314_TR01Shiny_VBCS-718/bifurcatoR_main/sims/2000_bimodal_grid_sim.csv"),row.names = F)
 

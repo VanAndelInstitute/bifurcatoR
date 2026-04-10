@@ -85,8 +85,10 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   rej_alt  <- setNames(integer(length(test_fns)), test_names)
   rej_null <- rej_alt
   
-  par.alt <- convert_params(dist,params)
-  par.null  <- pool_params(c(n[1],n[2]),par.alt)
+  par.alt <-  convert_params(dist, params)
+  
+  pooled <- pool_params( c(n[1],n[2]), params)
+  par.null <- convert_params(dist, list(pooled, pooled))
   
   
   # --- generators ---
