@@ -78,12 +78,17 @@ bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
   if(!is.numeric(H1) || H1 < H0) stop("H1 must be an integer greater than H0.")
 
   # perform the bootstrap test
-  tst.p = mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter, ...)
-  # If this test comes back NA, it usually means the EM algorithm failed to converge on two unequal modes.
-  # Attempt with equal variances to get a p-value. An alternate option would be to set NA -> p =0.99999
-  if(is.na(tst.p$pvalue)){
-    tst.p = mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter,ev=T ,...)
-  }
+  tst.p = try(mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter, ...),silent = T )
+  if(! inherits(tst.p,"try-error")){
+    # If this test comes back NA, it usually means the EM algorithm failed to converge on two unequal modes.
+    # Attempt with equal variances to get a p-value. 
+    if(is.na(tst.p$pvalue)){
+      tst.p = mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter,ev=T ,...)
+    }
+  } else {
+    #If the p is still NA, we set p to 0.9999 because it has failed to find enough evidence. 
+    tst.p <- data.frame(pvalue = NA)
+  }  
   
   return(tst.p)
 

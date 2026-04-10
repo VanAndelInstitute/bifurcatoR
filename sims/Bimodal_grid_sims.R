@@ -3,6 +3,14 @@ library(parallel)
 library(dplyr)
 library(data.table)
 library(bifurcatoR)
+library(mclust)
+library(diptest)
+library(mousetrap)
+library(LaplacesDemon)
+library(multimode)
+library(Hmisc)
+library(twosamples)
+library(mixR)
 
 mus <- c(0,2,4)
 sdx <- c(1,2,4)
@@ -48,7 +56,7 @@ sim_mean <- function(i){
   n2 =  params.sim$total_n[i] - n1
   sims <- est_pow_bimodal(n =c(n1,n2) ,
                              alpha = 0.05,
-                             nsim = 5,
+                             nsim = 1000,
                              dist = params.sim$dists[i],
                              params = params,
                              tests = all.tests)
@@ -62,8 +70,7 @@ sim_mean <- function(i){
 }
 
 ncore <- ceiling(parallel::detectCores()*0.9)
-# mean.sims <- rbindlist(mclapply(1:nrow(params.sim),function(x) sim_mean(x) ,mc.cores = ncore))
-mean.sims <- rbindlist(mclapply(1:10,function(x) sim_mean(x) ,mc.cores = ncore))
+mean.sims <- rbindlist(mclapply(1:nrow(params.sim),function(x) sim_mean(x) ,mc.cores = ncore))
 
 write.csv(mean.sims,file = paste0("/varidata/research/projects/bbc/research/POSA_20230314_TR01Shiny_VBCS-718/bifurcatoR_main/sims/2000_bimodal_grid_sim.csv"),row.names = F)
 
