@@ -19,6 +19,7 @@
 #' @import          mixR
 #'
 #' @export
+
 est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "weibull", "gamma", "lnorm") ,params,tests){
   dist <- match.arg(dist, c("norm","beta","weibull","gamma","lnorm"))
   stopifnot(is.numeric(n), length(n) == 2, all(is.finite(n)), all(n > 0))
@@ -34,14 +35,14 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   if ("mclust_E" %in% tests) {
     test_fns$mclust_E <- function(x) {
       mclustBootstrapLRT(data.frame(x=x), modelName="E",
-                                 verbose=FALSE, maxG=1, nboot=500)$p.value < alpha
+                                 verbose=FALSE, maxG=1, nboot = 500)$p.value < alpha
     }
   }
   
   if ("mclust_V" %in% tests) {
     test_fns$mclust_V <- function(x) {
       mclustBootstrapLRT(data.frame(x=x), modelName="V",
-                         verbose=FALSE, maxG=1, nboot=500)$p.value < alpha
+                         verbose=FALSE, maxG=1, nboot = 500)$p.value < alpha
     }
   }
   
@@ -50,6 +51,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
       mt_check_bimodality(data.frame(x = x),method="BC")$BC > (5/9)
     }
   }
+  
   # modetest family: avoid repeating boilerplate
   add_modetest <- function(key, method) {
     if (key %in% tests) {
@@ -67,8 +69,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   add_mixR <- function(key, family) {
     if (key %in% tests) {
       test_fns[[key]] <<- function(x) {
-        pval <- try(bs_lrt(x, H0 = 1, H1 = 2, family = family, nboot = 500)$pvalue, silent = TRUE)
-        if (inherits(pval, "try-error")) FALSE else (pval < alpha)
+        pval <- bs_lrt(x, H0 = 1, H1 = 2, family = family, nboot = 500)$pvalue < alpha
       }
     }
   }
@@ -87,9 +88,9 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   
   par.alt <-  convert_params(dist, params)
   
-  pooled <- pool_params( c(n[1],n[2]), params)
-  par.null <- convert_params(dist, list(pooled, pooled))
-  
+  pooled <- pool_params(n, params)
+  par.null.2 <- convert_params(dist, list(pooled, pooled))
+  par.null <- par.null.2[[1]]
   
   # --- generators ---
   draw2_norm  <- function(n1, n2, p_list) c(
@@ -108,7 +109,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
     rlnorm(n1, p_list[[1]]$meanlog, p_list[[1]]$sdlog),
     rlnorm(n2, p_list[[2]]$meanlog, p_list[[2]]$sdlog)
   )
-  draw_beta <- function(n1, n2, p_list) c(
+  draw2_beta <- function(n1, n2, p_list) c(
     rbeta(n1, p_list[[1]]$shape1, p_list[[1]]$shape2),
     rbeta(n2, p_list[[2]]$shape1, p_list[[2]]$shape2)
   )
@@ -121,7 +122,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
       weibull  = draw2_weibull(n[1], n[2], par.alt),
       gamma = draw2_gamma(n[1], n[2], par.alt),
       lnorm = draw2_lnorm(n[1], n[2], par.alt),
-      beta  = draw_beta(n[1], n[2], par.alt)
+      beta  = draw2_beta(n[1], n[2], par.alt)
     )
   }
   
@@ -138,16 +139,20 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
     )
   }
   
-  # --- simulation loop ---
+  xa <- get_alt()
+  sapply(test_fns, function(f) system.time(replicate(5, f(xa)))[["elapsed"]])
+  
+  test_names <- names(test_fns)
+  
   for (sim in seq_len(nsim)) {
     xa <- get_alt()
     x0 <- get_null()
     
-    for (nm in test_names) {
-      f <- test_fns[[nm]]
-      rej_alt[nm]  <- rej_alt[nm]  + isTRUE(f(xa))
-      rej_null[nm] <- rej_null[nm] + isTRUE(f(x0))
-    }
+    alt_hits <- vapply(test_fns, function(f) isTRUE(f(xa)), logical(1))
+    null_hits <- vapply(test_fns, function(f) isTRUE(f(x0)), logical(1))
+    
+    rej_alt[test_names]  <- rej_alt[test_names]  + alt_hits
+    rej_null[test_names] <- rej_null[test_names] + null_hits
   }
   
   test_labels <- c(
