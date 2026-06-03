@@ -20,7 +20,7 @@
 #'
 #' @export
 
-est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "weibull", "gamma", "lnorm") ,params,tests){
+est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "weibull", "gamma", "lnorm") ,params,tests,run_null=T){
   dist <- match.arg(dist, c("norm","beta","weibull","gamma","lnorm"))
   stopifnot(is.numeric(n), length(n) == 2, all(is.finite(n)), all(n > 0))
 
@@ -34,15 +34,15 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   
   if ("mclust_E" %in% tests) {
     test_fns$mclust_E <- function(x) {
-      mclustBootstrapLRT(data.frame(x=x), modelName="E",
-                                 verbose=FALSE, maxG=1, nboot = 500)$p.value < alpha
+      mclustBootstrapLRT(x, modelName="E",
+                                 verbose=FALSE, maxG=1)$p.value < alpha
     }
   }
   
   if ("mclust_V" %in% tests) {
     test_fns$mclust_V <- function(x) {
-      mclustBootstrapLRT(data.frame(x=x), modelName="V",
-                         verbose=FALSE, maxG=1, nboot = 500)$p.value < alpha
+      mclustBootstrapLRT(x, modelName="V",
+                         verbose=FALSE, maxG=1)$p.value < alpha
     }
   }
   
@@ -55,7 +55,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   # modetest family: avoid repeating boilerplate
   add_modetest <- function(key, method) {
     if (key %in% tests) {
-      test_fns[[key]] <<- function(x) modetest(x, mod0 = 1, method = method, B = 500)$p.value < alpha
+      test_fns[[key]] <<- function(x) modetest(x, mod0 = 1, method = method)$p.value < alpha
     }
   }
   
@@ -69,7 +69,12 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   add_mixR <- function(key, family) {
     if (key %in% tests) {
       test_fns[[key]] <<- function(x) {
-        pval <- bs_lrt(x, H0 = 1, H1 = 2, family = family, nboot = 500)$pvalue < alpha
+        try.fit <- try(bs.test(x,family = family)$pvalue,silent=T)
+        if(! inherits(try.fit,"try-error")) { 
+          try.fit < alpha
+        } else {
+          NA
+        }
       }
     }
   }
@@ -89,8 +94,8 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   par.alt <-  convert_params(dist, params)
   
   pooled <- pool_params(n, params)
-  par.null.2 <- convert_params(dist, list(pooled, pooled))
-  par.null <- par.null.2[[1]]
+  
+  par.null <- convert_params(dist, list(pooled, pooled))[[1]]
   
   # --- generators ---
   draw2_norm  <- function(n1, n2, p_list) c(
@@ -114,7 +119,6 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
     rbeta(n2, p_list[[2]]$shape1, p_list[[2]]$shape2)
   )
 
-    
   get_alt <- function() {
     switch(
       dist,
@@ -139,22 +143,27 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
     )
   }
   
-  xa <- get_alt()
-  sapply(test_fns, function(f) system.time(replicate(5, f(xa)))[["elapsed"]])
-  
-  test_names <- names(test_fns)
-  
-  for (sim in seq_len(nsim)) {
+  if(run_null){
+    for (sim in seq_len(nsim)) {
+      xa <- get_alt()
+      x0 <- get_null()
+      
+      alt_hits <- vapply(test_fns, function(f) isTRUE(f(xa)), logical(1))
+      null_hits <- vapply(test_fns, function(f) isTRUE(f(x0)), logical(1))
+      
+      rej_alt[test_names]  <- rej_alt[test_names]  + alt_hits
+      rej_null[test_names] <- rej_null[test_names] + null_hits
+    }
+    
+  } else {
+    for (sim in seq_len(nsim)) {
     xa <- get_alt()
-    x0 <- get_null()
-    
     alt_hits <- vapply(test_fns, function(f) isTRUE(f(xa)), logical(1))
-    null_hits <- vapply(test_fns, function(f) isTRUE(f(x0)), logical(1))
-    
     rej_alt[test_names]  <- rej_alt[test_names]  + alt_hits
-    rej_null[test_names] <- rej_null[test_names] + null_hits
+    }
   }
   
+
   test_labels <- c(
     mclust_E = "Mclust equal var",
     mclust_V = "Mclust unequal var",
@@ -177,7 +186,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
     N     = paste0(n,collapse = ", "),
     Test  = unname(test_labels[nm]),   # pretty label
     power = rej_alt[nm]  / nsim,
-    FP    = rej_null[nm] / nsim,
+    FFP = if (run_null) rej_null[nm] / nsim else NA_real_,
     row.names = NULL,
     check.names = FALSE
   )
