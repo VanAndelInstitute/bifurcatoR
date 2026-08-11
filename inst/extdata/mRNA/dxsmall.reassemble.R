@@ -80,9 +80,6 @@ sort(table(dxsmall$FusionGroup))
 # NSD1   MLL
 #  103   367
 
-# test that it works with iSEE 
-iSEEapp(dxsmall)
-
 # resave?
 if (FALSE) { 
   save(dxsmall, file="../../../data/dxsmall.rda", compress="xz")
