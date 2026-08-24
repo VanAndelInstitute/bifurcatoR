@@ -20,7 +20,7 @@
 #'
 #' @export
 
-est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "weibull", "gamma", "lnorm") ,params,tests,run_null=T){
+est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "weibull", "gamma", "lnorm") ,params,tests,run_null=T,convert=T){
   dist <- match.arg(dist, c("norm","beta","weibull","gamma","lnorm"))
   stopifnot(is.numeric(n), length(n) == 2, all(is.finite(n)), all(n > 0))
 
@@ -31,6 +31,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   if (!is.character(tests)) stop("tests must be a character vector.", call. = FALSE)
   
   test_fns <- list()
+
   
   if ("mclust_E" %in% tests) {
     test_fns$mclust_E <- function(x) {
@@ -38,11 +39,15 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
                                  verbose=FALSE, maxG=1)$p.value < alpha
     }
   }
-  
+  ctrl <- emControl(
+    eps   = 1e-7,          # stop near-singular variance solutions sooner
+    tol   = c(1e-3, 1e-3), # higher tolerance to prevent from divergent variances (i.e modes made of a single outlier)
+    itmax = c(5000, 5000)
+  )
   if ("mclust_V" %in% tests) {
     test_fns$mclust_V <- function(x) {
       mclustBootstrapLRT(x, modelName="V",
-                         verbose=FALSE, maxG=1)$p.value < alpha
+                         verbose=FALSE, maxG=1, control = ctrl)$p.value < alpha
     }
   }
   
