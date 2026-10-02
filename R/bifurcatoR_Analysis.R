@@ -172,7 +172,7 @@ ad <- function(data, nboot, alpha) {
   twosample_tester("ad", data, nboot, alpha)
 }
 
-Levene <- function(data, nboot) {
+Levene <- function(data, nboot, alpha) {
   tmp = car::leveneTest(lm(value ~ as.factor(data$group), data = data))
   data.frame(
     Test = "Levene's Test",
@@ -224,7 +224,7 @@ permutation_tester <- function(type, data, nboot, alpha) {
 
 anova_tester <- function(type, data, nboot, alpha) {
   tmp <- switch(type,
-    `Parametric ANOVA` = lm(value ~ as.factor(data$group), data = data),
+    `ANOVA` = lm(value ~ as.factor(data$group), data = data),
     `Non-parametric ANOVA` = lm(rank(value) ~ as.factor(data$group), data = data)
   )
   ci <- round(confint(tmp)[2, ], floor(log10(nboot)) + 1)
