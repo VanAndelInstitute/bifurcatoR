@@ -20,7 +20,6 @@ Imports:
     data.table,
     diptest,
     dplyr,
-    EpiNow2,
     Hmisc,
     LaplacesDemon,
     MASS,

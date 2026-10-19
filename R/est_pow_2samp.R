@@ -138,11 +138,11 @@ est_pow_2samp <- function(n1, n2, alpha, nsim, modes, dist, params, tests, nperm
       } else {
         if (dist == "lnorm") {
           if (modes == 1) {
-            logmean <- EpiNow2::convert_to_logmean(
+            logmean <- convert_to_logmean(
               exp(0.5) + params$mean,
               params$v_scale * exp((1 / 2) * 1) * sqrt(exp(1) - 1)
             )
-            logsd <- EpiNow2::convert_to_logsd(
+            logsd <- convert_to_logsd(
               exp(0.5) + params$mean,
               params$v_scale * exp((1 / 2) * 1) * sqrt(exp(1) - 1)
             )
@@ -450,4 +450,32 @@ est_pow_2samp <- function(n1, n2, alpha, nsim, modes, dist, params, tests, nperm
   }
 
   return(pwr.df)
+}
+
+#' Convert mean and sd to log mean or standard deviation for a log normal distribution
+#'
+#' @description
+#' Convert from mean and standard deviation to the log mean or standard deviation of the
+#' lognormal distribution. Useful for defining a [LogNormal()] distribution
+#' from a mean and standard deviation on the natural scale.
+#' Copied from: https://github.com/epiforecasts/distspec/blob/d8b8ca2c4842f0cfcfc3139f7a0759d93b4e141c/R/conversions.R
+#'
+#' @param mean Numeric, mean of a distribution
+#' @param sd Numeric, standard deviation of a distribution
+#'
+#' @return The log mean of a lognormal distribution
+#' @export
+#' @name convert_to_logmean_sd
+#'
+#' @examples
+#' convert_to_logmean(2, 1)
+#' convert_to_logsd(2, 1)
+convert_to_logmean <- function(mean, sd) {
+  log(mean^2 / sqrt(sd^2 + mean^2))
+}
+
+#' @rdname convert_to_logmean_sd
+#' @export
+convert_to_logsd <- function(mean, sd) {
+  sqrt(log(1 + (sd^2 / mean^2)))
 }
