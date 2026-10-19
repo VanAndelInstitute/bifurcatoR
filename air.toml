@@ -1,0 +1,14 @@
+[format]
+line-width = 120
+indent-width = 2
+indent-style = "space"
+line-ending = "auto"
+persistent-line-breaks = true
+assignment-style = "arrow"
+exclude = []
+default-exclude = true
+skip = []
+table = []
+default-table = true
+
+# https://posit-dev.github.io/air/configuration.html
