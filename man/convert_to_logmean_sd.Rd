@@ -20,7 +20,7 @@ The log mean of a lognormal distribution
 }
 \description{
 Convert from mean and standard deviation to the log mean or standard deviation of the
-lognormal distribution. Useful for defining a \code{\link[=LogNormal]{LogNormal()}} distribution
+lognormal distribution. Useful for defining a \code{LogNormal()} distribution
 from a mean and standard deviation on the natural scale.
 Copied from: https://github.com/epiforecasts/distspec/blob/d8b8ca2c4842f0cfcfc3139f7a0759d93b4e141c/R/conversions.R
 }
