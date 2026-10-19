@@ -35,6 +35,7 @@ Imports:
     ppclust,
     pwr,
     shiny,
+    sigclust,
     stats,
     twosamples
 Suggests:
