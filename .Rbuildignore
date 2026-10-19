@@ -3,4 +3,12 @@
 Makefile
 
 
+air.toml
+docs
 LICENSE.md
+
+# TODO: remove
+MLL.RD
+df.rds
+resuls.rds
+sims
