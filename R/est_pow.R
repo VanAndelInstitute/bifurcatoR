@@ -16,54 +16,63 @@
 #' @importFrom      stats rbeta rlnorm rnorm rweibull
 #'
 #' @export
-est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
-  if(dist=="norm"){
+est_pow <- function(n, alpha, nsim, dist, params, tests, nboot) {
+  if (dist == "norm") {
+    n1 <- floor(params$p * n)
+    n2 <- floor((1 - params$p) * n)
 
-    n1 = floor(params$p*n)
-    n2 = floor((1-params$p)*n)
+    n.dfs <- lapply(1:nsim, function(x) c(rnorm(n1, params$mu1, params$sd1), rnorm(n2, params$mu2, params$sd2)))
 
-    n.dfs = lapply(1:nsim,function(x) c(rnorm(n1,params$mu1,params$sd1),rnorm(n2,params$mu2,params$sd2)))
-
-
-    a.dfs = lapply(1:nsim,function(x) c(rnorm(n,
-                                              (n1 * params$mu1 + n2 * params$mu2)/n,
-                                              sqrt(((n1-1)*params$sd1^2 + (n2-1)*params$sd2^2)/(n-2)))))
-
+    a.dfs <- lapply(1:nsim, function(x) {
+      c(rnorm(
+        n,
+        (n1 * params$mu1 + n2 * params$mu2) / n,
+        sqrt(((n1 - 1) * params$sd1^2 + (n2 - 1) * params$sd2^2) / (n - 2))
+      ))
+    })
   } else {
-    if(dist=="beta"){
-      n.dfs = lapply(1:nsim,function(x) rbeta(n,params$s1,params$s2))
+    if (dist == "beta") {
+      n.dfs <- lapply(1:nsim, function(x) rbeta(n, params$s1, params$s2))
 
-      a.dfs = lapply(1:nsim,function(x) rbeta(n,2,2))
-
+      a.dfs <- lapply(1:nsim, function(x) rbeta(n, 2, 2))
     } else {
-      if(dist=="weib"){
+      if (dist == "weib") {
+        #print(params)
+        n1 <- floor(params$p * n)
+        n2 <- floor((1 - params$p) * n)
 
-      #print(params)
-      n1 = floor(params$p*n)
-      n2 = floor((1-params$p)*n)
+        n.dfs <- lapply(1:nsim, function(x) {
+          c(rweibull(n1, shape = params$sp1, scale = params$sc1), rweibull(n2, shape = params$sp2, scale = params$sc2))
+        })
 
-      n.dfs = lapply(1:nsim,function(x) c(rweibull(n1,shape=params$sp1,scale=params$sc1),rweibull(n2,shape=params$sp2,scale=params$sc2)))
-
-
-      a.dfs = lapply(1:nsim,function(x) c(rweibull(n,
-                                                shape = (n1 * params$sp1 + n2 * params$sp2)/n,
-                                                scale = (n1 * params$sc1 + n2 * params$sc2)/n)))
-
+        a.dfs <- lapply(1:nsim, function(x) {
+          c(rweibull(
+            n,
+            shape = (n1 * params$sp1 + n2 * params$sp2) / n,
+            scale = (n1 * params$sc1 + n2 * params$sc2) / n
+          ))
+        })
       } else {
-        if(dist == "LNnorm"){
-          n1 = floor(params$p*n)
-          n2 = floor((1-params$p)*n)
+        if (dist == "LNnorm") {
+          n1 <- floor(params$p * n)
+          n2 <- floor((1 - params$p) * n)
 
-          n.dfs = try( lapply(1:nsim,function(x) c(rlnorm(n1,params$mu1,params$sd1),rlnorm(n2,params$mu2,params$sd2))))
+          n.dfs <- try(lapply(1:nsim, function(x) {
+            c(rlnorm(n1, params$mu1, params$sd1), rlnorm(n2, params$mu2, params$sd2))
+          }))
 
-          a.dfs = lapply(1:nsim,function(x) c(rlnorm(n,
-                                                    (n1 * params$mu1 + n2 * params$mu2)/n,
-                                                    sqrt(((n1-1)*params$sd1^2 + (n2-1)*params$sd2^2)/(n-2)))))
+          a.dfs <- lapply(1:nsim, function(x) {
+            c(rlnorm(
+              n,
+              (n1 * params$mu1 + n2 * params$mu2) / n,
+              sqrt(((n1 - 1) * params$sd1^2 + (n2 - 1) * params$sd2^2) / (n - 2))
+            ))
+          })
         }
-     }
+      }
     }
   }
-  pwr.df = NULL
+  pwr.df <- NULL
   #Old version of dip
   # if("dip" %in% tests){
   #   pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hartigans' dip test",
@@ -72,43 +81,143 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
   # }
   #
 
-  if("mclust" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Mclust",
-                                     power = sum(sapply(n.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1,nboot=nboot)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(mclust::mclustBootstrapLRT(as.data.frame(s),modelName="E",verbose=F,maxG=1,nboot=nboot)$p.value<alpha)))/nsim ))
+  if ("mclust" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Mclust",
+        power = sum(sapply(n.dfs, function(s) {
+          I(
+            mclust::mclustBootstrapLRT(
+              as.data.frame(s),
+              modelName = "E",
+              verbose = F,
+              maxG = 1,
+              nboot = nboot
+            )$p.value <
+              alpha
+          )
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(
+            mclust::mclustBootstrapLRT(
+              as.data.frame(s),
+              modelName = "E",
+              verbose = F,
+              maxG = 1,
+              nboot = nboot
+            )$p.value <
+              alpha
+          )
+        })) /
+          nsim
+      )
+    )
   }
 
-
-
-  if("WmixR" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Weibull mixR",
-                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="weibull", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="weibull", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim ))
+  if ("WmixR" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Weibull mixR",
+        power = sum(
+          sapply(n.dfs, function(s) {
+            I(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "weibull", nboot = nboot)$pvalue < alpha)
+          }),
+          na.rm = TRUE
+        ) /
+          nsim,
+        FP = sum(
+          sapply(a.dfs, function(s) {
+            I(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "weibull", nboot = nboot)$pvalue < alpha)
+          }),
+          na.rm = TRUE
+        ) /
+          nsim
+      )
+    )
   }
 
-
-  if("GmixR" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Gaussian mixR",
-                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="normal", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="normal", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim ))
+  if ("GmixR" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Gaussian mixR",
+        power = sum(
+          sapply(n.dfs, function(s) {
+            I(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "normal", nboot = nboot)$pvalue < alpha)
+          }),
+          na.rm = TRUE
+        ) /
+          nsim,
+        FP = sum(
+          sapply(a.dfs, function(s) {
+            I(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "normal", nboot = nboot)$pvalue < alpha)
+          }),
+          na.rm = TRUE
+        ) /
+          nsim
+      )
+    )
   }
 
-
-  if("GamixR" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Gamma mixR",
-                                     power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="gamma", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim,
-                                     FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="gamma", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim ))
+  if ("GamixR" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Gamma mixR",
+        power = sum(
+          sapply(n.dfs, function(s) {
+            I(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "gamma", nboot = nboot)$pvalue < alpha)
+          }),
+          na.rm = TRUE
+        ) /
+          nsim,
+        FP = sum(
+          sapply(a.dfs, function(s) {
+            I(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "gamma", nboot = nboot)$pvalue < alpha)
+          }),
+          na.rm = TRUE
+        ) /
+          nsim
+      )
+    )
   }
 
   #Adding in a try function as there is a TBD edge case that cause an error in mixR
   #For now these will be counted as nulls, finding the source of these errors is important
-  if("LNmixR" %in% tests){
+  if ("LNmixR" %in% tests) {
     # pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Log normal mixR",
     #                                  power = sum(sapply(n.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="lnorm", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim,
     #                                  FP = sum(sapply(a.dfs, function(s) I(bs_lrt(unlist(s), H0=1, H1=2, family="lnorm", nboot=nboot)$pvalue<alpha)),na.rm=TRUE)/nsim ))
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Log normal mixR",
-                                     power = sum(sapply(n.dfs, function(s) { p = try(bs_lrt(unlist(s), H0=1, H1=2, family="lnorm", nboot=nboot)) ;ifelse( inherits(p,"try-error"),FALSE, I(p$pvalue < alpha))}),na.rm=TRUE)/nsim,
-                                     FP = sum(sapply(a.dfs, function(s){ p = try(bs_lrt(unlist(s), H0=1, H1=2, family="lnorm", nboot=nboot)) ;ifelse( inherits(p,"try-error"),FALSE, I(p$pvalue < alpha))}),na.rm=TRUE)/nsim ))
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Log normal mixR",
+        power = sum(
+          sapply(n.dfs, function(s) {
+            p <- try(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "lnorm", nboot = nboot))
+            ifelse(inherits(p, "try-error"), FALSE, I(p$pvalue < alpha))
+          }),
+          na.rm = TRUE
+        ) /
+          nsim,
+        FP = sum(
+          sapply(a.dfs, function(s) {
+            p <- try(bs_lrt(unlist(s), H0 = 1, H1 = 2, family = "lnorm", nboot = nboot))
+            ifelse(inherits(p, "try-error"), FALSE, I(p$pvalue < alpha))
+          }),
+          na.rm = TRUE
+        ) /
+          nsim
+      )
+    )
   }
 
   #Pulling bootstrapped BC until we establish a cut-off
@@ -118,53 +227,131 @@ est_pow = function(n,alpha,nsim,dist,params,tests,nboot){
   #                                    FP = sum(sapply(a.dfs, function(s)  I(BC_boot(s,nboot) < 0.05)))/nsim))
   # }
 
-  if("mt" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Bimodality Coefficient",
-                                     power = sum(sapply(n.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (5/9))))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(mousetrap::mt_check_bimodality(as.data.frame(s),method="BC")$BC > (5/9))))/nsim))
+  if ("mt" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Bimodality Coefficient",
+        power = sum(sapply(n.dfs, function(s) {
+          I(mousetrap::mt_check_bimodality(as.data.frame(s), method = "BC")$BC > (5 / 9))
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(mousetrap::mt_check_bimodality(as.data.frame(s), method = "BC")$BC > (5 / 9))
+        })) /
+          nsim
+      )
+    )
   }
 
-  if("dip" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hartigans' dip test",
-                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HH",B=nboot)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HH",B=nboot)$p.value<alpha)))/nsim))
+  if ("dip" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Hartigans' dip test",
+        power = sum(sapply(n.dfs, function(s) {
+          I(multimode::modetest(s, mod0 = 1, method = "HH", B = nboot)$p.value < alpha)
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(multimode::modetest(s, mod0 = 1, method = "HH", B = nboot)$p.value < alpha)
+        })) /
+          nsim
+      )
+    )
   }
 
-  if("SI" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Silverman Bandwidth test",
-                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "SI",B=nboot)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "SI",B=nboot)$p.value<alpha)))/nsim))
+  if ("SI" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Silverman Bandwidth test",
+        power = sum(sapply(n.dfs, function(s) {
+          I(multimode::modetest(s, mod0 = 1, method = "SI", B = nboot)$p.value < alpha)
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(multimode::modetest(s, mod0 = 1, method = "SI", B = nboot)$p.value < alpha)
+        })) /
+          nsim
+      )
+    )
   }
 
-
-  if("HY" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Hall and York Bandwidth test",
-                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HY",B=nboot)$p.value<alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(s,mod0 = 1,method = "HY",B=nboot)$p.value<alpha)))/nsim))
+  if ("HY" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Hall and York Bandwidth test",
+        power = sum(sapply(n.dfs, function(s) {
+          I(multimode::modetest(s, mod0 = 1, method = "HY", B = nboot)$p.value < alpha)
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(multimode::modetest(s, mod0 = 1, method = "HY", B = nboot)$p.value < alpha)
+        })) /
+          nsim
+      )
+    )
   }
 
-  if("CH" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Cheng and Hall Excess Mass",
-                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = s,mod0 = 1,method = "CH",B=nboot)$p.value < alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = s,mod0 = 1,method = "CH",B=nboot)$p.value < alpha)))/nsim))
+  if ("CH" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Cheng and Hall Excess Mass",
+        power = sum(sapply(n.dfs, function(s) {
+          I(multimode::modetest(data = s, mod0 = 1, method = "CH", B = nboot)$p.value < alpha)
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(multimode::modetest(data = s, mod0 = 1, method = "CH", B = nboot)$p.value < alpha)
+        })) /
+          nsim
+      )
+    )
   }
 
-  if("ACR" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Ameijeiras-Alonso et al. Excess Mass",
-                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = s,mod0 = 1,method = "ACR",B=nboot)$p.value < alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = s,mod0 = 1,method = "ACR",B=nboot)$p.value < alpha)))/nsim))
+  if ("ACR" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Ameijeiras-Alonso et al. Excess Mass",
+        power = sum(sapply(n.dfs, function(s) {
+          I(multimode::modetest(data = s, mod0 = 1, method = "ACR", B = nboot)$p.value < alpha)
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(multimode::modetest(data = s, mod0 = 1, method = "ACR", B = nboot)$p.value < alpha)
+        })) /
+          nsim
+      )
+    )
   }
 
-  if("FM" %in% tests){
-    pwr.df = rbind(pwr.df,data.frame(N = n, Test = "Fisher and Marron Carmer-von Mises",
-                                     power = sum(sapply(n.dfs, function(s)  I(multimode::modetest(data = s,mod0 = 1,method = "FM",B=nboot)$p.value < alpha)))/nsim,
-                                     FP = sum(sapply(a.dfs, function(s)  I(multimode::modetest(data = s,mod0 = 1,method = "FM",B=nboot)$p.value < alpha)))/nsim))
-
+  if ("FM" %in% tests) {
+    pwr.df <- rbind(
+      pwr.df,
+      data.frame(
+        N = n,
+        Test = "Fisher and Marron Carmer-von Mises",
+        power = sum(sapply(n.dfs, function(s) {
+          I(multimode::modetest(data = s, mod0 = 1, method = "FM", B = nboot)$p.value < alpha)
+        })) /
+          nsim,
+        FP = sum(sapply(a.dfs, function(s) {
+          I(multimode::modetest(data = s, mod0 = 1, method = "FM", B = nboot)$p.value < alpha)
+        })) /
+          nsim
+      )
+    )
   }
-
-
-
 
   return(pwr.df)
-
 }

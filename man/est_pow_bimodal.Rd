@@ -10,7 +10,9 @@ est_pow_bimodal(
   nsim = 20,
   dist = c("norm", "beta", "weibull", "gamma", "lnorm"),
   params,
-  tests
+  tests,
+  run_null = T,
+  convert = T
 )
 }
 \arguments{

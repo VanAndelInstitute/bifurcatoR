@@ -41,7 +41,7 @@
 #' @importFrom      stats confint lm quantile
 #'
 #' @export
-bifurcatoR_Analysis = function(data, tests, nboot, alpha) {
+bifurcatoR_Analysis <- function(data, tests, nboot, alpha) {
   res_list <- lapply(tests, function(i) {
     eval(call(i, data, nboot, alpha))
   })
@@ -54,7 +54,7 @@ bifurcatoR_Analysis = function(data, tests, nboot, alpha) {
 }
 
 mclust <- function(data, nboot, alpha) {
-  tmp = mclust::mclustBootstrapLRT(
+  tmp <- mclust::mclustBootstrapLRT(
     data$value,
     modelName = "E",
     verbose = F,
@@ -71,15 +71,15 @@ mclust <- function(data, nboot, alpha) {
 }
 
 mt <- function(data, nboot, alpha) {
-  s = as.data.frame(data$value)
-  tmp = mousetrap::mt_check_bimodality(s, method = "BC")$BC
+  s <- as.data.frame(data$value)
+  tmp <- mousetrap::mt_check_bimodality(s, method = "BC")$BC
   boot.list <- lapply(1:nboot, function(x) {
     mousetrap::mt_check_bimodality(
       as.data.frame(s[sample(1:nrow(s), replace = T), ]),
       method = "BC"
     )$BC
   })
-  tmp.boot = unname(unlist(boot.list))
+  tmp.boot <- unname(unlist(boot.list))
   data.frame(
     Test = "Bimodality Coefficient",
     nboot = nboot,
@@ -90,7 +90,8 @@ mt <- function(data, nboot, alpha) {
 }
 
 modetester <- function(type, data, nboot) {
-  model_name <- switch(type,
+  model_name <- switch(
+    type,
     SI = "Silverman Bandwidth test",
     HH = "Hartigans' dip test",
     HY = "Hall and York Bandwidth test",
@@ -99,7 +100,7 @@ modetester <- function(type, data, nboot) {
     FM = "Fisher and Marron Carmer-von Mises"
   )
 
-  tmp = multimode::modetest(data$value, mod0 = 1, method = type, B = nboot)
+  tmp <- multimode::modetest(data$value, mod0 = 1, method = type, B = nboot)
   data.frame(
     Test = model_name,
     nboot = nboot,
@@ -134,14 +135,15 @@ FM <- function(data, nboot, ...) {
 }
 
 twosample_tester <- function(type, data, nboot, alpha) {
-  model <- switch(type,
+  model <- switch(
+    type,
     ks = c(fun = twosamples::ks_test, name = "Kolmogorov-Smirnov Test"),
     cvm = c(fun = twosamples::cvm_test, name = "Cramer-von Mises Test"),
     dts = c(fun = twosamples::dts_test, name = "DTS Test"),
     ad = c(fun = twosamples::ad_test, name = "Aderson-Darling Test")
   )
   twosample_test <- model['fun']
-  tmp = twosample_test(
+  tmp <- twosample_test(
     data$value[data$group == unique(data$group)[1]],
     data$value[data$group == unique(data$group)[2]],
     nboots = nboot,
@@ -173,7 +175,7 @@ ad <- function(data, nboot, alpha) {
 }
 
 Levene <- function(data, nboot, alpha) {
-  tmp = car::leveneTest(lm(value ~ as.factor(data$group), data = data))
+  tmp <- car::leveneTest(lm(value ~ as.factor(data$group), data = data))
   data.frame(
     Test = "Levene's Test",
     nboot = NA,
@@ -184,19 +186,14 @@ Levene <- function(data, nboot, alpha) {
 }
 
 permutation_tester <- function(type, data, nboot, alpha) {
-  difftype <- switch(type,
-    Raw = "meanDiff",
-    SD = "sdDiff",
-    MAD = "madDiff",
-    GiniMd = "giniDiff"
-  )
+  difftype <- switch(type, Raw = "meanDiff", SD = "sdDiff", MAD = "madDiff", GiniMd = "giniDiff")
 
-  temp_df = data.frame(
+  temp_df <- data.frame(
     y = data$value,
     X = as.numeric(as.factor(data$group)) - 1
   )
 
-  tmp = permutation_tests(temp_df, nboot, difftype, alpha)
+  tmp <- permutation_tests(temp_df, nboot, difftype, alpha)
   data.frame(
     Test = paste0("Permutations (", type, ")"),
     nboot = nboot,
@@ -223,7 +220,8 @@ permutation_tester <- function(type, data, nboot, alpha) {
 }
 
 anova_tester <- function(type, data, nboot, alpha) {
-  tmp <- switch(type,
+  tmp <- switch(
+    type,
     `ANOVA` = lm(value ~ as.factor(data$group), data = data),
     `Non-parametric ANOVA` = lm(rank(value) ~ as.factor(data$group), data = data)
   )
@@ -248,7 +246,8 @@ anova.np <- function(data, nboot, alpha) {
 }
 
 mixR <- function(family, data, nboot, alpha) {
-  model <- switch(family,
+  model <- switch(
+    family,
     WmixR = c(name = "Weibull", dist = "weibull"),
     LNmixR = c(name = "Lognormal", dist = "lnorm"),
     GmixR = c(name = "Gaussian", dist = "normal"),
@@ -258,7 +257,7 @@ mixR <- function(family, data, nboot, alpha) {
   model_name <- paste(model['name'], "mixR")
   model_dist <- model['dist']
 
-  tmp = bs_lrt(data$value, H0 = 1, H1 = 2, family = model_dist, nboot = nboot)
+  tmp <- bs_lrt(data$value, H0 = 1, H1 = 2, family = model_dist, nboot = nboot)
   data.frame(
     Test = model_name,
     nboot = nboot,

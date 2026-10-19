@@ -26,70 +26,82 @@
 #' @importFrom stats cutree dist hclust kmeans
 #'
 #' @export
-bs_lrt <- function(x, H0=1, H1=2, family="normal", nboot=1e2, iter=1e3, ...){
-  
+bs_lrt <- function(x, H0 = 1, H1 = 2, family = "normal", nboot = 1e2, iter = 1e3, ...) {
   #Our own initz with fuzzy c means if kmeans fails
-  initz2 <-  function(x, ncomp, init.method = c("kmeans", "hclust","fuzzy")) {
-    
-    init.method = match.arg(init.method)
+  initz2 <- function(x, ncomp, init.method = c("kmeans", "hclust", "fuzzy")) {
+    init.method <- match.arg(init.method)
     # check if 'x' is a matrix (from grouped data)
-    if(is.matrix(x)) {
+    if (is.matrix(x)) {
       x <- mixR::reinstate(x)
     }
-    if(init.method == "kmeans") {
-      a <- kmeans(x, centers = ncomp,nstart = 1)$cluster
-      if(any(table(a) < length(x) *0.05)){
-        a <- ppclust::fpppcm(x,centers = ncomp)$cluster
+    if (init.method == "kmeans") {
+      a <- kmeans(x, centers = ncomp, nstart = 1)$cluster
+      if (any(table(a) < length(x) * 0.05)) {
+        a <- ppclust::fpppcm(x, centers = ncomp)$cluster
       }
     } else {
       a <- cutree(hclust(dist(x)), ncomp)
       # a <- ppclust::fpppcm(x,centers = ncomp)$cluster
-    } 
+    }
     res <- list()
-    for(i in 1:ncomp) {
+    for (i in 1:ncomp) {
       res[[i]] <- x[a == i]
     }
     count <- sapply(res, length)
     pi <- count / sum(count)
     mu <- sapply(res, mean)
     sd <- sapply(res, sd)
-    if(any(is.na(sd))){sd[which(is.na(sd))] = sd[which(!is.na(sd))][1] }
-    #If we still have a cluster of size 1, even after fuzzy c means, 
+    if (any(is.na(sd))) {
+      sd[which(is.na(sd))] <- sd[which(!is.na(sd))][1]
+    }
+    #If we still have a cluster of size 1, even after fuzzy c means,
     #we'll give this cluster equal sd to cluster 1 and let the EM algorithm go
-    
-    
-    
+
     order <- order(mu)
-    
+
     pi <- pi[order]
     mu <- mu[order]
     sd <- sd[order]
     list(pi = pi, mu = mu, sd = sd)
   }
-  
+
   # unlockBinding("initz", as.environment("package:mixR"))
   # assign("initz", initz2, "package:mixR")
-  
-  unlockBinding("initz",  getNamespace("mixR"))
-  assign("initz", initz2,  getNamespace("mixR"))
-  
+
+  unlockBinding("initz", getNamespace("mixR"))
+  assign("initz", initz2, getNamespace("mixR"))
+
   # check input
-  if(!is.numeric(H0) || H0 < 1) stop("H0 must be a positive integer.")
-  if(!is.numeric(H1) || H1 < H0) stop("H1 must be an integer greater than H0.")
+  if (!is.numeric(H0) || H0 < 1) {
+    stop("H0 must be a positive integer.")
+  }
+  if (!is.numeric(H1) || H1 < H0) {
+    stop("H1 must be an integer greater than H0.")
+  }
 
   # perform the bootstrap test
-  tst.p = try(mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter, ...),silent = T )
-  if(! inherits(tst.p,"try-error")){
+  tst.p <- try(
+    mixR::bs.test(x, ncomp = c(H0, H1), family = family, B = nboot, max_iter = iter, ...),
+    silent = T
+  )
+  if (!inherits(tst.p, "try-error")) {
     # If this test comes back NA, it usually means the EM algorithm failed to converge on two unequal modes.
-    # Attempt with equal variances to get a p-value. 
-    if(is.na(tst.p$pvalue)){
-      tst.p = mixR::bs.test(x, ncomp=c(H0, H1), family=family, B=nboot, max_iter=iter,ev=T ,...)
+    # Attempt with equal variances to get a p-value.
+    if (is.na(tst.p$pvalue)) {
+      tst.p <- mixR::bs.test(
+        x,
+        ncomp = c(H0, H1),
+        family = family,
+        B = nboot,
+        max_iter = iter,
+        ev = T,
+        ...
+      )
     }
   } else {
-    #If the p is still NA, we set p to 0.9999 because it has failed to find enough evidence. 
+    #If the p is still NA, we set p to 0.9999 because it has failed to find enough evidence.
     tst.p <- data.frame(pvalue = NA)
-  }  
-  
-  return(tst.p)
+  }
 
+  return(tst.p)
 }

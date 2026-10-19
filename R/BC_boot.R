@@ -7,9 +7,12 @@
 #'
 #' @export
 
-BC_boot = function(x,nboot){
-  tmp.boot = unname(unlist(lapply(1:nboot, function(z) mousetrap::mt_check_bimodality(as.data.frame(x[sample(1:length(x),replace=T)]),method="BC")$BC)))
-  return(sum(I(tmp.boot<=0.5555555))/nboot)
+BC_boot <- function(x, nboot) {
+  tmp.boot <- unname(unlist(lapply(1:nboot, function(z) {
+    mousetrap::mt_check_bimodality(
+      as.data.frame(x[sample(1:length(x), replace = T)]),
+      method = "BC"
+    )$BC
+  })))
+  return(sum(I(tmp.boot <= 0.5555555)) / nboot)
 }
-
-
