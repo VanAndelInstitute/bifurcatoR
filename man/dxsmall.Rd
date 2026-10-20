@@ -21,10 +21,14 @@ A SummarizedExperiment with covariates and mRNA counts from 501 AML cases.
  data(dxsmall)
  show(dxsmall)
 
- rownames(dxsmall)
- names(colData(dxsmall))
- table(dxsmall$FusionGroup)
- table(dxsmall$AgeGroup)
+ # if `iSEE` is installed:
+ if (require("iSEE")) {
+   rownames(dxsmall)
+   names(colData(dxsmall))
+   table(dxsmall$FusionGroup)
+   table(dxsmall$AgeGroup)
+   iSEEapp(dxsmall)
+ }
 
  # if `mclust` is installed:
  if (require("mclust")) {

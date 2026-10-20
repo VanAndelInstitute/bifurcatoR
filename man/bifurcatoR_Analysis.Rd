@@ -7,13 +7,15 @@
 bifurcatoR_Analysis(data, tests, nboot, alpha)
 }
 \arguments{
-\item{data}{data frame with 2 columns, a two-level group column and numeric value column}
+\item{data}{data frame with 2 columns, a group column and numeric value column.
+Tests that compare groups (two-sample tests, permutation tests, ANOVA,
+Levene) need exactly two groups; bimodality tests ignore \code{group}.}
 
 \item{tests}{names of tests to run. See details below for supported tests.}
 
 \item{nboot}{number of bootstraps or permutations}
 
-\item{alpha}{default significance level (0.05)}
+\item{alpha}{significance level (0.05)}
 }
 \value{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{     a data frame where each row corresponds to the results of test, p-values, test stats, and confidence intervals where possible
@@ -35,6 +37,14 @@ bifurcatoR_Analysis
 \item \code{ACR}
 \item \code{FM}
 }
+\item Two-sample distribution tests
+\itemize{
+\item \code{ks}, \code{cvm}, \code{dts}, \code{ad}
+}
+\item Variance
+\itemize{
+\item \code{Levene}
+}
 \item Permutation tests
 \itemize{
 \item \code{perm.raw}
@@ -47,12 +57,18 @@ bifurcatoR_Analysis
 \item \code{anova.p}: Parametric ANOVA
 \item \code{anova.np}: Non-parametric ANOVA
 }
-\item mixR
+\item mixR (bootstrap likelihood ratio test via \code{mixR::bs.test}, 1 vs 2 components)
 \itemize{
+\item \code{NmixR}: Normal (Gaussian)
 \item \code{WmixR}: Weibull
 \item \code{LNmixR}: Lognormal
-\item \code{GmixR}: Gaussian
-\item \code{GamixR}: Gamma
+\item \code{GmixR}: Gamma
 }
 }
+
+For the bimodality coefficient (\code{mt}), \code{p.value} is by design an indicator: 1 when the
+coefficient is below 5/9 (consistent with unimodality) and 0 otherwise.
+
+If an individual test fails, its row is returned with \code{NA} results and the reason in
+the \code{CI} column (plus a warning) so the other requested tests are not lost.
 }

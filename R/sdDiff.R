@@ -9,6 +9,7 @@
 #'
 #' @export
 
-sdDiff <- function(y, X) {
+sdDiff <- function(y, X){
   abs((sd(y[X == 1]) - sd(y[X == 0])))
 }
+

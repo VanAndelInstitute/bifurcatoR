@@ -27,9 +27,13 @@ est_pow_bimodal(
 \item{params}{parameters for the generating distribution}
 
 \item{tests}{names of tests to run}
+
+\item{run_null}{if TRUE (default) also simulate the unimodal null to estimate the false-positive rate (\code{FP}); if FALSE \code{FP} is NA}
+
+\item{convert}{currently unused; kept for backward compatibility}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     a power estimate
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     a data frame with columns `N`, `Test`, `power` and `FP`
 }\if{html}{\out{</div>}}
 }
 \description{

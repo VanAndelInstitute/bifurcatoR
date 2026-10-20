@@ -38,3 +38,8 @@ est_pow_2_mixtures(
 \description{
 est_pow_2_mixtures
 }
+\details{
+The \code{power} column simulates the two groups as specified. The false-positive (\code{FP})
+column simulates the null of two samples from the same bimodal population: modes are pooled
+across the groups and so is the mixing proportion; each group keeps its total size.
+}

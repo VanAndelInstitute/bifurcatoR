@@ -7,16 +7,22 @@
 permutation_tests(y, X, nperm, fxn_names, alpha)
 }
 \arguments{
+\item{y}{numeric outcome vector}
+
+\item{X}{grouping vector coded 0/1, same length as \code{y}}
+
 \item{nperm}{The number of permutations to be performed}
 
-\item{alpha}{The confidence level}
+\item{fxn_names}{one or more of "Permutations (Raw)", "Permutations (SD)",
+"Permutations (MAD)", "Permutations (Gini)"}
 
-\item{temp_df}{Generic name for the data frame to be permuted columns are the group variable X and the value variable y}
-
-\item{fxn}{The function name to call is \link{meanDiff} \link{madDiff} \link{giniDiff} \link{sdDiff}}
+\item{alpha}{The significance level, used for the permutation interval}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{ a 3 level list containing: a p-value, the actual difference, and the 2.5\% - 97.5\% interval
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ a list with three named elements, each named by `fxn_names`:
+         `p` (permutation p-values), `diff` (observed absolute differences)
+         and `crit` (the alpha/2 and 1 - alpha/2 quantiles of the permuted
+         absolute differences)
 }\if{html}{\out{</div>}}
 }
 \description{

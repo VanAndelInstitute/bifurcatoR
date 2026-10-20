@@ -20,7 +20,7 @@ clinical outcomes (see vignette for more details).
 \examples{
 
  data(MLL)
- library(mixR)
+ library(mixR) 
  MLLfit <- mixfit(MLL$MECOM, ncomp=2)
  plot(MLLfit, xlab="log(MECOM transcripts)")
 

@@ -25,15 +25,15 @@ A tibble with weight measurements from C57BL/6 male mice over 10 weeks.
  if (require("ggplot2") & require("reshape2")) {
 
    Ziru$mouse <- seq_len(nrow(Ziru))
-   melted <- melt(Ziru,
+   melted <- melt(Ziru, 
                   id.vars="mouse",
                   variable.name="week",
                   value.name="weight")
    melted$week <- as.ordered(melted$week)
 
-   ggplot(melted, aes(group=mouse, x=week, y=weight, color=mouse)) +
-     geom_point() +
-     geom_line() +
+   ggplot(melted, aes(group=mouse, x=week, y=weight, color=mouse)) + 
+     geom_point() + 
+     geom_line() + 
      theme_minimal()
 
  }
