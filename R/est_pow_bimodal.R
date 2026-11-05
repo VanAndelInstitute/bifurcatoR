@@ -11,14 +11,7 @@
 #'
 #' @return          a data frame with columns `N`, `Test`, `power` and `FP`
 #'
-#' @import          mclust
-#' @import          diptest
-#' @import          mousetrap
-#' @import          LaplacesDemon
-#' @import          multimode
-#' @import          Hmisc
-#' @import          twosamples
-#' @import          mixR
+#' @importFrom stats rweibull rgamma rlnorm rbeta setNames
 #'
 #' @export
 
@@ -37,32 +30,32 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   
   if ("mclust_E" %in% tests) {
     test_fns$mclust_E <- function(x) {
-      mclustBootstrapLRT(x, modelName="E",
+      mclust::mclustBootstrapLRT(x, modelName="E",
                                  verbose=FALSE, maxG=1)$p.value < alpha
     }
   }
-  ctrl <- emControl(
+  ctrl <- mclust::emControl(
     eps   = 1e-7,          # stop near-singular variance solutions sooner
     tol   = c(1e-3, 1e-3), # higher tolerance to prevent from divergent variances (i.e modes made of a single outlier)
     itmax = c(5000, 5000)
   )
   if ("mclust_V" %in% tests) {
     test_fns$mclust_V <- function(x) {
-      mclustBootstrapLRT(x, modelName="V",
+      mclust::mclustBootstrapLRT(x, modelName="V",
                          verbose=FALSE, maxG=1, control = ctrl)$p.value < alpha
     }
   }
   
   if ("mt" %in% tests) {
     test_fns$mt <- function(x) {
-      mt_check_bimodality(data.frame(x = x),method="BC")$BC > (5/9)
+      mousetrap::mt_check_bimodality(data.frame(x = x),method="BC")$BC > (5/9)
     }
   }
   
   # modetest family: avoid repeating boilerplate
   add_modetest <- function(key, method) {
     if (key %in% tests) {
-      test_fns[[key]] <<- function(x) modetest(x, mod0 = 1, method = method)$p.value < alpha
+      test_fns[[key]] <<- function(x) multimode::modetest(x, mod0 = 1, method = method)$p.value < alpha
     }
   }
   
@@ -76,7 +69,7 @@ est_pow_bimodal = function(n,alpha = 0.05,nsim = 20,dist =c("norm", "beta", "wei
   add_mixR <- function(key, family) {
     if (key %in% tests) {
       test_fns[[key]] <<- function(x) {
-        try.fit <- try(bs.test(x,family = family)$pvalue,silent=T)
+        try.fit <- try(mixR::bs.test(x,family = family)$pvalue,silent=T)
         if(! inherits(try.fit,"try-error")) { 
           try.fit < alpha
         } else {

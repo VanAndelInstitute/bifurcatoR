@@ -14,7 +14,8 @@
 #' @examples
 #' pps = rmixnorm(20, p1=0.25, p2=0.5, shift=15, sel='Bodyweight', CI=0)
 #' 
-#' @import        dplyr
+#' @importFrom dplyr case_when
+#' @importFrom stats rnorm qnorm
 #' 
 #' @export 
 rmixnorm = function(n, p1, p2, shift, sel, CI) {

@@ -11,8 +11,6 @@
 #'
 #' @return         params.transform
 #'
-#' @import          mixdist
-#'
 #' @export
 
 convert_params <- function(dist, params) {

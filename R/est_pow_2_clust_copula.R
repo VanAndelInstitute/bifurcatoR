@@ -7,11 +7,9 @@
 #' @param   params  parameters for the generating distribution
 #' @param   tests   names of tests to run
 #'
-#' @return          a power estimate
+#' @importFrom stats pnorm qbeta qweibull qgamma qlnorm setNames
 #'
-#' @import mvtnorm
-#' @import mclust
-#' @import sigclust
+#' @return          a power estimate
 #'
 #' @export
 
@@ -32,7 +30,7 @@ est_pow_2_clust_copula = function(n,alpha = 0.05,nsim = 20 ,dist = c("norm", "be
   #https://rpubs.com/FJRubio/GC2
   get_copula <- function(qmarg1, qmarg2, n_cop, rho){
     R <- rbind(c(1,rho),c(rho,1))
-    dat <- rmvnorm(n_cop, mean = c(0,0), sigma = R)
+    dat <- mvtnorm::rmvnorm(n_cop, mean = c(0,0), sigma = R)
     dat[,1] <- qmarg1(pnorm(dat[,1]))
     dat[,2] <- qmarg2(pnorm(dat[,2]))
     return(dat)
@@ -100,7 +98,7 @@ est_pow_2_clust_copula = function(n,alpha = 0.05,nsim = 20 ,dist = c("norm", "be
   add_mclusttest("mclust_VVV", "VVV")
   
   if("sigclust" %in% tests){
-    test_fns$sigclust <- function(x){sigclust(x, nsim = 500,icovest = 2)@pval < alpha}
+    test_fns$sigclust <- function(x){sigclust::sigclust(x, nsim = 500,icovest = 2)@pval < alpha}
   }
   
   test_names <- names(test_fns)
